@@ -5,8 +5,8 @@ from random import choice
 from typing import cast
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ...array_types import Coords
 from ...colors import BLACK, WHITE, Color, gradient, lerp_colors
 from ...geometry import (
     BezierCurve,
@@ -61,14 +61,14 @@ async def black_hole_effect(text: Text):
 
     all_particles = list(_BlackHoleParticle.iter_from_field(field))
 
-    positions = RNG.random((field.nparticles, 2)) * text.size
-    for particle, position in zip(all_particles, positions):
-        particle.final_ord = particle.cell["ord"]
+    coords = cast(Coords, RNG.random((field.nparticles, 2)) * text.size)
+    for particle, position in zip(all_particles, coords):
+        particle.final_ord = particle.cell["ord"]  # type: ignore
         particle.final_fg_color = Color(*particle.cell["fg_color"].tolist())
         particle.final_pos = particle.pos
         particle.cell["ord"] = ord(choice(STARS))
         particle.cell["fg_color"] = choice(STAR_GRADIENT)
-        particle.pos = cast(NDArray[np.float64], position)
+        particle.pos = position
 
     black_hole = TextParticleField(
         size_hint={"height_hint": 1.0, "width_hint": 1.0}, is_transparent=True
@@ -120,14 +120,14 @@ async def black_hole_effect(text: Text):
     text.remove_gadget(field)
 
 
-async def _forming(particles: list[Particle], positions: NDArray[float]):
+async def _forming(particles: list[Particle], coords: Coords):
     for particle in particles:
         particle.cell["ord"] = ord("✸")
         particle.cell["fg_color"] = WHITE
 
     paths = [
         [BezierCurve(np.array([particle.pos, position], float))]
-        for particle, position in zip(particles, positions)
+        for particle, position in zip(particles, coords)
     ]
 
     speed = len(particles)
@@ -144,9 +144,7 @@ async def _forming(particles: list[Particle], positions: NDArray[float]):
     await asyncio.gather(*tasks)
 
 
-async def _rotating(
-    black_hole: TextParticleField, positions: NDArray[np.float64], center: Point
-):
+async def _rotating(black_hole: TextParticleField, coords: Coords, center: Point):
     angles = np.linspace(0, 2 * np.pi, 100, endpoint=False)
     cos = np.cos(angles)
     sin = np.sin(angles)
@@ -154,7 +152,7 @@ async def _rotating(
     i = 0
 
     while True:
-        new_positions = positions @ rot[i]
+        new_positions = coords @ rot[i]
         new_positions[:, 1] *= 2
         new_positions += center
         black_hole.particle_coords = new_positions
@@ -165,13 +163,13 @@ async def _rotating(
 
 async def _consuming(
     particles: list[_BlackHoleParticle],
-    positions: NDArray[float],
+    coords: Coords,
     center: Point,
 ):
     particles.sort(key=lambda p: (p.pos.y - center.y) ** 2 + (p.pos.x - center.x) ** 2)
 
     paths = [
-        [BezierCurve(np.array([particle.pos, choice(positions), center]))]
+        [BezierCurve(np.array([particle.pos, choice(coords), center]))]
         for particle in particles
     ]
 
@@ -204,11 +202,11 @@ async def _consuming(
 
 async def _collapsing(
     particles: list[Particle],
-    positions: NDArray[float],
+    coords: Coords,
     center: Point,
     radius: int,
 ):
-    new_pos = (positions - center).astype(float)
+    new_pos = (coords - center).astype(float)
     new_pos *= (radius + 3) / radius
     new_pos += center
 

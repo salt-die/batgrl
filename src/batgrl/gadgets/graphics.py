@@ -5,14 +5,13 @@ from typing import Final, Literal
 
 import cv2
 import numpy as np
-from numpy.typing import NDArray
 
 from .._rendering import graphics_render
+from ..array_types import RGBA_2D, RGBM_2D, Cell2D, Enum2D
 from ..colors import TRANSPARENT, AColor
 from ..logging import get_logger
 from ..texture_tools import Interpolation, resize_texture
 from .gadget import (
-    Cells2D,
     Gadget,
     Point,
     Pointlike,
@@ -104,7 +103,7 @@ class Graphics(Gadget):
 
     Attributes
     ----------
-    texture : NDArray[np.uint8]
+    texture : RGBA_2D
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.
@@ -251,7 +250,7 @@ class Graphics(Gadget):
         self.alpha = alpha
         self._interpolation: Interpolation
         self.interpolation = interpolation
-        self.texture = np.full((1, 1, 4), default_color, np.uint8)
+        self.texture: RGBA_2D = np.full((1, 1, 4), default_color, np.uint8)
         self._blitter: Blitter
         self.blitter = blitter  # Property setter will correctly resize texture.
 
@@ -318,9 +317,7 @@ class Graphics(Gadget):
         """Fill texture with default color."""
         self.texture[:] = self.default_color
 
-    def _render(
-        self, cells: Cells2D, graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
-    ) -> None:
+    def _render(self, cells: Cell2D, graphics: RGBM_2D, kind: Enum2D) -> None:
         """Render visible region of gadget."""
         graphics_render(
             cells,

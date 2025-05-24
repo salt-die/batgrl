@@ -7,8 +7,8 @@ from time import perf_counter
 from typing import cast
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ...array_types import Coords
 from ...colors import BLUE, WHITE, Color, gradient, lerp_colors
 from ...geometry import BezierCurve, Point, move_along_path
 from ..text import Text
@@ -45,8 +45,8 @@ async def ring_effect(text: Text):
     particles = list(_RingParticle.iter_from_field(field))
     for particle in particles:
         particle.final_pos = Point(int(particle.pos.y), int(particle.pos.x))
-    positions = RNG.random((field.nparticles, 2)) * text.size
-    field.particle_coords = cast(NDArray[float], positions)
+    coords = cast(Coords, RNG.random((field.nparticles, 2)) * text.size)
+    field.particle_coords = coords
 
     min_dim = min(text.height, text.width / 2)
     max_radius = int(2**0.5 * (min_dim / 2))

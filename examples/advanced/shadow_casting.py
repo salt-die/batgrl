@@ -51,7 +51,7 @@ class Selector(Grabbable, Text):
 
 class ShadowCasterApp(App):
     async def on_start(self):
-        caster_map = np.zeros((34, 34), np.uint8)
+        caster_map = np.zeros((34, 34), np.ulong)
 
         caster = ShadowCaster(
             size=(17, 34),

@@ -6,7 +6,7 @@ from collections.abc import Iterable, Sequence
 import numpy as np
 from uwcwidth import wcswidth
 
-from ..text_tools import Cells0D, Cells2D, add_text
+from ..text_tools import Cell0D, Cell2D, add_text
 from .text import Point, Pointlike, PosHint, Size, SizeHint, Sizelike, Text
 
 __all__ = ["Point", "Size", "TextAnimation"]
@@ -27,7 +27,7 @@ class TextAnimation(Text):
         Whether to restart animation after last frame.
     reverse : bool, default: False
         Whether to play animation in reverse.
-    default_cell : Cells0D | str, default: " "
+    default_cell : Cell0D | str, default: " "
         Default cell of text canvas.
     alpha : float, default: 0.0
         Transparency of gadget.
@@ -60,9 +60,9 @@ class TextAnimation(Text):
         Whether to restart animation after last frame.
     reverse : bool
         Whether to play animation in reverse.
-    canvas : Cells2D
+    canvas : Cell2D
         The array of characters for the gadget.
-    default_cell : Cells0D
+    default_cell : Cell0D
         Default cell of text canvas.
     default_fg_color : Color
         Foreground color of default cell.
@@ -194,7 +194,7 @@ class TextAnimation(Text):
         frame_durations: float | Sequence[float] = 1 / 12,
         loop: bool = True,
         reverse: bool = False,
-        default_cell: Cells0D | str = " ",
+        default_cell: Cell0D | str = " ",
         alpha: float = 0.0,
         size: Sizelike = Size(10, 10),
         pos: Pointlike = Point(0, 0),
@@ -231,8 +231,8 @@ class TextAnimation(Text):
             is_enabled=is_enabled,
         )
 
-        self._sized_frames: list[Cells2D] = []
-        """Frames of the animation converted to Cells2D and sized to gadget."""
+        self._sized_frames: list[Cell2D] = []
+        """Frames of the animation converted to Cell2D and sized to gadget."""
         for frame in self.frames:
             canvas = self._canvas.copy()
             add_text(canvas, frame, truncate_text=True)
@@ -244,14 +244,14 @@ class TextAnimation(Text):
         self._animation_task = None
 
     @property
-    def canvas(self) -> Cells2D:
+    def canvas(self) -> Cell2D:
         """The array of characters for the gadget."""
         if self._i < len(self.frames):
             return self._sized_frames[self._i]
         return self._canvas
 
     @canvas.setter
-    def canvas(self, canvas: Cells2D) -> None:
+    def canvas(self, canvas: Cell2D) -> None:  # type: ignore
         self._canvas = canvas
 
     @property

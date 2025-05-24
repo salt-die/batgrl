@@ -4,8 +4,8 @@ from collections.abc import Sequence
 from typing import cast
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ..array_types import Float1D, Int1D
 from ..colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG, Color, lerp_colors
 from ..terminal.events import MouseEvent
 from ..text_tools import smooth_vertical_bar
@@ -75,7 +75,7 @@ class Sparkline(Gadget):
 
     Attributes
     ----------
-    data : NDArray[np.float64]
+    data : Float1D
         Data for the sparkline. This can be set with a `Sequence[float]` or `None`, but
         will be converted into a (possibly empty) numpy array.
     min_color : Color
@@ -246,16 +246,16 @@ class Sparkline(Gadget):
         self.tooltip_bg_color = tooltip_bg_color
 
         # Following are set in `_build_sparkline`:
-        self._walls: NDArray[int]
+        self._walls: Int1D
         """
         Boundaries for each bin. The `i`th bin starts at ``self._walls[i]`` and stops at
         ``self._walls[i + 1]``.
         """
-        self._mins: NDArray[float]
+        self._mins: Float1D
         """Mininum of each bin."""
-        self._maxs: NDArray[float]
+        self._maxs: Float1D
         """Maximum of each bin."""
-        self._means: NDArray[float]
+        self._means: Float1D
         """Arithmetic mean of each bin."""
 
     @property
@@ -330,7 +330,7 @@ class Sparkline(Gadget):
         self._build_sparkline()
 
     @property
-    def data(self) -> NDArray[np.float64]:
+    def data(self) -> Float1D:
         """Data for the sparkline."""
         return self._data
 
@@ -339,22 +339,22 @@ class Sparkline(Gadget):
         self._data = np.array([]) if data is None else np.array(data, float)
         self._build_sparkline()
 
-    def on_add(self):
+    def on_add(self) -> None:
         """Add tooltip to root and build sparkline on add."""
         super().on_add()
         cast(Gadget, self.root).add_gadget(self._tooltip)
         self._build_sparkline()
 
-    def on_remove(self):
+    def on_remove(self) -> None:
         """Remove tooltip from root on remove."""
         cast(Gadget, self.root).remove_gadget(self._tooltip)
 
-    def on_size(self):
+    def on_size(self) -> None:
         """Rebuild sparkline on resize."""
         super().on_size()
         self._build_sparkline()
 
-    def _build_sparkline(self):
+    def _build_sparkline(self) -> None:
         if self.root is None:
             return
 

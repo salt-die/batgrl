@@ -1,12 +1,9 @@
 """A gadget with a background color that is composited if transparent."""
 
-import numpy as np
-from numpy.typing import NDArray
-
 from .._rendering import pane_render
+from ..array_types import RGBM_2D, Cell2D, Enum2D
 from ..colors import BLACK, Color
 from .gadget import (
-    Cells2D,
     Gadget,
     Point,
     Pointlike,
@@ -189,12 +186,7 @@ class Pane(Gadget):
     def alpha(self, alpha: float):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
 
-    def _render(
-        self,
-        cells: Cells2D,
-        graphics: NDArray[np.uint8],
-        kind: NDArray[np.uint8],
-    ) -> None:
+    def _render(self, cells: Cell2D, graphics: RGBM_2D, kind: Enum2D) -> None:
         """Render visible region of gadget."""
         pane_render(
             cells,

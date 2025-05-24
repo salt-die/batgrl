@@ -1,12 +1,10 @@
 """A gadget that replaces SGR parameters of cells beneath it."""
 
-import numpy as np
-from numpy.typing import NDArray
-
 from .._rendering import cursor_render
+from ..array_types import RGBM_2D, Enum2D
 from ..colors import Color
 from ..geometry import Point, Size
-from .gadget import Cells2D, Gadget, Pointlike, PosHint, SizeHint, Sizelike
+from .gadget import Cell2D, Gadget, Pointlike, PosHint, SizeHint, Sizelike
 
 
 class Cursor(Gadget):
@@ -193,9 +191,7 @@ class Cursor(Gadget):
             is_enabled=is_enabled,
         )
 
-    def _render(
-        self, cells: Cells2D, graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
-    ) -> None:
+    def _render(self, cells: Cell2D, graphics: RGBM_2D, kind: Enum2D) -> None:
         """Render visible region of gadget."""
         cursor_render(
             cells,

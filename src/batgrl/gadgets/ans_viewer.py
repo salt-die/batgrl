@@ -10,7 +10,7 @@ import numpy as np
 
 from ..colors import BLACK, WHITE, Color, lerp_colors
 from ..geometry import Point, Size
-from ..text_tools import Cells0D, Cells2D, new_cell
+from ..text_tools import Cell0D, Cell2D, new_cell
 from .gadget import Gadget, PosHint, SizeHint
 from .scroll_view import ScrollView
 from .text import Pointlike, Sizelike, Text
@@ -198,7 +198,7 @@ class _AnsReader:
 
         self._add_chars(current_index, len(self.data))
 
-    def _create_canvas(self) -> Cells2D:
+    def _create_canvas(self) -> Cell2D:
         canvas = np.full(
             (len(self.lines), self.width),
             new_cell(fg_color=_LOW_INTENSITY[7], bg_color=_LOW_INTENSITY[0]),
@@ -208,12 +208,12 @@ class _AnsReader:
                 canvas[y, x] = cell
         return canvas
 
-    def _guess_read(self) -> Cells2D:
+    def _guess_read(self) -> Cell2D:
         self.high_intensity = False
         self.fg_color = 7
         self.bg_color = 0
 
-        self.lines: list[list[Cells0D]] = []
+        self.lines: list[list[Cell0D]] = []
         self.cursor_y: int = 0
         self.cursor_x: int = 0
         try:
@@ -222,7 +222,7 @@ class _AnsReader:
         finally:
             del self.lines, self.cursor_y, self.cursor_x
 
-    def read(self) -> Cells2D | None:
+    def read(self) -> Cell2D | None:
         # How to determine the width of an ans file?
         # Most are 80 width, luckily, but there are exceptions! Sometimes there is a way
         # to discover an incorrect width assumption: an index error. An index error

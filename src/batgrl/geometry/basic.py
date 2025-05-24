@@ -5,7 +5,8 @@ from __future__ import annotations
 from typing import NamedTuple, Self
 
 import numpy as np
-from numpy.typing import NDArray
+
+from ..array_types import Coords
 
 __all__ = [
     "Point",
@@ -59,7 +60,7 @@ def points_on_circle(
     radius: float = 1.0,
     center: tuple[float, float] = (0.0, 0.0),
     offset: float = 0.0,
-) -> NDArray[np.float64]:
+) -> Coords:
     """
     Return `n` points on a circle.
 
@@ -76,8 +77,8 @@ def points_on_circle(
 
     Returns
     -------
-    NDArray[np.float32]
-        An `(n, 2)`-shaped NDArray of points on a circle.
+    Coords
+        An `(n, 2)`-shaped array of evenly-spaced points on a circle.
     """
     angles = np.linspace(0, 2 * np.pi, endpoint=False, num=n) + offset
     return radius * np.stack([np.sin(angles), np.cos(angles)]).T + center

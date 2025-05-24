@@ -6,10 +6,10 @@ from threading import RLock
 from typing import TYPE_CHECKING, Final, Literal, Self
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ..array_types import RGBM_2D, Cell0D, Cell2D, Enum2D, Int2D
 from ..colors import BLACK, Color
-from ..text_tools import Cells0D, Cells2D, new_cell
+from ..text_tools import new_cell
 from .gadget import Gadget, Point, Region, Size, _GadgetList
 from .graphics import Graphics, scale_geometry
 
@@ -31,7 +31,7 @@ class _Root(Gadget):
         """Lock held during rendering to prevent errors related to invalid geometry."""
         self._app = app
         """The running app."""
-        self._cell: Cells0D = new_cell()
+        self._cell: Cell0D = new_cell()
         """Default cell of root canvas."""
         self._bg_color = BLACK
         """Background color of the app."""
@@ -45,21 +45,21 @@ class _Root(Gadget):
         # Following attributes set in `on_size()`:
         self._resized: bool
         """Whether terminal has resized since last render."""
-        self.cells: Cells2D
+        self.cells: Cell2D
         """Current rendering of gadget tree."""
-        self.graphics: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
+        self.graphics: RGBM_2D = np.empty((0, 0, 4), np.uint8)
         """Current graphics rendering."""
-        self._sgraphics: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
+        self._sgraphics: RGBM_2D = np.empty((0, 0, 4), np.uint8)
         """Used by renderer to scale graphics from 0-255 to 0-100 for sixel."""
-        self.kind: NDArray[np.uint8]
+        self.kind: Enum2D
         """Whether a cell should use canvas, graphics or both."""
-        self._widths: NDArray[np.int32]
+        self._widths: Int2D
         """Column widths of characters in canvas."""
-        self._last_cells: Cells2D
+        self._last_cells: Cell2D
         """Previous rendering of gadget tree."""
-        self._last_graphics: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
+        self._last_graphics: RGBM_2D = np.empty((0, 0, 4), np.uint8)
         """Previous graphics rendering."""
-        self._last_kind: NDArray[np.uint8]
+        self._last_kind: Enum2D
         """Previous kind."""
 
     def on_size(self):
@@ -67,7 +67,7 @@ class _Root(Gadget):
         self._resized = True
         self.cells = np.full(self._size, self._cell)
         self._last_cells = self.cells.copy()
-        self._widths = np.zeros(self._size, dtype=np.int32)
+        self._widths = np.zeros(self._size, dtype=np.intc)
         self.kind = np.zeros(self._size, np.uint8)
         self._last_kind = self.kind.copy()
 

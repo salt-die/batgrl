@@ -4,11 +4,11 @@ from dataclasses import dataclass
 import cv2
 import numpy as np
 from batgrl.app import App
+from batgrl.array_types import Float1D
 from batgrl.colors import AWHITE, AColor
 from batgrl.gadgets.graphics import Graphics, Size, scale_geometry
 from batgrl.gadgets.slider import Slider
 from batgrl.gadgets.text import Text
-from numpy.typing import NDArray
 
 MESH_SIZE = 11, 21
 DAMPING = 0.97
@@ -17,7 +17,7 @@ GRAVITY = np.array([0.015, 0])
 
 @dataclass
 class Node:
-    position: NDArray[np.float64]
+    position: Float1D
 
     def __post_init__(self):
         self.velocity = np.zeros(2)
@@ -87,7 +87,7 @@ class Cloth(Graphics):
         super().on_size()
         self.h_offset = (self.width - self.nodes[-1].position[1] * self.scale) / 2
 
-    def scale_pos(self, pos: NDArray[np.float64]) -> NDArray[np.float64]:
+    def scale_pos(self, pos: Float1D) -> Float1D:
         scaled = self.scale * pos
         scaled[1] += self.h_offset
         return scaled

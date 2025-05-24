@@ -11,7 +11,7 @@ from typing import Self, cast
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
 from .gadget import (
-    Cells0D,
+    Cell0D,
     Gadget,
     Point,
     Pointlike,
@@ -36,7 +36,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         Whether node is a leaf node.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
-    default_cell : Cells0D | str, default: " "
+    default_cell : Cell0D | str, default: " "
         Default cell of text canvas.
     alpha : float, default: 0.0
         Transparency of gadget.
@@ -65,9 +65,9 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         Whether a mouse up event outside the button will trigger it.
     state : ButtonState
         Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
-    canvas : Cells2D
+    canvas : Cell2D
         The array of characters for the gadget.
-    default_cell : Cells0D
+    default_cell : Cell0D
         Default cell of text canvas.
     default_fg_color : Color
         Foreground color of default cell.
@@ -214,7 +214,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         self,
         is_leaf=True,
         always_release: bool = False,
-        default_cell: Cells0D | str = " ",
+        default_cell: Cell0D | str = " ",
         alpha: float = 0.0,
         size: Sizelike = Size(10, 10),
         pos: Pointlike = Point(0, 0),

@@ -30,10 +30,10 @@ from pathlib import Path
 from typing import Self
 
 import numpy as np
-from numpy.typing import NDArray
 from ugrapheme import grapheme_iter
 from uwcwidth import wcswidth
 
+from .array_types import Unicode1D, Unicode2D
 from .text_tools import egc_ord
 
 __all__ = ["FIGFont", "FullLayout"]
@@ -110,7 +110,7 @@ class FIGFont:
         Controls how characters are fitted in rendered text.
     reverse_universal_smush : bool, default: False
         Whether universal smushing will display earliest sub-character.
-    font : dict[str, NDArray[np.str_]], default: {}
+    font : dict[str, Unicode2D, default: {}
         A dictionary of characters to their ascii art representations.
     comments : str, default: ""
         Additional comments about this font.
@@ -125,7 +125,7 @@ class FIGFont:
         Controls how characters are fitted in rendered text.
     reverse_universal_smush : bool
         Whether universal smushing will display earliest sub-character.
-    font : dict[str, NDArray[np.str_]]
+    font : dict[str, Unicode2D
         A dictionary of characters to their ascii art representations.
     comments : str
         Additional comments about this font.
@@ -148,7 +148,7 @@ class FIGFont:
     """Controls how characters are fitted in rendered text."""
     reverse_universal_smush: bool = False
     """Whether universal smushing will display earliest sub-character."""
-    font: dict[str, NDArray[np.str_]] = field(repr=False, default_factory=dict)
+    font: dict[str, Unicode2D] = field(repr=False, default_factory=dict)
     """A dictionary of characters to their ascii art representations."""
     comments: str = field(repr=False, default="")
     """Additional comments about this font."""
@@ -206,7 +206,7 @@ class FIGFont:
         it = iter(lines)
         height = int(figinfo["height"])
 
-        def consume_char() -> NDArray[np.str_] | None:
+        def consume_char() -> Unicode2D | None:
             char_lines = [ENDMARKS_RE.sub("", line) for line in islice(it, height)]
             if len(char_lines) < height:
                 return None
@@ -263,7 +263,7 @@ class FIGFont:
         """Height of characters in this font."""
         return next(v for v in self.font.values() if v is not None).shape[0]
 
-    def _trim_char(self, fig_char: NDArray[np.str_]) -> NDArray[np.str_]:
+    def _trim_char(self, fig_char: Unicode2D) -> Unicode2D:
         """Remove leading and trailing whitespace."""
         while fig_char.shape[1] and (fig_char[:, 0] == " ").all():
             fig_char = fig_char[:, 1:]
@@ -340,7 +340,7 @@ class FIGFont:
             if ab == "><":
                 return "X"
 
-    def _smush(self, a: NDArray[np.str_], b: NDArray[np.str_]) -> list[str] | None:
+    def _smush(self, a: Unicode1D, b: Unicode1D) -> list[str] | None:
         """
         Attempt to smush two columns of sub-characters.
 
@@ -356,8 +356,8 @@ class FIGFont:
         return c
 
     def _add_char(
-        self, buffer: NDArray[np.str_], prev_char_width: int, char: str
-    ) -> tuple[NDArray[np.str_], int]:
+        self, buffer: Unicode2D, prev_char_width: int, char: str
+    ) -> tuple[Unicode2D, int]:
         """Add a character to the line buffer."""
         fig_char = self.font.get(char, self.font.get("\x00"))
         if fig_char is None:
@@ -383,7 +383,7 @@ class FIGFont:
 
         return np.concatenate((a, b), axis=1), current_char_width
 
-    def _render_line(self, line: str) -> NDArray[np.str_]:
+    def _render_line(self, line: str) -> Unicode2D:
         """Render a single line of text."""
         buffer, prev_char_width = np.zeros((self.height, 0), dtype=str), 0
         for char in line:
@@ -392,7 +392,7 @@ class FIGFont:
         buffer[buffer == self.hardblank] = " "
         return buffer
 
-    def render_array(self, text: str) -> NDArray[np.str_]:
+    def render_array(self, text: str) -> Unicode2D:
         """
         Render text as ascii art into a 2-D "<U1" numpy array.
 
@@ -403,7 +403,7 @@ class FIGFont:
 
         Returns
         -------
-        NDArray[np.str_]
+        Unicode2D
             The rendered array.
         """
         lines = list(map(self._render_line, text.splitlines()))

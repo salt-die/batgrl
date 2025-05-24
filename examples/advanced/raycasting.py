@@ -51,7 +51,7 @@ MAP = np.array(
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     ],
-    dtype=np.uint8,
+    dtype=np.ulong,
 )
 
 
@@ -72,7 +72,7 @@ class RaycasterApp(App):
             camera_coord=points[0],
             camera_angle=angles[0],
             sprite_coords=points,
-            sprite_indexes=np.zeros(4, np.uint8),
+            sprite_indexes=np.zeros(4, np.ulong),
             sprite_textures=[PYTHON],
             ceiling=CHECKER,
             floor=CHECKER,
@@ -84,7 +84,7 @@ class RaycasterApp(App):
             camera_coord=points[0],
             camera_angle=angles[0],
             sprite_coords=points,
-            sprite_indexes=np.zeros(4, np.uint8),
+            sprite_indexes=np.zeros(4, np.ulong),
             sprite_textures=[TREE],
             default_cell=new_cell(fg_color=GREEN),
             size_hint={"height_hint": 1.0, "width_hint": 0.5},

@@ -27,7 +27,7 @@ from .grid_layout import GridLayout
 from .image import Image
 from .pane import Pane
 from .scroll_view import ScrollView
-from .text import Border, Cells0D, Text, new_cell
+from .text import Border, Cell0D, Text, new_cell
 from .video import Video
 
 __all__ = ["Markdown", "Point", "Size"]
@@ -110,7 +110,7 @@ class EmojiCode(span_token.SpanToken):
 class _BorderedContent(Text):
     def __init__(
         self,
-        default_cell: Cells0D,
+        default_cell: Cell0D,
         border: Border,
         padding: int = 0,
         content: Gadget | None = None,

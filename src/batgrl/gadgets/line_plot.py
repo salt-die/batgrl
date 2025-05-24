@@ -8,9 +8,9 @@ from typing import cast
 
 import cv2
 import numpy as np
-from numpy.typing import NDArray
 from uwcwidth import wcswidth
 
+from ..array_types import Float1D
 from ..colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG, Color, rainbow_gradient
 from ..terminal.events import MouseEvent
 from .behaviors.movable import Movable
@@ -93,9 +93,9 @@ class LinePlot(Gadget):
 
     Parameters
     ----------
-    xs : Sequence[NDArray[float]]
+    xs : Sequence[Float1D]
         x-coordinates of each plot.
-    ys : Sequence[NDArray[float]]
+    ys : Sequence[Float1D]
         y-coordinates of each plot.
     blitter : Blitter, default: "braille"
         Determines how the line plot is rendered.
@@ -140,9 +140,9 @@ class LinePlot(Gadget):
 
     Attributes
     ----------
-    xs : Sequence[NDArray[float]]
+    xs : Sequence[Float1D]
         x-coordinates of each plot.
-    ys : Sequence[NDArray[float]]
+    ys : Sequence[Float1D]
         y-coordinates of each plot.
     blitter : Blitter
         Determines how the line plot is rendered.
@@ -267,9 +267,9 @@ class LinePlot(Gadget):
         Handle a focus event.
     """
 
-    xs: _LinePlotProperty[Sequence[NDArray[float]]] = _LinePlotProperty()
+    xs: _LinePlotProperty[Sequence[Float1D]] = _LinePlotProperty()
     """x-coordinates of each plot."""
-    ys: _LinePlotProperty[Sequence[NDArray[float]]] = _LinePlotProperty()
+    ys: _LinePlotProperty[Sequence[Float1D]] = _LinePlotProperty()
     """x-coordinates of each plot."""
     blitter: _LinePlotProperty[Blitter] = _LinePlotProperty()
     """Determines which characters are used to draw the plot."""
@@ -287,8 +287,8 @@ class LinePlot(Gadget):
     def __init__(
         self,
         *,
-        xs: Sequence[NDArray[float]],
-        ys: Sequence[NDArray[float]],
+        xs: Sequence[Float1D],
+        ys: Sequence[Float1D],
         blitter: Blitter = "braille",
         min_x: float | None = None,
         max_x: float | None = None,

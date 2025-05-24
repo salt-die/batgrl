@@ -5,7 +5,7 @@ from libc.string cimport memmove
 cimport cython
 
 ctypedef unsigned char uint8
-ctypedef unsigned int uint
+ctypedef unsigned long ulong
 
 
 cdef struct Octant:
@@ -224,7 +224,7 @@ cdef inline bint point_is_visible(
 cpdef void cast_shadows(
     uint8[:, :, ::1] texture,
     double[:, :, ::1] light_intensity,
-    uint8[:, ::1] caster_map,
+    ulong[:, ::1] caster_map,
     tuple[int, int] camera_pos,
     tuple[int, int] camera_size,
     list[tuple[int, int, int, int]] tile_colors,

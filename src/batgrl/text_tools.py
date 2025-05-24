@@ -8,15 +8,16 @@ from ugrapheme import grapheme_iter
 from uwcwidth import wcswidth
 
 from ._batgrl_markdown import find_md_tokens
+from .array_types import Cell, Cell0D, Cell1D, Cell2D, cell_dtype
 from .colors import BLACK, WHITE, Color
 from .geometry import Size
 from .logging import get_logger
 
 __all__ = [
-    "Cells",
-    "Cells0D",
-    "Cells1D",
-    "Cells2D",
+    "Cell",
+    "Cell0D",
+    "Cell1D",
+    "Cell2D",
     "Style",
     "add_text",
     "cell_dtype",
@@ -55,26 +56,6 @@ class Style(IntFlag):
     STRIKETHROUGH = 0b1000
     OVERLINE = 0b10000
     REVERSE = 0b100000
-
-
-cell_dtype = np.dtype(
-    [
-        ("ord", "ulong"),
-        ("style", "u1"),
-        ("fg_color", "u1", (3,)),
-        ("bg_color", "u1", (3,)),
-    ]
-)
-"""A structured array type that represents a single cell in a terminal."""
-
-Cells = np.ndarray[tuple[int, ...], cell_dtype]
-"""An array of ``cell_type``."""
-Cells0D = np.ndarray[tuple[()], cell_dtype]
-"""A 0-dimensional array of ``cell_dtype``."""
-Cells1D = np.ndarray[tuple[int], cell_dtype]
-"""A 1-dimensional array of ``cell_dtype``."""
-Cells2D = np.ndarray[tuple[int, int], cell_dtype]
-"""A 2-dimensional array of ``cell_dtype``."""
 
 
 def egc_ord(text: str) -> int:
@@ -156,7 +137,7 @@ def new_cell(
     style: Style = Style.DEFAULT,
     fg_color: Color = WHITE,
     bg_color: Color = BLACK,
-) -> Cells0D:
+) -> Cell0D:
     """
     Create a 0-dimensional ``cell_dtype`` array.
 
@@ -176,13 +157,13 @@ def new_cell(
 
     Returns
     -------
-    Cells0D
+    Cell0D
         A 0-dimensional ``cell_dtype`` array.
     """
     return np.array((ord, style, fg_color, bg_color), dtype=cell_dtype)
 
 
-def _parse_batgrl_md(text: str) -> tuple[Size, list[list[Cells0D]]]:
+def _parse_batgrl_md(text: str) -> tuple[Size, list[list[Cell0D]]]:
     """
     Parse batgrl markdown and return the minimum canvas size to fit text and
     a list of lines of styled characters.
@@ -201,7 +182,7 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[Cells0D]]]:
 
     Returns
     -------
-    tuple[Size, list[list[Cells0D]]]
+    tuple[Size, list[list[Cell0D]]]
         Minimum canvas size to fit text and a list of lines of styled characters.
     """
     NO_CHAR = new_cell(ord=0)
@@ -246,7 +227,7 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[Cells0D]]]:
     return Size(len(lines), max_width), lines
 
 
-def _text_to_cells(text: str) -> tuple[Size, list[list[Cells0D]]]:
+def _text_to_cells(text: str) -> tuple[Size, list[list[Cell0D]]]:
     """
     Convert some text to a list of lists of cells and the minimum canvas size to fit
     them.
@@ -258,7 +239,7 @@ def _text_to_cells(text: str) -> tuple[Size, list[list[Cells0D]]]:
 
     Returns
     -------
-    tuple[Size, list[list[Cells0D]]]
+    tuple[Size, list[list[Cell0D]]]
         Minimum canvas size to fit text and a list of lists of cells.
     """
     egcs = [list(grapheme_iter(line)) for line in text.split("\n")]
@@ -312,13 +293,13 @@ def _write_cells_to_canvas(cells, canvas, fg_color, bg_color) -> None:
                 break
 
 
-def put_egc(canvas: Cells, text: str) -> None:
+def put_egc(canvas: Cell, text: str) -> None:
     """
     Set each ord in canvas to represent the first extended grapheme cluster in ``text``.
 
     Parameters
     ----------
-    canvas : Cells2D
+    canvas : Cell2D
         A ``Cell`` array or view.
     text : str
         An extended grapheme cluster.
@@ -327,7 +308,7 @@ def put_egc(canvas: Cells, text: str) -> None:
 
 
 def add_text(
-    canvas: Cells1D | Cells2D,
+    canvas: Cell1D | Cell2D,
     text: str,
     *,
     fg_color: Color | None = None,
@@ -350,7 +331,7 @@ def add_text(
 
     Parameters
     ----------
-    canvas : Cells1D | Cells2D
+    canvas : Cell1D | Cell2D
         A 1- or 2-dimensional view of a ``Cell`` array.
     text : str
         Text to add to canvas.
@@ -374,14 +355,14 @@ def add_text(
 
 
 def canvas_as_text(
-    canvas: Cells1D | Cells2D, line_widths: list[int] | None = None
+    canvas: Cell1D | Cell2D, line_widths: list[int] | None = None
 ) -> str:
     """
     Return a ``Cell`` array as a single multi-line string.
 
     Parameters
     ----------
-    canvas : Cells1D | Cells2D
+    canvas : Cell1D | Cell2D
         The ``Cell`` array to convert.
     line_widths : list[int] | None
         Optionally truncate line ``n`` to have column width ``line_widths[n]``. If

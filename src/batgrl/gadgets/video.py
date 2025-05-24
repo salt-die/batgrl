@@ -76,7 +76,7 @@ class Video(Graphics):
         Whether to restart video after last frame.
     is_device : bool
         Whether video is from a video capturing device.
-    texture : NDArray[np.uint8]
+    texture : RGBA_2D
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.

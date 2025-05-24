@@ -5,8 +5,8 @@ from typing import Literal
 
 import cv2
 import numpy as np
-from numpy.typing import NDArray
 
+from .array_types import RGBA_2D
 from .geometry import Point, Region, Sizelike, rect_slice
 
 __all__ = ["Interpolation", "composite", "read_texture", "resize_texture"]
@@ -23,7 +23,7 @@ _INTERPOLATION_TO_CV_ENUM = {
 }
 
 
-def read_texture(path: Path) -> NDArray[np.uint8]:
+def read_texture(path: Path) -> RGBA_2D:
     """
     Return a uint8 RGBA numpy array from a path to an image.
 
@@ -34,7 +34,7 @@ def read_texture(path: Path) -> NDArray[np.uint8]:
 
     Returns
     -------
-    NDArray[np.uint8]
+    RGBA_2D
         An uint8 RGBA array of the image.
     """
     image = cv2.imread(str(path.absolute()), cv2.IMREAD_UNCHANGED)
@@ -54,28 +54,28 @@ def read_texture(path: Path) -> NDArray[np.uint8]:
 
 
 def resize_texture(
-    texture: NDArray[np.uint8],
+    texture: RGBA_2D,
     size: Sizelike,
     interpolation: Interpolation = "linear",
-    out: NDArray[np.uint8] | None = None,
-) -> NDArray[np.uint8]:
+    out: RGBA_2D | None = None,
+) -> RGBA_2D:
     """
     Resize texture.
 
     Parameters
     ----------
-    texture : NDArray[np.uint8]
+    texture : RGBA_2D
         An RGBA texture to resize.
     size : Sizelike
         The new size of the texture.
     interpolation : Interpolation, default: "linear"
         Interpolation used when resizing texture.
-    out : NDArray[np.uint8] | None, default: None
+    out : RGBA_2D | None, default: None
         Optional output array. If None, a new array is created.
 
     Returns
     -------
-    NDArray[np.uint8]
+    RGBA_2D
         A new uint8 RGBA array.
     """
     old_h, old_w = texture.shape[:2]
@@ -88,8 +88,8 @@ def resize_texture(
 
 
 def composite(
-    source: NDArray[np.uint8],
-    dest: NDArray[np.uint8],
+    source: RGBA_2D,
+    dest: RGBA_2D,
     pos: Point = Point(0, 0),
     mask_mode: bool = False,
 ) -> None:
@@ -100,9 +100,9 @@ def composite(
 
     Parameters
     ----------
-    source : NDArray[np.uint8]
+    source : RGBA_2D
         The texture to composite.
-    dest : NDArray[np.uint8]
+    dest : RGBA_2D
         The texture on which the source is painted.
     pos : Pointlike, default: Point(0, 0)
         Position of the source on the destination.

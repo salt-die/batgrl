@@ -5,8 +5,8 @@ from itertools import product
 from typing import Literal
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ..array_types import ULong2D
 from ..colors import AWHITE, BLACK, TRANSPARENT, AColor, Color
 from ._shadow_casting import cast_shadows
 from .graphics import (
@@ -60,7 +60,7 @@ class ShadowCaster(Graphics):
 
     Parameters
     ----------
-    caster_map : NDArray[np.uint8]
+    caster_map : ULong2D
         A 2-d map. Non-zero values are walls.
     camera_pos : Pointlike
         Position of camera in map.
@@ -113,7 +113,7 @@ class ShadowCaster(Graphics):
 
     Attributes
     ----------
-    caster_map : NDArray[np.uint8]
+    caster_map : ULong2D
         A 2-d map. Non-zero values are walls.
     camera_pos : Pointlike
         Position of camera in map.
@@ -137,7 +137,7 @@ class ShadowCaster(Graphics):
         Whether all not-visible cells will be treated as opaque.
     light_decay : Callable[[float], float]
         The strength of light as a function of distance from origin.
-    texture : NDArray[np.uint8]
+    texture : RGBA_2D
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.
@@ -258,7 +258,7 @@ class ShadowCaster(Graphics):
     def __init__(
         self,
         *,
-        caster_map: NDArray[np.uint8],
+        caster_map: ULong2D,
         camera_pos: Pointlike,
         camera_size: Sizelike,
         tile_colors: list[AColor] | None = None,

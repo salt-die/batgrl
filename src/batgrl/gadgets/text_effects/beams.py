@@ -6,8 +6,8 @@ from random import random, shuffle
 from typing import Coroutine, Literal
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ...array_types import Int2D
 from ...colors import WHITE, Color, gradient
 from ..text import Text
 
@@ -54,7 +54,7 @@ async def beams_effect(text: Text):
 
 
 def _create_on_progress(
-    pass_count: NDArray[np.int32],
+    pass_count: Int2D,
     cover: Text,
     beam: Text,
     kind: Literal["down", "left", "right", "up"],
@@ -108,9 +108,7 @@ def _create_on_progress(
     return on_progress
 
 
-def _create_beams(
-    pass_count: NDArray[np.int32], cover: Text
-) -> tuple[list[Text], list[Coroutine]]:
+def _create_beams(pass_count: Int2D, cover: Text) -> tuple[list[Text], list[Coroutine]]:
     h, w = cover.size
     beams = []
     tweens = []
@@ -166,7 +164,7 @@ def _create_beams(
     return beams, tweens
 
 
-async def _fade_cover(pass_count: NDArray[np.int32], cover: Text, text: Text):
+async def _fade_cover(pass_count: Int2D, cover: Text, text: Text):
     cover_fg = cover.canvas["fg_color"]
     text_fg = text.canvas["fg_color"].astype(float)  # type: ignore
     while not np.array_equal(cover_fg, text_fg):

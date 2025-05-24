@@ -10,10 +10,9 @@ from time import perf_counter
 from typing import TYPE_CHECKING, Any, Final, Literal, TypedDict, cast
 from weakref import WeakKeyDictionary
 
-import numpy as np
-from numpy.typing import NDArray
 from typing_extensions import ReadOnly
 
+from ..array_types import RGBM_2D, Enum2D
 from ..geometry import (
     EASINGS,
     Easing,
@@ -28,7 +27,7 @@ from ..geometry import (
 )
 from ..logging import get_logger
 from ..terminal.events import FocusEvent, KeyEvent, MouseEvent, PasteEvent
-from ..text_tools import Cells0D, Cells2D, cell_dtype, new_cell
+from ..text_tools import Cell0D, Cell2D, cell_dtype, new_cell
 
 if TYPE_CHECKING:
     from ..app import App
@@ -36,8 +35,8 @@ if TYPE_CHECKING:
 
 __all__ = [
     "Anchor",
-    "Cells0D",
-    "Cells2D",
+    "Cell0D",
+    "Cell2D",
     "Gadget",
     "Easing",
     "Point",
@@ -697,9 +696,7 @@ class Gadget:
             return None
         return self.root.app
 
-    def _render(
-        self, cells: Cells2D, graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
-    ) -> None:
+    def _render(self, cells: Cell2D, graphics: RGBM_2D, kind: Enum2D) -> None:
         """Render visible region of gadget."""
 
     def dispatch_key(self, key_event: KeyEvent) -> bool | None:

@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Self
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ..array_types import RGBA_2D
 from ..colors import TRANSPARENT, AColor
 from ..texture_tools import read_texture, resize_texture
 from .graphics import (
@@ -77,7 +77,7 @@ class Animation(Graphics):
         Whether to animation is restarted after last frame.
     reverse : bool
         Whether to animation is played in reverse.
-    texture : NDArray[np.uint8]
+    texture : RGBA_2D
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.
@@ -217,10 +217,10 @@ class Animation(Graphics):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self.frames: list[NDArray[np.uint8]]
+        self.frames: list[RGBA_2D]
         """Frames of the animation."""
         # Set in `on_size`
-        self._sized_frames: list[NDArray[np.uint8]]
+        self._sized_frames: list[RGBA_2D]
         """Resized frames of the animation."""
 
         if path is None:
@@ -262,14 +262,14 @@ class Animation(Graphics):
         self._animation_task = None
 
     @property
-    def texture(self) -> NDArray[np.uint8]:
+    def texture(self) -> RGBA_2D:
         """uint8 RGBA color array."""
         if self._i < len(self.frames):
             return self._sized_frames[self._i]
         return self._texture
 
     @texture.setter
-    def texture(self, texture: NDArray[np.uint8]) -> None:
+    def texture(self, texture: RGBA_2D) -> None:  # type: ignore
         self._texture = texture
 
     def on_remove(self) -> None:
@@ -338,7 +338,7 @@ class Animation(Graphics):
     @classmethod
     def from_textures(
         cls,
-        textures: Iterable[NDArray[np.uint8]],
+        textures: Iterable[RGBA_2D],
         *,
         frame_durations: float | Sequence[float] = 1 / 12,
         loop: bool = True,
@@ -360,7 +360,7 @@ class Animation(Graphics):
 
         Parameters
         ----------
-        textures : Iterable[NDArray[np.uint8]]
+        textures : Iterable[RGBA_2D]
             An iterable of RGBA textures that will be the frames of the animation.
         frame_durations : float | Sequence[float], default: 1/12
             Time each frame is displayed. If a sequence is provided, it's length should

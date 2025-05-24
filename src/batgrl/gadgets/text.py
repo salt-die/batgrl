@@ -3,17 +3,15 @@
 from typing import Literal
 
 import numpy as np
-from numpy.typing import NDArray
 from pygments.lexer import Lexer
 from pygments.lexers import guess_lexer
 from pygments.style import Style as PygmentsStyle
 from uwcwidth import wcswidth
 
 from .._rendering import text_render
+from ..array_types import RGBM_2D, Cell0D, Cell2D, Enum2D, Unicode2D
 from ..colors import Color, Neptune
 from ..text_tools import (
-    Cells0D,
-    Cells2D,
     Style,
     _parse_batgrl_md,
     _text_to_cells,
@@ -100,7 +98,7 @@ class Text(Gadget):
 
     Parameters
     ----------
-    default_cell : Cells0D | str, default: " "
+    default_cell : Cell0D | str, default: " "
         Default cell of text canvas.
     alpha : float, default: 0.0
         Transparency of gadget.
@@ -123,9 +121,9 @@ class Text(Gadget):
 
     Attributes
     ----------
-    canvas : Cells2D
+    canvas : Cell2D
         The array of characters for the gadget.
-    default_cell : Cells0D
+    default_cell : Cell0D
         Default cell of text canvas.
     default_fg_color : Color
         Foreground color of default cell.
@@ -247,7 +245,7 @@ class Text(Gadget):
     def __init__(
         self,
         *,
-        default_cell: Cells0D | str = " ",
+        default_cell: Cell0D | str = " ",
         alpha: float = 0.0,
         size: Sizelike = Size(10, 10),
         pos: Pointlike = Point(0, 0),
@@ -268,11 +266,11 @@ class Text(Gadget):
         )
         size = self.size
         self.default_cell = default_cell
-        self.canvas = np.full(size, self.default_cell)
+        self.canvas: Cell2D = np.full(size, self.default_cell)
         self.alpha = alpha
 
     @property
-    def chars(self) -> NDArray[np.str_]:
+    def chars(self) -> Unicode2D:
         """
         Return a view of the ords field of the canvas as 1-character unicode strings.
 
@@ -284,12 +282,12 @@ class Text(Gadget):
         return self.canvas["ord"].view("<U1")
 
     @property
-    def default_cell(self) -> Cells0D:
+    def default_cell(self) -> Cell0D:
         """Default character for text canvas."""
         return self._default_cell
 
     @default_cell.setter
-    def default_cell(self, cell: Cells0D | str):
+    def default_cell(self, cell: Cell0D | str):
         if isinstance(cell, str):
             cell = new_cell(ord=egc_ord(cell))
         self._default_cell = cell
@@ -297,20 +295,20 @@ class Text(Gadget):
     @property
     def default_fg_color(self) -> Color:
         """Foreground color of default character."""
-        return Color(*self._default_cell["fg_color"])
+        return Color(*self._default_cell["fg_color"])  # type: ignore
 
     @default_fg_color.setter
     def default_fg_color(self, default_fg_color: Color):
-        self._default_cell["fg_color"] = default_fg_color
+        self._default_cell["fg_color"] = default_fg_color  # type: ignore
 
     @property
     def default_bg_color(self) -> Color:
         """Background color of default character."""
-        return Color(*self._default_cell["bg_color"])
+        return Color(*self._default_cell["bg_color"])  # type: ignore
 
     @default_bg_color.setter
     def default_bg_color(self, default_bg_color: Color):
-        self._default_cell["bg_color"] = default_bg_color
+        self._default_cell["bg_color"] = default_bg_color  # type: ignore
 
     @property
     def alpha(self) -> float:
@@ -533,9 +531,7 @@ class Text(Gadget):
             self.canvas[-n:] = self.canvas[:n]
             self.canvas[:-n] = self.default_cell
 
-    def _render(
-        self, cells: Cells2D, graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
-    ) -> None:
+    def _render(self, cells: Cell2D, graphics: RGBM_2D, kind: Enum2D) -> None:
         """Render visible region of gadget."""
         text_render(
             cells,

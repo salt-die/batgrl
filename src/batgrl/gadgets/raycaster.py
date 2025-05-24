@@ -1,8 +1,8 @@
 """A raycaster gadget."""
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ..array_types import RGBA_2D, Coords, ULong1D, ULong2D
 from ..colors import ABLACK, TRANSPARENT, AColor
 from ._raycasting import cast_rays
 from .graphics import (
@@ -35,9 +35,9 @@ class Raycaster(Graphics):
 
     Parameters
     ----------
-    caster_map : NDArray[np.uint8]
+    caster_map : ULong2D
         The raycaster map.
-    wall_textures : List[NDArray[np.uint8]]
+    wall_textures : list[RGBA_2D]
         Textures for walls.
     camera_coord : tuple[float, float], default: (0.0, 0.0)
         The camera's position.
@@ -45,17 +45,17 @@ class Raycaster(Graphics):
         The camera's angle.
     camera_fov : float, default: 0.66
         The camera's field-of-view. Somewhere between 0-1.
-    sprite_coords : NDArray[np.float64] | None, default: None
+    sprite_coords : Coords | None, default: None
         Positions of sprites.
-    sprite_indexes : NDArray[np.uint8] | None, default: None
+    sprite_indexes : ULong1D | None, default: None
         Texture indexes of sprites.
-    sprite_textures : list[NDArray[np.uint8]] | None, default: None
+    sprite_textures : list[RGBA_2D] | None, default: None
         Textures for sprites.
-    ceiling : NDArray[np.uint8] | None, default: None
+    ceiling : RGBA_2D | None, default: None
         Optional ceiling texture.
     ceiling_color : AColor, default: ABLACK
         Color of ceiling if no ceiling texture.
-    floor : NDArray[np.uint8] | None, default: None
+    floor : RGBA_2D | None, default: None
         Optional floor texture.
     floor_color : AColor, default: ABLACK
         Color of floor if no floor texture.
@@ -86,9 +86,9 @@ class Raycaster(Graphics):
 
     Attributes
     ----------
-    caster_map : NDArray[np.uint8]
+    caster_map : ULong2D
         The raycaster map.
-    wall_textures : List[NDArray[np.uint8]]
+    wall_textures : list[RGBA_2D]
         Textures for walls.
     camera_coord : tuple[float, float]
         The camera's position.
@@ -96,21 +96,21 @@ class Raycaster(Graphics):
         The camera's angle.
     camera_fov : float
         The camera's field-of-view. Somewhere between 0-1.
-    sprite_coords : NDArray[np.float64]
+    sprite_coords : Coords
         Positions of sprites.
-    sprite_indexes : NDArray[np.uint8]
+    sprite_indexes : ULong1D
         Texture indexes of sprites.
-    sprite_textures : list[NDArray[np.uint8]]
+    sprite_textures : list[RGBA_2D]
         Textures for sprites.
-    ceiling : NDArray[np.uint8] | None
+    ceiling : RGBA_2D | None
         The ceiling texture.
     ceiling_color : AColor
         Color of ceiling if no ceiling texture.
-    floor : NDArray[np.uint8] | None
+    floor : RGBA_2D | None
         The floor texture.
     floor_color : AColor
         Color of floor if no floor texture.
-    texture : NDArray[np.uint8]
+    texture : RGBA_2D
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.
@@ -228,17 +228,17 @@ class Raycaster(Graphics):
     def __init__(
         self,
         *,
-        caster_map: NDArray[np.uint8],
-        wall_textures: list[NDArray[np.uint8]],
+        caster_map: ULong2D,
+        wall_textures: list[RGBA_2D],
         camera_coord: tuple[float, float] = (0.0, 0.0),
         camera_angle: float = 0.0,
         camera_fov: float = 0.66,
-        sprite_coords: NDArray[np.float64] | None = None,
-        sprite_indexes: NDArray[np.uint8] | None = None,
-        sprite_textures: list[NDArray[np.uint8]] | None = None,
-        ceiling: NDArray[np.uint8] | None = None,
+        sprite_coords: Coords | None = None,
+        sprite_indexes: ULong1D | None = None,
+        sprite_textures: list[RGBA_2D] | None = None,
+        ceiling: RGBA_2D | None = None,
         ceiling_color: AColor = ABLACK,
-        floor: NDArray[np.uint8] | None = None,
+        floor: RGBA_2D | None = None,
         floor_color: AColor = ABLACK,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
@@ -275,14 +275,14 @@ class Raycaster(Graphics):
         """The camera's angle."""
         self.camera_fov = camera_fov
         """The camera's field-of-view. Somewhere between 0-1."""
-        self.sprite_coords: NDArray[np.float64]
+        self.sprite_coords: Coords
         """Positions of sprites."""
         if sprite_coords is None:
             self.sprite_coords = np.empty((0, 2), np.float64)
         else:
             self.sprite_coords = sprite_coords
 
-        self.sprite_indexes: NDArray[np.uint8]
+        self.sprite_indexes: ULong1D
         """Texture indexes of sprites."""
         if sprite_indexes is None:
             self.sprite_indexes = np.empty(0, np.uint8)

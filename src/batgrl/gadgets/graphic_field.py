@@ -2,18 +2,17 @@
 A graphic particle field.
 
 A particle field specializes in rendering many single "pixel" children from an array of
-particle positions and an array particle colors.
+particle positions and an array of particle colors.
 """
 
 from typing import Any
 
 import numpy as np
-from numpy.typing import NDArray
 
 from .._rendering import graphics_field_render
+from ..array_types import RGBA_1D, RGBA_2D, RGBM_2D, Cell2D, Coords, Enum2D
 from ..logging import get_logger
 from .gadget import (
-    Cells2D,
     Gadget,
     Point,
     Pointlike,
@@ -44,9 +43,9 @@ class GraphicParticleField(Gadget):
 
     Parameters
     ----------
-    particle_coords : NDArray[np.float64] | None, default: None
+    particle_coords : Coords | None, default: None
         An array of particle positions with shape ``(N, 2)``.
-    particle_colors : NDArray[np.uint8] | None, default: None
+    particle_colors : RGBA_1D | None, default: None
         A RGBA array of particle colors with shape ``(N, 4)``.
     particle_properties : dict[str, Any] | None, default: None
         Additional particle properties.
@@ -75,9 +74,9 @@ class GraphicParticleField(Gadget):
     ----------
     nparticles : int
         Number of particles in particle field.
-    particle_coords : NDArray[np.float64]
+    particle_coords : Coords
         An array of particle positions with shape `(N, 2)`.
-    particle_colors : NDArray[np.uint8]
+    particle_colors : RGBA_1D
         A RGBA array of particle colors with shape `(N, 4)`.
     particle_properties : dict[str, Any]
         Additional particle properties.
@@ -189,8 +188,8 @@ class GraphicParticleField(Gadget):
     def __init__(
         self,
         *,
-        particle_coords: NDArray[np.float64] | None = None,
-        particle_colors: NDArray[np.uint8] | None = None,
+        particle_coords: Coords | None = None,
+        particle_colors: RGBA_1D | None = None,
         particle_properties: dict[str, Any] | None = None,
         alpha: float = 1.0,
         blitter: Blitter = "half",
@@ -211,7 +210,7 @@ class GraphicParticleField(Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self.particle_coords: NDArray[np.float64]
+        self.particle_coords: Coords
         """An array of particle positions with shape `(N, 2)`."""
         if particle_coords is None:
             self.particle_coords = np.zeros((0, 2), dtype=np.float64)
@@ -220,7 +219,7 @@ class GraphicParticleField(Gadget):
                 particle_coords, dtype=np.float64
             )
 
-        self.particle_colors: NDArray[np.uint8]
+        self.particle_colors: RGBA_1D
         """A RGBA array of particle colors with shape `(N, 4)`."""
         if particle_colors is None:
             self.particle_colors = np.zeros(
@@ -289,13 +288,13 @@ class GraphicParticleField(Gadget):
         """Number of particles in particle field."""
         return len(self.particle_coords)
 
-    def particles_from_texture(self, texture: NDArray[np.uint8]) -> None:
+    def particles_from_texture(self, texture: RGBA_2D) -> None:
         """
         Set particle positions and colors from visible pixels of an RGBA texture.
 
         Parameters
         ----------
-        texture : NDArray[np.uint8]
+        texture : RGBA_2D
             A uint8 RGBA numpy array.
         """
         positions = np.argwhere(texture[..., 3])
@@ -306,9 +305,9 @@ class GraphicParticleField(Gadget):
 
     def _render(
         self,
-        cells: Cells2D,
-        graphics: NDArray[np.uint8],
-        kind: NDArray[np.uint8],
+        cells: Cell2D,
+        graphics: RGBM_2D,
+        kind: Enum2D,
     ):
         """Render visible region of gadget."""
         graphics_field_render(

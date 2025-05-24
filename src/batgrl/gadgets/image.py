@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Self
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ..array_types import RGBA_2D
 from ..colors import TRANSPARENT, AColor
 from ..texture_tools import read_texture, resize_texture
 from .graphics import (
@@ -61,7 +61,7 @@ class Image(Graphics):
     ----------
     path : pathlib.Path | None
         Path to image.
-    texture : NDArray[np.uint8]
+    texture : RGBA_2D
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.
@@ -237,7 +237,7 @@ class Image(Graphics):
     @classmethod
     def from_texture(
         cls,
-        texture: NDArray[np.uint8],
+        texture: RGBA_2D,
         *,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
@@ -256,7 +256,7 @@ class Image(Graphics):
 
         Parameters
         ----------
-        texture : NDArray[np.uint8]
+        texture : RGBA_2D
             The RGBA texture of the image.
         default_color : AColor, default: AColor(0, 0, 0, 0)
             Default texture color.

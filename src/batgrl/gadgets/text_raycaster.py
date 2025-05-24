@@ -1,13 +1,13 @@
 """A raycaster gadget."""
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ..array_types import Coords, ULong1D, ULong2D
 from ..text_tools import _text_to_cells, _write_cells_to_canvas, cell_dtype
 from ._raycasting import text_cast_rays
 from .text import (
-    Cells0D,
-    Cells2D,
+    Cell0D,
+    Cell2D,
     Point,
     Pointlike,
     PosHint,
@@ -42,9 +42,9 @@ class TextRaycaster(Text):
 
     Parameters
     ----------
-    caster_map : NDArray[np.uint8]
+    caster_map : ULong2D
         The raycaster map.
-    wall_textures : List[NDArray[np.uint8]]
+    wall_textures : list[ULong2D]
         Textures for walls.
     camera_coord : tuple[float, float], default: (0.0, 0.0)
         The camera's position.
@@ -52,15 +52,15 @@ class TextRaycaster(Text):
         The camera's angle.
     camera_fov : float, default: 0.66
         The camera's field-of-view. Somewhere between 0-1.
-    sprite_coords : NDArray[np.float64] | None, default: None
+    sprite_coords : Coords | None, default: None
         Positions of sprites.
-    sprite_indexes : NDArray[np.uint8] | None, default: None
+    sprite_indexes : ULong1D | None, default: None
         Texture indexes of sprites.
     sprite_textures : list[str] | None, default: None
         Textures for sprites.
     ascii_map : str, default: " .,:;<+*LtCa4U80dQM@"
         Dark to bright ascii characters for shading.
-    default_cell : Cells0D | str, default: " "
+    default_cell : Cell0D | str, default: " "
         Default cell of text canvas.
     alpha : float, default: 1.0
         Transparency of gadget.
@@ -83,9 +83,9 @@ class TextRaycaster(Text):
 
     Attributes
     ----------
-    caster_map : NDArray[np.uint8]
+    caster_map : ULong2D
         The raycaster map.
-    wall_textures : List[NDArray[np.uint8]]
+    wall_textures : list[ULong2D]
         Textures for walls.
     camera_coord : tuple[float, float]
         The camera's position.
@@ -93,17 +93,17 @@ class TextRaycaster(Text):
         The camera's angle.
     camera_fov : float
         The camera's field-of-view. Somewhere between 0-1.
-    sprite_coords : NDArray[np.float64]
+    sprite_coords : Coords
         Positions of sprites.
-    sprite_indexes : NDArray[np.uint8]
+    sprite_indexes : ULong1D
         Texture indexes of sprites.
-    sprite_textures : list[Cells2D]
+    sprite_textures : list[Cell2D]
         Textures for sprites.
     ascii_map : str
         Dark to bright ascii characters for shading.
-    canvas : Cells2D
+    canvas : Cell2D
         The array of characters for the gadget.
-    default_cell : Cells0D
+    default_cell : Cell0D
         Default cell of text canvas.
     default_fg_color : Color
         Foreground color of default cell.
@@ -227,16 +227,16 @@ class TextRaycaster(Text):
     def __init__(
         self,
         *,
-        caster_map: NDArray[np.uint8],
-        wall_textures: list[NDArray[np.uint8]] | None,
+        caster_map: ULong2D,
+        wall_textures: list[ULong2D],
         camera_coord: tuple[float, float] = (0.0, 0.0),
         camera_angle: float = 0.0,
         camera_fov: float = 0.66,
-        sprite_coords: NDArray[np.float64] | None = None,
-        sprite_indexes: NDArray[np.uint8] | None = None,
+        sprite_coords: Coords | None = None,
+        sprite_indexes: ULong1D | None = None,
         sprite_textures: list[str] | None = None,
         ascii_map: str = " .,:;<+*LtCa4U80dQM@",
-        default_cell: Cells0D | str = " ",
+        default_cell: Cell0D | str = " ",
         alpha: float = 1.0,
         size: Sizelike = Size(10, 10),
         pos: Pointlike = Point(0, 0),
@@ -268,21 +268,21 @@ class TextRaycaster(Text):
         self.camera_fov = camera_fov
         """The camera's field-of-view. Somewhere between 0-1."""
 
-        self.sprite_coords: NDArray[np.float64]
+        self.sprite_coords: Coords
         """Positions of sprites."""
         if sprite_coords is None:
             self.sprite_coords = np.empty((0, 2), np.float64)
         else:
             self.sprite_coords = sprite_coords
 
-        self.sprite_indexes: NDArray[np.uint8]
+        self.sprite_indexes: ULong1D
         """Texture indexes of sprites."""
         if sprite_indexes is None:
             self.sprite_indexes = np.empty(0, np.uint8)
         else:
             self.sprite_indexes = sprite_indexes
 
-        self.sprite_textures: list[Cells2D] = []
+        self.sprite_textures: list[Cell2D] = []
         """Textures for sprites."""
         if sprite_textures is not None:
             for texture in sprite_textures:

@@ -6,6 +6,8 @@ cimport cython
 from .._rendering cimport Cell
 
 ctypedef unsigned char uint8
+ctypedef unsigned long ulong
+
 
 cdef struct Sprite:
     double y
@@ -122,14 +124,14 @@ cdef inline void draw_floor_ceiling(
 @cython.wraparound(False)
 def cast_rays(
     uint8[:, :, ::1] texture,
-    uint8[:, ::1] map,
+    ulong[:, ::1] map,
     tuple[double, double] camera_pos,
     double camera_theta,
     double camera_fov,
     list[uint8[:, :, ::1]] wall_textures,
     uint8[:, :, ::1] ceiling_texture,
     uint8[:, :, ::1] floor_texture,
-    uint8[::1] sprite_indexes,
+    ulong[::1] sprite_indexes,
     double[:, ::1] sprite_coords,
     list[uint8[:, :, ::1]] sprite_textures,
 ) -> None:
@@ -381,12 +383,12 @@ cdef uint8 shade_wall(uint8 value, double distance):
 @cython.wraparound(False)
 def text_cast_rays(
     Cell[:, ::1] canvas,
-    uint8[:, ::1] map,
+    ulong[:, ::1] map,
     tuple[double, double] camera_pos,
     double camera_theta,
     double camera_fov,
     list[uint8[:, ::1]] wall_textures,
-    uint8[::1] sprite_indexes,
+    ulong[::1] sprite_indexes,
     double[:, ::1] sprite_coords,
     list[Cell[:, ::1]] sprite_textures,
     unsigned int[::1] ascii_map,

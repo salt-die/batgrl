@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from random import randrange
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ...array_types import RGB_2D
 from ...colors import BLUE, GREEN, RED, Color
 from ...geometry import BezierCurve, Pointlike, Size, move_along_path
 from ..text import Text
@@ -65,10 +65,10 @@ def _random_point(size: Size):
 
 
 def _draw_spotlights(
-    in_fg: NDArray[np.uint8],
-    in_bg: NDArray[np.uint8],
-    out_fg: NDArray[np.uint8],
-    out_bg: NDArray[np.uint8],
+    in_fg: RGB_2D,
+    in_bg: RGB_2D,
+    out_fg: RGB_2D,
+    out_bg: RGB_2D,
     spotlights: list[_SpotLight],
 ):
     out_fg[:] = in_fg
@@ -94,10 +94,10 @@ def _draw_spotlights(
 
 
 async def _move_spotlights(
-    in_fg: NDArray[np.uint8],
-    in_bg: NDArray[np.uint8],
-    out_fg: NDArray[np.uint8],
-    out_bg: NDArray[np.uint8],
+    in_fg: RGB_2D,
+    in_bg: RGB_2D,
+    out_fg: RGB_2D,
+    out_bg: RGB_2D,
     spotlights: list[_SpotLight],
     positions: list[Pointlike],
 ):
@@ -125,10 +125,10 @@ async def _move_spotlights(
 
 
 async def _grow_spotlights(
-    in_fg: NDArray[np.uint8],
-    in_bg: NDArray[np.uint8],
-    out_fg: NDArray[np.uint8],
-    out_bg: NDArray[np.uint8],
+    in_fg: RGB_2D,
+    in_bg: RGB_2D,
+    out_fg: RGB_2D,
+    out_bg: RGB_2D,
     spotlights: list[_SpotLight],
 ):
     h, w, _ = in_fg.shape

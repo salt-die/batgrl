@@ -7,11 +7,11 @@ from dataclasses import dataclass
 from itertools import accumulate
 from math import comb
 from time import perf_counter
-from typing import Protocol
+from typing import Protocol, overload
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ..array_types import Coords, Float1D, _Coord
 from .basic import Pointlike, clamp
 from .easings import EASINGS, Easing
 
@@ -25,7 +25,7 @@ class BezierCurve:
 
     Parameters
     ----------
-    control_points : NDArray[np.float32]
+    control_points : Coords
         Array of control points of Bezier curve with shape `(N, 2)`.
     arc_length_approximation : int, default: 50
         Number of evaluations for arc length approximation.
@@ -36,11 +36,11 @@ class BezierCurve:
         Approximate length of Bezier curve.
     arc_length_approximation : int
         Number of evaluations for arc length approximation.
-    arc_lengths : NDArray[np.float32]
+    arc_lengths : Float1D
         Approximate arc lengths along Bezier curve.
-    coef : NDArray[np.float32]
+    coef : Float1D
         Binomial coefficients of Bezier curve.
-    control_points : NDArray[np.float32]
+    control_points : Coords
         Array of control points of Bezier curve with shape `(N, 2)`.
     degree : int
         Degree of Bezier curve.
@@ -53,7 +53,7 @@ class BezierCurve:
         Evaluate the Bezier curve at a proportion of its total arc length.
     """
 
-    control_points: NDArray[np.float32]
+    control_points: Coords
     """Array of control points of Bezier curve with shape `(N, 2)`."""
     arc_length_approximation: int = 50
     """Number of evaluations for arc length approximation."""
@@ -62,14 +62,14 @@ class BezierCurve:
         if self.degree == -1:
             raise ValueError("There must be at least one control point.")
 
-        self.coef: NDArray[np.float32] = np.array(
+        self.coef: Float1D = np.array(
             [comb(self.degree, i) for i in range(self.degree + 1)], dtype=float
         )
         """Binomial coefficients of Bezier curve."""
 
         evaluated = self.evaluate(np.linspace(0, 1, self.arc_length_approximation))
         norms = np.linalg.norm(evaluated[1:] - evaluated[:-1], axis=-1)
-        self.arc_lengths: NDArray[np.float32] = np.append(0, norms.cumsum())
+        self.arc_lengths: Float1D = np.append(0, norms.cumsum())
         """Approximate arc lengths along Bezier curve."""
 
     @property
@@ -82,7 +82,13 @@ class BezierCurve:
         """Approximate length of Bezier curve."""
         return self.arc_lengths[-1]
 
-    def evaluate(self, t: float | NDArray[np.float32]) -> NDArray[np.float32]:
+    @overload
+    def evaluate(self, t: float) -> _Coord: ...
+
+    @overload
+    def evaluate(self, t: Coords) -> Coords: ...
+
+    def evaluate(self, t):
         """Evaluate the Bezier curve at `t` (0 <= t <= 1)."""
         t = np.asarray(t)
         terms = np.logspace(0, self.degree, num=self.degree + 1, base=t).T
@@ -90,7 +96,7 @@ class BezierCurve:
         terms *= self.coef
         return terms @ self.control_points
 
-    def arc_length_proportion(self, p: float) -> NDArray[np.float32]:
+    def arc_length_proportion(self, p: float) -> _Coord:
         """Evaluate the Bezier curve at a proportion of its total arc length."""
         target_length = self.arc_length * p
         n = self.arc_length_approximation
@@ -110,7 +116,7 @@ class BezierCurve:
         return self.evaluate(t)
 
 
-type Coord = Pointlike | tuple[float, float] | NDArray[float]
+type Coord = Pointlike | tuple[float, float] | _Coord
 
 
 class HasPosAttr(Protocol):

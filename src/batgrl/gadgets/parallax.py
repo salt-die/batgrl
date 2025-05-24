@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import Self
 
 import numpy as np
-from numpy.typing import NDArray
 
+from ..array_types import RGBA_2D
 from ..colors import TRANSPARENT, AColor
 from ..texture_tools import composite, read_texture, resize_texture
 from .graphics import (
@@ -74,7 +74,7 @@ class Parallax(Graphics):
         Vertical offset of the parallax.
     horizontal_offset : float
         Horizontal offset of the parallax.
-    texture : NDArray[np.uint8]
+    texture : RGBA_2D
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.
@@ -206,7 +206,7 @@ class Parallax(Graphics):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self.layers: list[NDArray[np.uint8]]
+        self.layers: list[RGBA_2D]
         """Layers of the parallax."""
 
         if path is None:
@@ -294,7 +294,7 @@ class Parallax(Graphics):
     @classmethod
     def from_textures(
         cls,
-        textures: Iterable[NDArray[np.uint8]],
+        textures: Iterable[RGBA_2D],
         *,
         speeds: Sequence[float] | None = None,
         default_color: AColor = TRANSPARENT,
@@ -314,7 +314,7 @@ class Parallax(Graphics):
 
         Parameters
         ----------
-        textures : Iterable[NDArray[np.uint8]]
+        textures : Iterable[RGBA_2D]
             An iterable of RGBA textures that will be the layers of the parallax.
         speeds : Sequence[float] | None, default: None
             The scrolling speed of each layer. Default speeds are `1/(N - i)` where `N`
