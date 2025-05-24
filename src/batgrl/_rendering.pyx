@@ -2395,16 +2395,6 @@ cdef inline void write_rgb(fbuf *f, uint8 fg, uint8 *rgb, bint *first):
         fbuf_printf(f, ";%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
 
 
-cdef:
-    bint sgr_set = 0
-    Cell last_sgr
-
-
-def clear_last_sgr():
-    global sgr_set
-    sgr_set = 0
-
-
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef inline ssize_t write_glyph(
@@ -2417,6 +2407,7 @@ cdef inline ssize_t write_glyph(
     ssize_t *cursor_x,
     Cell[:, ::1] canvas,
     int[:, ::1] widths,
+    Cell **last_sgr,
 ):
     if not widths[y, x]:
         return 0
@@ -2424,9 +2415,8 @@ cdef inline ssize_t write_glyph(
     cdef:
         ssize_t abs_y = y + oy, abs_x = x + ox
         Cell *cell = &canvas[y, x]
+        Cell *last = last_sgr[0]
         bint first = 1
-    
-    global sgr_set, last_sgr
 
     if abs_y == cursor_y[0]:
         if abs_x != cursor_x[0]:
@@ -2444,7 +2434,7 @@ cdef inline ssize_t write_glyph(
     if fbuf_grow(f, 128):
         return -1
     # Build up Select Graphic Rendition (SGR) parameters
-    if not sgr_set:
+    if last is NULL:
         write_sgr(f, 1 if cell.style & BOLD else 22, &first)
         write_sgr(f, 3 if cell.style & ITALIC else 23, &first)
         write_sgr(f, 4 if cell.style & UNDERLINE else 24, &first)
@@ -2453,31 +2443,24 @@ cdef inline ssize_t write_glyph(
         write_sgr(f, 7 if cell.style & REVERSE else 27, &first)
         write_rgb(f, 38, &cell.fg_color[0], &first)
         write_rgb(f, 48, &cell.bg_color[0], &first)
-        last_sgr.style = cell.style
-        last_sgr.fg_color = cell.fg_color
-        last_sgr.bg_color = cell.bg_color
-        sgr_set = 1
     else:
-        if cell.style != last_sgr.style:
-            if cell.style & BOLD != last_sgr.style & BOLD:
+        if cell.style != last.style:
+            if cell.style & BOLD != last.style & BOLD:
                 write_sgr(f, 1 if cell.style & BOLD else 22, &first)
-            if cell.style & ITALIC != last_sgr.style & ITALIC:
+            if cell.style & ITALIC != last.style & ITALIC:
                 write_sgr(f, 3 if cell.style & ITALIC else 23, &first)
-            if cell.style & UNDERLINE != last_sgr.style & UNDERLINE:
+            if cell.style & UNDERLINE != last.style & UNDERLINE:
                 write_sgr(f, 4 if cell.style & UNDERLINE else 24, &first)
-            if cell.style & STRIKETHROUGH != last_sgr.style & STRIKETHROUGH:
+            if cell.style & STRIKETHROUGH != last.style & STRIKETHROUGH:
                 write_sgr(f, 9 if cell.style & STRIKETHROUGH else 29, &first)
-            if cell.style & OVERLINE != last_sgr.style & OVERLINE:
+            if cell.style & OVERLINE != last.style & OVERLINE:
                 write_sgr(f, 53 if cell.style & OVERLINE else 55, &first)
-            if cell.style & REVERSE != last_sgr.style & REVERSE:
+            if cell.style & REVERSE != last.style & REVERSE:
                 write_sgr(f, 7 if cell.style & REVERSE else 27, &first)
-            last_sgr.style = cell.style
-        if not rgb_eq(&cell.fg_color[0], &last_sgr.fg_color[0]):
+        if not rgb_eq(&cell.fg_color[0], &last.fg_color[0]):
             write_rgb(f, 38, &cell.fg_color[0], &first)
-            last_sgr.fg_color = cell.fg_color
-        if not rgb_eq(&cell.bg_color[0], &last_sgr.bg_color[0]):
+        if not rgb_eq(&cell.bg_color[0], &last.bg_color[0]):
             write_rgb(f, 48, &cell.bg_color[0], &first)
-            last_sgr.bg_color = cell.bg_color
     if not first:
         fbuf_putn(f, "m", 1)
     if cell.ord & EGC_BASE:
@@ -2486,6 +2469,7 @@ cdef inline ssize_t write_glyph(
     else:
         fbuf_putucs4(f, cell.ord)
     cursor_x[0] += widths[y, x]
+    last_sgr[0] = cell
     return 0
 
 
@@ -2517,6 +2501,7 @@ cpdef void terminal_render(
         size_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
         size_t oy = app_pos[0], ox = app_pos[1]
         ssize_t cursor_y = -1, cursor_x = -1
+        Cell *last_sgr = NULL
         bint emit_sixel = 0
         uint8 *quant_color
         unsigned int aspect_h = aspect_ratio[0], aspect_w = aspect_ratio[1]
@@ -2524,7 +2509,7 @@ cpdef void terminal_render(
     if fbuf_putn(f, "\x1b7", 2):  # Save cursor
         raise MemoryError
 
-    if terminal.sum_supported:  # TODO: Only SUM on large outputs.
+    if terminal.sum_supported:
         if fbuf_putn(f, "\x1b[2026h", 7):
             raise MemoryError
 
@@ -2592,7 +2577,7 @@ cpdef void terminal_render(
             for x in range(w):
                 if kind[y, x] == MIXED:
                     if write_glyph(
-                        f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths
+                        f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, &last_sgr
                     ):
                         raise MemoryError
 
@@ -2621,7 +2606,9 @@ cpdef void terminal_render(
                 )
                 or not cell_eq(&cells[y, x], &prev_cells[y, x])
             ):
-                if write_glyph(f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths):
+                if write_glyph(
+                    f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, &last_sgr
+                ):
                     raise MemoryError
             elif kind[y, x] == SEE_THROUGH_SIXEL and emit_sixel:
                 # Note to future code archaeologists:
@@ -2640,7 +2627,9 @@ cpdef void terminal_render(
                 cells[y, x].bg_color[0] = _100_to_uint8(quant_color[0])
                 cells[y, x].bg_color[1] = _100_to_uint8(quant_color[1])
                 cells[y, x].bg_color[2] = _100_to_uint8(quant_color[2])
-                if write_glyph(f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths):
+                if write_glyph(
+                    f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, &last_sgr
+                ):
                     raise MemoryError
 
     if (
@@ -2660,5 +2649,6 @@ cpdef void terminal_render(
 
     if logger.isEnabledFor(LogLevel.ANSI):
         logger.log(LogLevel.ANSI, f"Frame rendered: {f.len} bytes")
+        logger.log(LogLevel.ANSI, "ANSI DUMP")
         logger.log(LogLevel.ANSI, f.buf[:f.len])
     fbuf_flush_fd(f, terminal.stdout)
