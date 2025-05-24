@@ -9,7 +9,7 @@ from pathlib import Path
 from time import perf_counter
 from typing import Any, Final, cast
 
-from ._rendering import terminal_render
+from ._rendering import clear_last_sgr, terminal_render
 from ._sixel import OctTree
 from .colors import NEPTUNE_THEME, Color, ColorTheme
 from .gadgets._root import _Root
@@ -348,6 +348,8 @@ class App(ABC):
 
     def run(self) -> Any:
         """Run the app."""
+        clear_last_sgr()
+
         tmp_stderr = StringIO()
         try:
             with redirect_stderr(tmp_stderr):
