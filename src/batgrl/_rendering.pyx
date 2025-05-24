@@ -2472,7 +2472,7 @@ cdef inline ssize_t write_glyph(
             if cell.style & REVERSE != last_sgr.style & REVERSE:
                 write_sgr(f, 7 if cell.style & REVERSE else 27, &first)
             last_sgr.style = cell.style
-        if cell.ord != 0x20 and not rgb_eq(&cell.fg_color[0], &last_sgr.fg_color[0]):
+        if not rgb_eq(&cell.fg_color[0], &last_sgr.fg_color[0]):
             write_rgb(f, 38, &cell.fg_color[0], &first)
             last_sgr.fg_color = cell.fg_color
         if not rgb_eq(&cell.bg_color[0], &last_sgr.bg_color[0]):
