@@ -103,6 +103,8 @@ class TextRaycaster(Text):
         Dark to bright ascii characters for shading.
     canvas : Cell2D
         The array of characters for the gadget.
+    chars : Unicode2D
+        Return a view of the ords field of the canvas as 1-character unicode strings.
     default_cell : Cell0D
         Default cell of text canvas.
     default_fg_color : Color

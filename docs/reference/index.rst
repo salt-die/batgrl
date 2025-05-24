@@ -12,10 +12,12 @@ batgrl Reference
    :recursive:
 
    app
+   array_types
    colors
    figfont
    gadgets
    geometry
+   logging
    terminal.events
    text_tools
    texture_tools
