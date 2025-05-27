@@ -98,6 +98,7 @@ class Fluid(Graphics):
             delta = filter2D(self.momentum, -1, POISSON)
 
             self.pressure = filter2D(pressure, -1, POISSON) + 0.5 * (delta - delta**2)
+            self.pressure *= 0.99
 
             # Note the alpha channel is affected by `pressure` as well.
             self.texture[:] = (
