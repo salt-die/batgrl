@@ -56,7 +56,7 @@ Float2D = ndarray[tuple[int, int], dtype[float64]]
 """A 2-dimensional array of floats."""
 
 _Coord = ndarray[tuple[Literal[2]] | tuple[Literal[1], Literal[2]], dtype[float64]]
-"""A pair of xy-coordinates."""
+"""2-dimensional coordinates."""
 
 Coords = ndarray[tuple[int, Literal[2]], dtype[float64]]
 """An array of 2-dimensional coordinates."""
