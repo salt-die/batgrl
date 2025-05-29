@@ -64,8 +64,6 @@ cdef void init_iter(RegionIterator *it, CRegion *cregion):
         it.done = 0
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
 cdef void next_(RegionIterator *it):
     if it.done:
         return
@@ -106,22 +104,11 @@ cdef inline bint rgba_eq(uint8 *a, uint8 *b):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef inline bint all_eq(uint8[:, :, ::1] a, uint8[:, :, ::1] b):
+cdef inline bint rgba2d_eq(uint8[:, :, ::1] a, uint8[:, :, ::1] b):
     cdef size_t h = a.shape[0], w = a.shape[1], y, x
     for y in range(h):
         for x in range(w):
             if not rgba_eq(&a[y, x, 0], &b[y, x, 0]):
-                return 0
-    return 1
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-cdef inline bint one_color(uint8[:, :, ::1] rgb, int y, int x, size_t h, size_t w):
-    cdef size_t i, j
-    for i in range(h):
-        for j in range(w):
-            if not rgba_eq(&rgb[y, x, 0], &rgb[y + i, x + j, 0]):
                 return 0
     return 1
 
@@ -135,9 +122,7 @@ cdef inline bint cell_eq(Cell *a, Cell *b):
     )
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-cdef inline bint see_through_eq(
+cdef inline bint see_through_cell_eq(
     Cell *a, Cell *b, uint8[:, :, ::1] g, uint8[:, :, ::1] pg
 ):
     return (
@@ -146,19 +131,15 @@ cdef inline bint see_through_eq(
         and rgb_eq(&a.fg_color[0], &b.fg_color[0])
         # Note that bg_color is not checked because color information for see-through
         # cells is stored in graphics.
-        and all_eq(g, pg)
+        and rgba2d_eq(g, pg)
     )
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-cdef inline size_t graphics_geom_height(Cell[:, ::1] cells, uint8[:, :, ::1] graphics):
+cdef inline size_t graphics_cell_height(Cell[:, ::1] cells, uint8[:, :, ::1] graphics):
     return graphics.shape[0] // cells.shape[0]
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-cdef inline size_t graphics_geom_width(Cell[:, ::1] cells, uint8[:, :, ::1] graphics):
+cdef inline size_t graphics_cell_width(Cell[:, ::1] cells, uint8[:, :, ::1] graphics):
     return graphics.shape[1] // cells.shape[1]
 
 
@@ -297,8 +278,8 @@ cdef void trans_pane_render(
 
     cdef:
         RegionIterator it
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox, gy, gx
         Cell *dst
 
@@ -374,8 +355,8 @@ cdef void trans_text_render(
 ):
     cdef:
         RegionIterator it
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox, gy, gx
         uint8[3] rgb
         double p
@@ -485,8 +466,8 @@ cdef void trans_full_graphics_render(
 
     cdef:
         RegionIterator it
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox, gy, gx
         Cell *dst
         uint8 *bg_color
@@ -558,8 +539,8 @@ cdef void trans_half_graphics_render(
     cdef:
         RegionIterator it
         int src_y, src_x
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox, gy, gx
         Cell *dst
         double a_top, a_bot
@@ -637,8 +618,8 @@ cdef void opaque_sixel_graphics_render(
     cdef:
         RegionIterator it
         int src_y, src_x
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox, gy, gx
 
     init_iter(&it, cregion)
@@ -976,8 +957,8 @@ cdef void trans_sixel_graphics_render(
     cdef:
         RegionIterator it
         int src_y, src_x
-        int h = <int>graphics_geom_height(cells, graphics)
-        int w = <int>graphics_geom_width(cells, graphics)
+        int h = <int>graphics_cell_height(cells, graphics)
+        int w = <int>graphics_cell_width(cells, graphics)
         int oy, ox, gy, gx, y, x
         uint8 *rgba
         uint8[4] mean
@@ -1153,8 +1134,8 @@ cdef void trans_braille_graphics_render(
         bint[8] pixels
         Cell *cell
         uint8 i
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox
         uint8[3] rgb, fg
         double p, average_alpha
@@ -1411,8 +1392,8 @@ cdef void trans_block_char_graphics_render(
     cdef:
         RegionIterator it
         Cell *dst
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         int src_y, src_x
         size_t oy, ox, y, x, gy, gx, ty, tx
         div_t div_result
@@ -1690,8 +1671,8 @@ cdef void trans_text_field_render(
     cdef:
         size_t nparticles = particles.shape[0], i, j
         int py, px
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox, gy, gx, cwidth
         uint8[3] rgb
         double p
@@ -1827,8 +1808,8 @@ cdef void trans_full_graphics_field_render(
     cdef:
         size_t nparticles = particles.shape[0], i
         int py, px
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox, gy, gx
         Cell *dst
         double a
@@ -1912,8 +1893,8 @@ cdef void trans_half_graphics_field_render(
         size_t nparticles = particles.shape[0], i
         double py, px
         int ipy, ipx
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox, gy, gx, gtop, gbot
         Cell *dst
         double a
@@ -1982,8 +1963,8 @@ cdef void opaque_sixel_graphics_field_render(
         size_t nparticles = particles.shape[0], i
         double py, px
         int ipy, ipx
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         size_t gh = graphics.shape[0], gw = graphics.shape[1]
         size_t oy, ox, gy, gx, pgy, pgx
         RegionIterator it
@@ -2040,8 +2021,8 @@ cdef void trans_sixel_graphics_field_render(
         size_t nparticles = particles.shape[0], i
         double py, px
         int ipy, ipx
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         size_t gh = graphics.shape[0], gw = graphics.shape[1]
         size_t oy, ox, gy, gx, pgy, pgx
 
@@ -2171,8 +2152,8 @@ cdef void trans_braille_graphics_field_render(
         double py, px
         int ipy, ipx, y, x
         Cell *dst
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
+        size_t h = graphics_cell_height(cells, graphics)
+        size_t w = graphics_cell_width(cells, graphics)
         size_t rh, rw
         int pgy, pgx
         uint8[3] rgb
@@ -2495,8 +2476,8 @@ cpdef void terminal_render(
     cdef:
         fbuf *f = &terminal.out_buf
         size_t h = cells.shape[0], w = cells.shape[1], y, x
-        size_t cell_h = graphics_geom_height(cells, graphics)
-        size_t cell_w = graphics_geom_width(cells, graphics)
+        size_t cell_h = graphics_cell_height(cells, graphics)
+        size_t cell_w = graphics_cell_width(cells, graphics)
         size_t gy, gx, gh, gw
         size_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
         size_t oy = app_pos[0], ox = app_pos[1]
@@ -2534,7 +2515,7 @@ cpdef void terminal_render(
                         gw = x * cell_w
                         if kind[y, x] == SIXEL:
                             # Check if graphics changed.
-                            emit_sixel = not all_eq(
+                            emit_sixel = not rgba2d_eq(
                                 graphics[gh:gh + cell_h, gw:gw + cell_w],
                                 prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
                             )
@@ -2542,14 +2523,14 @@ cpdef void terminal_render(
                             # Check if cell or graphics changed.
                             emit_sixel = not (
                                 cell_eq(&cells[y, x], &prev_cells[y, x])
-                                and all_eq(
+                                and rgba2d_eq(
                                     graphics[gh:gh + cell_h, gw:gw + cell_w],
                                     prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
                                 )
                             )
                         elif kind[y, x] == SEE_THROUGH_SIXEL:
                             # Check if cell (but not bg_color) or graphics changed.
-                            emit_sixel = not see_through_eq(
+                            emit_sixel = not see_through_cell_eq(
                                 &cells[y, x],
                                 &prev_cells[y, x],
                                 graphics[gh:gh + cell_h, gw:gw + cell_w],
