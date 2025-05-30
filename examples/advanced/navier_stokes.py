@@ -143,19 +143,20 @@ class NavierStokesApp(App):
             label="binary", group=0, callback=on_binary, pos=(1, 0), size=(1, 9)
         )
 
-        def on_momentum(toggle_state):
-            if toggle_state == "on":
-                fluid.visual = "momentum"
-
         def on_pressure(toggle_state):
             if toggle_state == "on":
                 fluid.visual = "pressure"
 
-        momentum_toggle = ToggleButton(
-            label="momentum", group=1, callback=on_momentum, size=(1, 11), pos=(0, 10)
-        )
+        def on_momentum(toggle_state):
+            if toggle_state == "on":
+                fluid.visual = "momentum"
+
         pressure_toggle = ToggleButton(
             label="pressure", group=1, callback=on_pressure, size=(1, 11), pos=(1, 10)
+        )
+
+        momentum_toggle = ToggleButton(
+            label="momentum", group=1, callback=on_momentum, size=(1, 11), pos=(0, 10)
         )
 
         damp_label = Text(size=(1, 20), pos=(2, 0), is_transparent=True)
