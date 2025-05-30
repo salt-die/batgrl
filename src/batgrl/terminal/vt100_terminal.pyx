@@ -62,7 +62,7 @@ COLOR_RE: re.Pattern[bytes] = re.compile(
     rb"([0-9a-f]{2})[0-9a-f]{2}/"
     rb"([0-9a-f]{2})[0-9a-f]{2}\x1b\\"
 )
-DEC_MODES: frozenset[bytes] = frozenset([1016, 2026])
+DEC_MODES: frozenset[int] = frozenset([1016, 2026])
 
 logger = get_logger(__name__)
 
