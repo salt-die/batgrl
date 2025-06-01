@@ -178,7 +178,6 @@ cdef class Vt100Terminal:
             self.in_buf.buf[0] = 0x1b
             self.in_buf.len = 1
         elif self.state == GROUND:
-            data = <bytes>char_
             if 0x20 <= char_ < 0x7f:
                 data = <bytes>char_
                 self.add_event(KeyEvent(data.decode()))
