@@ -124,9 +124,6 @@ class Point(NamedTuple):
     Note that y-coordinate is before x-coordinate. This convention is used so that the
     2-d arrays that underly a gadget's data can be directly indexed with the point.
 
-    Parameters or attributes type-hinted `Point` can often take `tuple[int, int]` for
-    convenience.
-
     Parameters
     ----------
     y : int
@@ -176,9 +173,6 @@ class Point(NamedTuple):
 class Size(NamedTuple):
     """
     A rectangular area.
-
-    Parameters or attributes type-hinted `Size` can often take `tuple[int, int]` for
-    convenience.
 
     Parameters
     ----------
