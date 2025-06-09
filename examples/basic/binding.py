@@ -1,8 +1,7 @@
 """
 An example to showcase binding.
 
-After binding a callback to gadget property, the callback will be called anytime the
-property is updated.
+A callback bound to a gadget property will be called any time that property is updated.
 """
 
 from batgrl.app import App
