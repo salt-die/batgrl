@@ -182,12 +182,6 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         Undo previous edit.
     redo()
         Redo previous undo.
-    select()
-        Start a new selection at cursor if none.
-    unselect()
-        Unselect current selection.
-    delete_selection()
-        Delete current selection.
     move_cursor_left(n)
         Move cursor left `n` characters.
     move_cursor_right(n)
