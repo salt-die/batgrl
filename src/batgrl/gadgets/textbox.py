@@ -3,16 +3,16 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import astuple
+from dataclasses import astuple, dataclass
 from typing import cast
 
-from ugrapheme import grapheme_len, graphemes
+from ugrapheme import graphemes
 from uwcwidth import wcswidth
 
 from ..geometry import rect_slice
 from ..logging import get_logger
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent, PasteEvent
-from ..text_tools import canvas_as_text, egc_chr, is_word_char
+from ..text_tools import canvas_as_text, egc_chr, egc_ord, is_word_char
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
@@ -34,6 +34,61 @@ __all__ = ["Point", "Size", "Textbox"]
 logger = get_logger(__name__)
 
 
+@dataclass
+class _TextSelection:
+    start: int
+    end: int
+
+
+@dataclass
+class _TextEdit:
+    cursor: int
+    selection: _TextSelection | None
+    start: int
+    end: int
+    text: str
+
+    @property
+    def first(self) -> int:
+        return min(self.start, self.end)
+
+    @first.setter
+    def first(self, first: int):
+        if self.start <= self.end:
+            self.start = first
+        else:
+            self.end = first
+
+    @property
+    def last(self) -> int:
+        return max(self.start, self.end)
+
+    @last.setter
+    def last(self, last: int):
+        if self.end >= self.start:
+            self.end = last
+        else:
+            self.start = last
+
+    def end_of_content(self) -> int:
+        return self.first + wcswidth(self.text)
+
+    def join(self, other: _TextEdit) -> bool:
+        if other.end_of_content() == self.first:
+            width = self.last - self.first
+            self.first = other.first
+            self.last = other.last + width
+            self.text = other.text + self.text
+            return True
+
+        if self.last == other.first:
+            self.last = other.last
+            self.text += other.text
+            return True
+
+        return False
+
+
 class _Box(Text):
     def _render(self, cells, graphics, kind):
         super()._render(cells, graphics, kind)
@@ -42,8 +97,7 @@ class _Box(Text):
             hider_rect = Region.from_rect(self.absolute_pos, (1, textbox._line_width))
             hider_region = self._region & hider_rect
             for pos, size in hider_region.rects():
-                # FIXME: Allow for egcs for textbox.hide_char
-                cells["ord"][rect_slice(pos, size)] = ord(textbox.hide_char)
+                cells["ord"][rect_slice(pos, size)] = textbox._hide_char_ord
 
 
 class Textbox(Themable, Focusable, Grabbable, Gadget):
@@ -176,12 +230,6 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Undo previous edit.
     redo()
         Redo previous undo.
-    select()
-        Start a new selection at cursor if none.
-    unselect()
-        Unselect current selection.
-    delete_selection()
-        Delete current selection.
     move_cursor_left(n)
         Move cursor left `n` characters.
     move_cursor_right(n)
@@ -190,7 +238,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Move cursor a word left.
     move_word_right()
         Move cursor a word right.
-    get_color()
+    get_color(color_name)
         Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
@@ -299,13 +347,14 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             is_enabled=is_enabled,
         )
 
-        self._selection_start: int | None = None
-        self._selection_end: int | None = None
+        self._selection: _TextSelection | None = None
         self._line_width = 0
-        self._undo_stack = []
-        self._redo_stack = []
-        self._undo_buffer = []
-        self._undo_buffer_type = "add"
+        self._replace_text_to_undo_stack: bool = True
+        """Whether ``replace_text`` uses the undo or redo stack."""
+        self._replace_text_clears_redo: bool = True
+        """Whether ``replace_text`` clears the redo stack."""
+        self._undo_stack: list[_TextEdit] = []
+        self._redo_stack: list[_TextEdit] = []
 
         self._box.add_gadgets(self._placeholder_gadget, self._cursor)
         self.add_gadgets(self._box)
@@ -316,6 +365,8 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         """Placeholder text for textbox."""
         self.hide_input = hide_input
         """Whether input is hidden with :attr:`hide_char`."""
+        self._hide_char_ord: int = 0
+        """``hide_char``'s ordinal representation."""
         self.hide_char = hide_char
         """Character to hide input if :attr:`hide_input` is true."""
         self.max_chars = max_chars
@@ -328,59 +379,26 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         return self._box.alpha
 
     @alpha.setter
-    def alpha(self, alpha: float):
+    def alpha(self, alpha: float) -> None:
         self._box.alpha = alpha
-
-    def on_transparency(self) -> None:
-        """Update gadget after transparency is enabled/disabled."""
-        self._box.is_transparent = self.is_transparent
-        self._placeholder_gadget.is_transparent = self.is_transparent
 
     @property
     def hide_char(self) -> str:
-        """Character to hide input when :attr:`hide_input` is true."""
-        return self._hide_char
+        """
+        Character to hide input when :attr:`hide_input` is true.
+
+        If ``hide_char`` cell width is not 1 it will default to ``"*"``.
+        """
+        return egc_chr(self._hide_char_ord)
 
     @hide_char.setter
-    def hide_char(self, char: str):
-        self._hide_char = char[:1] or "*"
-
-    def update_theme(self):
-        """Paint the gadget with current theme."""
-        primary_fg = self.get_color("textbox_primary_fg")
-        primary_bg = self.get_color("textbox_primary_bg")
-        self._box.canvas["fg_color"] = self._box.default_fg_color = primary_fg
-        self._box.canvas["bg_color"] = self._box.default_bg_color = primary_bg
-        self._cursor.fg_color = primary_bg
-        self._cursor.bg_color = primary_fg
-
-        placeholder_fg = self.get_color("textbox_placeholder_fg")
-        placeholder_bg = self.get_color("textbox_placeholder_bg")
-        self._placeholder_gadget.default_fg_color = placeholder_fg
-        self._placeholder_gadget.default_bg_color = placeholder_bg
-        self._placeholder_gadget.canvas["fg_color"] = placeholder_fg
-        self._placeholder_gadget.canvas["bg_color"] = placeholder_bg
-
-        self._highlight_selection()
-
-    def on_size(self):
-        """Resize and reposition children on resize."""
-        self._box.width = max(self.width, self._line_width + 1)
-        if self._box.x + self._line_width < self.width:
-            self._box.x = min(0, self.width - self._line_width)
-        self.cursor = self.cursor
-
-    def on_focus(self):
-        """Show cursor and select all text on focus."""
-        self._cursor.is_enabled = True
-        if self._line_width > 0:
-            self._ctrl_a()
-
-    def on_blur(self):
-        """Hide cursor on blur."""
-        self._cursor.is_enabled = False
-        self.unselect()
-        self.cursor = self.cursor
+    def hide_char(self, char: str) -> None:
+        self._hide_char_ord = egc_ord(char)
+        if wcswidth(egc_chr(self._hide_char_ord)) != 1:
+            logger.info(
+                f"hide_char ({char}) cell width greater than 1, using default hide_char"
+            )
+            self._hide_char_ord = ord("*")
 
     @property
     def placeholder(self) -> str:
@@ -395,54 +413,18 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             placeholder
         )
 
-    def _move_undo_buffer_to_stack(self, buffer_type=None):
-        self._undo_buffer_type = buffer_type
-        if self._undo_buffer:
-            self._undo_stack.append(self._undo_buffer)
-            self._undo_buffer = []
-            self._redo_stack.clear()
-
-    def undo(self):
-        """Undo previous edit."""
-        self._move_undo_buffer_to_stack()
-        if self._undo_stack:
-            redo = []
-            for func, args, selection_start, selection_end, cursor in reversed(
-                self._undo_stack.pop()
-            ):
-                redo.append(func(*args))
-                self._selection_start = selection_start
-                self._selection_end = selection_end
-                self.cursor = cursor
-            self._redo_stack.append(redo)
-
-    def redo(self):
-        """Redo previous undo."""
-        if self._redo_stack and not self._undo_buffer:
-            undo = []
-            for func, args, selection_start, selection_end, cursor in reversed(
-                self._redo_stack.pop()
-            ):
-                undo.append(func(*args))
-                self._selection_start = selection_start
-                self._selection_end = selection_end
-                self.cursor = cursor
-            self._undo_stack.append(undo)
-
     @property
     def text(self) -> str:
         """The textbox's text."""
         return canvas_as_text(self._box.canvas[0, : self._line_width])
 
     @text.setter
-    def text(self, text: str):
-        text = text.replace("\n", " ")[: self.max_chars]
-        self.unselect()
-        self._del_text(0, self._line_width)
-        self._add_text(0, text)
-        self._redo_stack.clear()
+    def text(self, text: str) -> None:
+        self._selection = None
+        text = graphemes(text.replace("\n", " "))[: self.max_chars]
+        self.replace_text(0, self._line_width, text)
         self._undo_stack.clear()
-        self._undo_buffer.clear()
+        self._redo_stack.clear()
         self.cursor = self._line_width
 
     @property
@@ -465,56 +447,23 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         elif rel_x < 0:
             self._box.x -= rel_x
 
-        if self.is_selecting:
-            self._selection_end = self.cursor
-
+        if self._selection is not None:
+            self._selection.end = self.cursor
         self._highlight_selection()
 
-    def _highlight_selection(self):
-        self._selection_start = cast(int, self._selection_start)
-        self._selection_end = cast(int, self._selection_end)
-        fg = self._box.canvas["fg_color"]
-        bg = self._box.canvas["bg_color"]
-        fg[:] = self._box.default_fg_color
-        bg[:] = self._box.default_bg_color
-        if self._selection_start != self._selection_end:
-            if self._selection_start > self._selection_end:
-                start = self._selection_end
-                end = self._selection_start
-            else:
-                start = self._selection_start
-                end = self._selection_end
+    def replace_text(self, start: int, end: int, content: str) -> None:
+        """
+        Replace text from ``start`` to ``end`` with ``content``.
 
-            fg[0, start:end] = self.get_color("textbox_selection_highlight_fg")
-            bg[0, start:end] = self.get_color("textbox_selection_highlight_bg")
-
-    @property
-    def is_selecting(self) -> bool:
-        """Whether there is a selection."""
-        return self._selection_start is not None and self._selection_end is not None
-
-    @property
-    def has_nonempty_selection(self) -> bool:
-        """Whether selection is non-empty."""
-        return self.is_selecting and self._selection_start != self._selection_end
-
-    def select(self):
-        """Start a new selection at cursor if none."""
-        if not self.is_selecting:
-            self._selection_start = self._selection_end = self.cursor
-
-    def unselect(self):
-        """Unselect current selection."""
-        self._selection_start = self._selection_end = None
-
-    def delete_selection(self):
-        """Delete current selection."""
-        if self.has_nonempty_selection:
-            self._selection_start = cast(int, self._selection_start)
-            self._selection_end = cast(int, self._selection_end)
-            return self._del_text(self._selection_start, self._selection_end)
-
-    def _del_text(self, start: int, end: int):
+        Parameters
+        ----------
+        start : int
+            The start of text to replace.
+        end : int
+            The end of text to replace.
+        content : str
+            The replacement text.
+        """
         if start > end:
             start, end = end, start
 
@@ -522,43 +471,81 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             logger.debug("End of delete greater than line length.")
             end = self._line_width
 
-        contents = canvas_as_text(self._box.canvas[0, start:end])
-        selection_start = self._selection_start
-        selection_end = self._selection_end
-        cursor = self.cursor
+        prev_selection = self._selection
+        prev_cursor = self.cursor
+        text = canvas_as_text(self._box.canvas[0, start:end])
+
+        self._selection = None
 
         len_end = self._line_width - end
-        self._line_width = start + len_end
+        line_width = start + len_end
 
         box = self._box
-        box.canvas[0, start : self._line_width] = box.canvas[0, end : end + len_end]
-        box.canvas[0, self._line_width :] = box.default_cell
+        box.canvas[0, start:line_width] = box.canvas[0, end : end + len_end]
+        box.canvas[0, line_width:] = box.default_cell
 
-        self.unselect()
-        self.cursor = start
-
-        return self._add_text, [start, contents], selection_start, selection_end, cursor
-
-    def _add_text(self, x: int, text: str):
-        selection_start = self._selection_start
-        selection_end = self._selection_end
-        cursor = self.cursor
+        content = content.replace("\n", " ")
 
         box_text = graphemes(
-            canvas_as_text(self._box.canvas[0, :x])
-            + text.replace("\n", " ")
-            + canvas_as_text(self._box.canvas[0, x : self._line_width])
+            canvas_as_text(box.canvas[0, :start])
+            + content
+            + canvas_as_text(box.canvas[0, start:line_width])
         )[: self.max_chars]
 
         box_width = self._line_width = wcswidth(box_text)
-        if box_width >= self._box.width:
-            self._box.width = box_width + 1
+        if box_width >= box.width:
+            box.width = box_width + 1
 
-        self._box.add_str(box_text)
-        self._box.canvas[0, box_width:] = self._box.default_cell
+        box.add_str(box_text)
+        box.canvas[0, box_width:] = box.default_cell
 
-        self.cursor = min(box_width, x + wcswidth(text))
-        return self._del_text, [x, self.cursor], selection_start, selection_end, cursor
+        self.cursor = start + wcswidth(content)
+
+        inverse_edit = _TextEdit(prev_cursor, prev_selection, start, self.cursor, text)
+        if self._replace_text_to_undo_stack:
+            stack = self._undo_stack
+        else:
+            stack = self._redo_stack
+            self._replace_text_to_undo_stack = True
+
+        if self._replace_text_clears_redo:
+            self._redo_stack.clear()
+        else:
+            self._replace_text_clears_redo = True
+
+        if not (stack and stack[-1].join(inverse_edit)):
+            stack.append(inverse_edit)
+
+    def undo(self):
+        """Undo previous edit."""
+        if self._undo_stack:
+            last_edit = self._undo_stack.pop()
+            self._replace_text_to_undo_stack = False
+            self._replace_text_clears_redo = False
+            self.replace_text(last_edit.start, last_edit.end, last_edit.text)
+            self._selection = last_edit.selection
+            self.cursor = last_edit.cursor
+
+    def redo(self):
+        """Redo previous undo."""
+        if self._redo_stack:
+            prev_edit = self._redo_stack.pop()
+            self._replace_text_clears_redo = False
+            self.replace_text(prev_edit.start, prev_edit.end, prev_edit.text)
+            self._selection = prev_edit.selection
+            self.cursor = prev_edit.cursor
+
+    def _highlight_selection(self):
+        fg = self._box.canvas["fg_color"]
+        bg = self._box.canvas["bg_color"]
+        fg[:] = self._box.default_fg_color
+        bg[:] = self._box.default_bg_color
+        if self._selection is not None and self._selection.start != self._selection.end:
+            start, end = self._selection.start, self._selection.end
+            if start > end:
+                start, end = end, start
+            fg[0, start:end] = self.get_color("textbox_selection_highlight_fg")
+            bg[0, start:end] = self.get_color("textbox_selection_highlight_bg")
 
     def move_cursor_left(self, n: int = 1):
         """Move cursor left `n` characters."""
@@ -583,8 +570,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     def move_word_left(self):
         """Move cursor a word left."""
         last_x = self.cursor
-        first_char_found = False
-        char_is_word_char = False
+        first_char_found = char_is_word_char = False
         while True:
             self.move_cursor_left()
             if self.cursor == last_x:
@@ -606,8 +592,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     def move_word_right(self):
         """Move cursor a word right."""
         last_x = self.cursor
-        first_char_found = False
-        char_is_word_char = False
+        first_char_found = char_is_word_char = False
         while True:
             self.move_cursor_right()
             if self.cursor == last_x:
@@ -630,74 +615,61 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             self.enter_callback(self)
 
     def _backspace(self):
-        if self.has_nonempty_selection:
-            self._move_undo_buffer_to_stack("del")
-            self._undo_buffer.append(self.delete_selection())
-        else:
-            if self._undo_buffer_type != "del":
-                self._move_undo_buffer_to_stack("del")
-
+        if self._selection is None:
             end = self.cursor
             self.move_cursor_left()
             start = self.cursor
             self.cursor = end
-            if start != end:
-                self._undo_buffer.append(self._del_text(start, end))
+            if start == end:
+                return
+        else:
+            start, end = self._selection.start, self._selection.end
+        self.replace_text(start, end, "")
 
     def _delete(self):
-        if self.has_nonempty_selection:
-            self._move_undo_buffer_to_stack("del")
-            self._undo_buffer.append(self.delete_selection())
-        else:
-            if self._undo_buffer_type != "del":
-                self._move_undo_buffer_to_stack("del")
-
+        if self._selection is None:
             start = self.cursor
             self.move_cursor_right()
             end = self.cursor
             self.cursor = start
-            if start != end:
-                self._undo_buffer.append(self._del_text(start, end))
+            if start == end:
+                return
+        else:
+            start, end = self._selection.start, self._selection.end
+        self.replace_text(start, end, "")
 
     def _left(self):
-        if self.has_nonempty_selection:
-            self._selection_start = cast(int, self._selection_start)
-            self._selection_end = cast(int, self._selection_end)
-            select_start = min(self._selection_start, self._selection_end)
-            self.unselect()
-            self.cursor = select_start
-        else:
-            self.unselect()
+        if self._selection is None:
             self.move_cursor_left()
+        else:
+            select_start = min(self._selection.start, self._selection.end)
+            self._selection = None
+            self.cursor = select_start
 
     def _right(self):
-        if self.has_nonempty_selection:
-            self._selection_start = cast(int, self._selection_start)
-            self._selection_end = cast(int, self._selection_end)
-            select_end = max(self._selection_start, self._selection_end)
-            self.unselect()
-            self.cursor = select_end
-        else:
-            self.unselect()
+        if self._selection is None:
             self.move_cursor_right()
+        else:
+            select_end = max(self._selection.start, self._selection.end)
+            self._selection = None
+            self.cursor = select_end
 
     def _ctrl_left(self):
-        self.unselect()
+        self._selection = None
         self.move_word_left()
 
     def _ctrl_right(self):
-        self.unselect()
+        self._selection = None
         self.move_word_right()
 
     def _ctrl_a(self):
         """Select all."""
-        self._selection_start = 0
-        self._selection_end = self._line_width
+        self._selection = _TextSelection(0, self._line_width)
         self.cursor = self._line_width
 
     def _ctrl_d(self):
         """Select word."""
-        self.unselect()
+        self._selection = None
         last_x = self.cursor
         while True:
             self.move_cursor_left()
@@ -708,7 +680,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
                 break
             last_x = self.cursor
 
-        self.select()
+        self._selection = _TextSelection(self.cursor, self.cursor)
         last_x = self.cursor
         while True:
             if not is_word_char(egc_chr(self._box.canvas[0, self.cursor]["ord"])):
@@ -719,58 +691,56 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             last_x = self.cursor
 
     def _home(self):
-        self.unselect()
+        self._selection = None
         self.cursor = 0
 
     def _end(self):
-        self.unselect()
+        self._selection = None
         self.cursor = self._line_width
 
     def _shift_left(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.move_cursor_left()
 
     def _shift_right(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.move_cursor_right()
 
     def _shift_ctrl_left(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.move_word_left()
 
     def _shift_ctrl_right(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.move_word_right()
 
     def _shift_home(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.cursor = 0
 
     def _shift_end(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.cursor = self._line_width
 
     def _escape(self):
-        if self.has_nonempty_selection:
-            self.unselect()
-            self._highlight_selection()
-        else:
-            self.unselect()
+        if self._selection is None:
             self.blur()
+        else:
+            self._selection = None
+            self._highlight_selection()
 
-    def _ascii(self, key):
-        if self.has_nonempty_selection:
-            self._move_undo_buffer_to_stack("add")
-            self._undo_buffer.append(self.delete_selection())
-
-        if (
-            self.max_chars is None
-            or grapheme_len(canvas_as_text(self._box.canvas[0, : self._line_width]))
-            < self.max_chars
-        ):
-            if self._undo_buffer_type != "add":
-                self._move_undo_buffer_to_stack("add")
-            self._undo_buffer.append(self._add_text(self.cursor, key))
+    def _ascii(self, key: str):
+        if self._selection is None:
+            start = end = self.cursor
+        else:
+            start, end = self._selection.start, self._selection.end
+        self.replace_text(start, end, key)
 
     __HANDLERS = {
         ("enter", False, False, False): _enter,
@@ -821,12 +791,11 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         if not self.is_focused:
             return
 
-        self._move_undo_buffer_to_stack()
-        undos = []
-        if undo := self.delete_selection():
-            undos.append(undo)
-        undos.append(self._add_text(self.cursor, paste_event.paste))
-        self._undo_stack.append(undos)
+        if self._selection is None:
+            start = end = self.cursor
+        else:
+            start, end = self._selection.start, self._selection.end
+        self.replace_text(start, end, paste_event.paste)
         self._redo_stack.clear()
 
         return True
@@ -837,12 +806,12 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             super().grab(mouse_event)
 
             _, x = self._box.to_local(mouse_event.pos)
+            cursor = min(x, self._line_width)
 
-            if not mouse_event.shift:
-                self.unselect()
+            if not mouse_event.shift or self._selection is None:
+                self._selection = _TextSelection(cursor, cursor)
 
-            self.cursor = min(x, self._line_width)
-            self.select()  # Need at least an empty selection for `grab_update`.
+            self.cursor = cursor
 
     def grab_update(self, mouse_event: MouseEvent):
         """Update selection on grab update."""
@@ -860,5 +829,45 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     def ungrab(self, mouse_event):
         """Clear an empty selection on ungrab."""
         super().ungrab(mouse_event)
-        if self._selection_start == self._selection_end:
-            self.unselect()
+        if self._selection is not None and self._selection.start == self._selection.end:
+            self._selection = None
+
+    def on_transparency(self) -> None:
+        """Update gadget after transparency is enabled/disabled."""
+        self._box.is_transparent = self.is_transparent
+        self._placeholder_gadget.is_transparent = self.is_transparent
+
+    def update_theme(self) -> None:
+        """Paint the gadget with current theme."""
+        primary_fg = self.get_color("textbox_primary_fg")
+        primary_bg = self.get_color("textbox_primary_bg")
+        self._box.canvas["fg_color"] = self._box.default_fg_color = primary_fg
+        self._box.canvas["bg_color"] = self._box.default_bg_color = primary_bg
+        self._cursor.fg_color = primary_bg
+        self._cursor.bg_color = primary_fg
+
+        placeholder_fg = self.get_color("textbox_placeholder_fg")
+        placeholder_bg = self.get_color("textbox_placeholder_bg")
+        self._placeholder_gadget.default_fg_color = placeholder_fg
+        self._placeholder_gadget.default_bg_color = placeholder_bg
+        self._placeholder_gadget.canvas["fg_color"] = placeholder_fg
+        self._placeholder_gadget.canvas["bg_color"] = placeholder_bg
+
+        self._highlight_selection()
+
+    def on_size(self):
+        """Resize and reposition children on resize."""
+        self._box.width = max(self.width, self._line_width + 1)
+        if self._box.x + self._line_width < self.width:
+            self._box.x = min(0, self.width - self._line_width)
+        self.cursor = self.cursor
+
+    def on_focus(self):
+        """Show cursor and select all text on focus."""
+        self._cursor.is_enabled = True
+        if self._line_width > 0:
+            self._ctrl_a()
+
+    def on_blur(self):
+        """Hide cursor on blur."""
+        self._cursor.is_enabled = False

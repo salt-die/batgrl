@@ -295,6 +295,10 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         """Currently selected text."""
         self._line_widths: list[int] = [0]
         """Line widths of each line in the text area."""
+        self._replace_text_to_undo_stack: bool = True
+        """Whether ``replace_text`` uses the undo or redo stack."""
+        self._replace_text_clears_redo: bool = True
+        """Whether ``replace_text`` clears the redo stack."""
         self._undo_stack: list[_TextEdit] = []
         """Stack of undo text edits."""
         self._redo_stack: list[_TextEdit] = []
@@ -390,10 +394,14 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         ey, ex = end
 
         if ey >= len(ll):
-            logger.debug("End y-coordinate is greater than number of lines.")
+            logger.debug(
+                "replace_text: Delete end y-coordinate is greater than number of lines."
+            )
             ey = len(ll) - 1
         if ex > ll[ey]:
-            logger.debug("End x-coordinate is greater than line length.")
+            logger.debug(
+                "replace_text: Delete end x-coordinate is greater than line length."
+            )
             ex = ll[ey]
 
         if sy == ey:
@@ -464,16 +472,27 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         inverse_edit = _TextEdit(
             prev_cursor, prev_selection, Point(sy, sx), self.cursor, text
         )
-        if not (self._undo_stack and self._undo_stack[-1].join(inverse_edit)):
-            self._undo_stack.append(inverse_edit)
+        if self._replace_text_to_undo_stack:
+            stack = self._undo_stack
+        else:
+            stack = self._redo_stack
+            self._replace_text_to_undo_stack = True
+
+        if self._replace_text_clears_redo:
+            self._redo_stack.clear()
+        else:
+            self._replace_text_clears_redo = True
+
+        if not (stack and stack[-1].join(inverse_edit)):
+            stack.append(inverse_edit)
 
     def undo(self):
         """Undo previous edit."""
         if self._undo_stack:
             last_edit = self._undo_stack.pop()
-            self._undo_stack, self._redo_stack = self._redo_stack, self._undo_stack
+            self._replace_text_to_undo_stack = False
+            self._replace_text_clears_redo = False
             self.replace_text(last_edit.start, last_edit.end, last_edit.text)
-            self._undo_stack, self._redo_stack = self._redo_stack, self._undo_stack
             self._selection = last_edit.selection
             self.cursor = last_edit.cursor
 
@@ -481,6 +500,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         """Redo previous undo."""
         if self._redo_stack:
             prev_edit = self._redo_stack.pop()
+            self._replace_text_clears_redo = False
             self.replace_text(prev_edit.start, prev_edit.end, prev_edit.text)
             self._selection = prev_edit.selection
             self.cursor = prev_edit.cursor
@@ -706,6 +726,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             self.cursor = select_end
 
     def _ctrl_left(self):
+        self._selection = None
         self.move_word_left()
 
     def _ctrl_right(self):
@@ -839,7 +860,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             self._selection = None
             self._highlight_selection()
 
-    def _ascii(self, key):
+    def _ascii(self, key: str):
         if self._selection is None:
             start = end = self.cursor
         else:
@@ -908,8 +929,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         if self._selection is None:
             start = end = self.cursor
         else:
-            start = self._selection.start
-            end = self._selection.end
+            start, end = self._selection.start, self._selection.end
         self.replace_text(start, end, paste_event.paste)
         self._redo_stack.clear()
 
@@ -925,11 +945,12 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
                 return
 
             x = min(x, self._line_widths[y])
-            if not mouse_event.shift:
-                self._selection = None
+            cursor = Point(y, x)
 
-            self.cursor = y, x
-            self._selection = _TextSelection(self.cursor, self.cursor)
+            if not mouse_event.shift or self._selection is None:
+                self._selection = _TextSelection(cursor, cursor)
+
+            self.cursor = cursor
 
     def grab_update(self, mouse_event: MouseEvent):
         """Update selection on grab update."""
@@ -958,7 +979,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     def ungrab(self, mouse_event):
         """Clear an empty selection on ungrab."""
         super().ungrab(mouse_event)
-        self._selection = None
+        if self._selection is not None and self._selection.start == self._selection.end:
+            self._selection = None
 
     def on_transparency(self) -> None:
         """Update gadget after transparency is enabled/disabled."""
