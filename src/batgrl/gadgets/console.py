@@ -151,8 +151,8 @@ class _ConsoleTextbox(Textbox):
         y, x = self.pos
         self.console._scroll_view.scroll_to_rect((y, cursor + x))
 
-        if self.is_selecting:
-            self._selection_end = self.cursor
+        if self._selection is not None:
+            self._selection.end = self.cursor
 
         self._highlight_selection()
 
@@ -163,24 +163,18 @@ class _ConsoleTextbox(Textbox):
             self.console._container.width = self.console._min_line_length
         self.cursor = self.cursor
 
-    def _del_text(self, start: int, end: int):
-        result = super()._del_text(start, end)
+    def replace_text(
+        self, start: builtins.int, end: builtins.int, content: builtins.str
+    ) -> None:
+        super().replace_text(start, end, content)
         self.width = self._box.width = self._line_width + 1
-        return result
-
-    def _add_text(self, x: int, text: str):
-        result = super()._add_text(x, text)
-        self.width = self._box.width = self._line_width + 1
-        return result
 
     def _tab(self):
-        self._move_undo_buffer_to_stack()
-        undos = []
-        if undo := self.delete_selection():
-            undos.append(undo)
-        undos.append(self._add_text(self.cursor, "    "))
-        self._undo_stack.append(undos)
-        self._redo_stack.clear()
+        if self._selection is None:
+            x = self.cursor
+        else:
+            x = min(self._selection.start, self._selection.end)
+        self.replace_text(x, x, "    ")
 
     def update_theme(self):
         super().update_theme()
@@ -472,7 +466,7 @@ class Console(Themable, Focusable, Gadget):
         self._console = _InteractiveConsole(self)
         self._input_mode: bool = False
         self._history = []
-        self._history_index: float | int = 0
+        self._history_index: float = 0
         """
         Current index into history.
 
