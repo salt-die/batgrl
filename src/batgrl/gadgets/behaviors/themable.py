@@ -20,7 +20,7 @@ class Themable(ABC, Behavior):
 
     Methods
     -------
-    get_color()
+    get_color(color_name)
         Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.

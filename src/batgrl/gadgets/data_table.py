@@ -401,7 +401,7 @@ class DataTable(Themable, Gadget):
         Returns the row id of the row at index.
     column_id_from_index(index)
         Returns the column id of the column at index.
-    get_color()
+    get_color(color_name)
         Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.

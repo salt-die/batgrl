@@ -194,7 +194,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         Move cursor a word left.
     move_word_right()
         Move cursor a word right.
-    get_color()
+    get_color(color_name)
         Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.

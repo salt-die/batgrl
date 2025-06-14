@@ -362,7 +362,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         Scroll the view down `n` lines.
     scroll_to_rect(pos, size=(1, 1))
         Scroll the view so that a given rect is visible.
-    get_color()
+    get_color(color_name)
         Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.

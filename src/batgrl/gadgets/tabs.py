@@ -171,7 +171,7 @@ class Tabs(Themable, Gadget):
         Add a new tab.
     remove_tab(title)
         Remove a tab.
-    get_color()
+    get_color(color_name)
         Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
