@@ -293,20 +293,6 @@ def _write_cells_to_canvas(cells, canvas, fg_color, bg_color) -> None:
                 break
 
 
-def put_egc(canvas: Cell, text: str) -> None:
-    """
-    Set each ord in canvas to represent the first extended grapheme cluster in ``text``.
-
-    Parameters
-    ----------
-    canvas : Cell2D
-        A ``Cell`` array or view.
-    text : str
-        An extended grapheme cluster.
-    """
-    canvas[:] = egc_ord(text)
-
-
 def add_text(
     canvas: Cell1D | Cell2D,
     text: str,
