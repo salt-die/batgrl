@@ -71,7 +71,7 @@ class Animation(Graphics):
     ----------
     frames : list[Image]
         Frames of the animation.
-    frame_durations : list[int | float]
+    frame_durations : list[float]
         Time each frame is displayed.
     loop : bool
         Whether to animation is restarted after last frame.

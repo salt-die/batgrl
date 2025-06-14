@@ -20,7 +20,7 @@ class TextAnimation(Text):
     ----------
     frames : Iterable[str] | None, default: None
         Frames of the animation.
-    frame_durations : float | int | Sequence[float| int], default: 1/12
+    frame_durations : float | Sequence[float| int], default: 1/12
         Time each frame is displayed. If a sequence is provided, it's length
         should be equal to number of frames.
     loop : bool, default: True
@@ -54,7 +54,7 @@ class TextAnimation(Text):
         The minimum size needed to not clip any frames of the animation.
     frames : list[str]
         Frames of the animation.
-    frame_durations : list[int | float]
+    frame_durations : list[float]
         Time each frame is displayed.
     loop : bool
         Whether to restart animation after last frame.
