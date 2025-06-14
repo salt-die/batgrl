@@ -84,7 +84,9 @@ def points_on_circle(
     return radius * np.stack([np.sin(angles), np.cos(angles)]).T + center
 
 
-def rect_slice(pos: Pointlike, size: Sizelike) -> tuple[slice, slice]:
+def rect_slice(
+    pos: Pointlike, size: Sizelike
+) -> tuple[slice[int, int, None], slice[int, int, None]]:
     """
     Return slices for indexing a rect in a numpy array.
 
@@ -97,7 +99,7 @@ def rect_slice(pos: Pointlike, size: Sizelike) -> tuple[slice, slice]:
 
     Returns
     -------
-    tuple[slice, slice]
+    tuple[slice[int, int, None], slice[int, int, None]]
         Slices that index a rect in a numpy array.
     """
     y, x = pos
