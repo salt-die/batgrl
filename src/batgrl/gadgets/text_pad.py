@@ -1,7 +1,8 @@
 """A text-pad gadget for multiline editable text."""
 
-from dataclasses import astuple
-from typing import cast
+from __future__ import annotations
+
+from dataclasses import astuple, dataclass
 
 from ugrapheme import grapheme_iter, graphemes
 from uwcwidth import wcswidth
@@ -20,6 +21,71 @@ from .text import Text
 __all__ = ["Point", "Size", "TextPad"]
 
 logger = get_logger(__name__)
+
+
+@dataclass
+class _TextSelection:
+    start: Point
+    end: Point
+
+
+@dataclass
+class _TextEdit:
+    cursor: Point
+    selection: _TextSelection | None
+    start: Point
+    end: Point
+    text: str
+
+    @property
+    def first(self) -> Point:
+        return min(self.start, self.end)
+
+    @first.setter
+    def first(self, first: Point):
+        if self.start <= self.end:
+            self.start = first
+        else:
+            self.end = first
+
+    @property
+    def last(self) -> Point:
+        return max(self.start, self.end)
+
+    @last.setter
+    def last(self, last: Point):
+        if self.end >= self.start:
+            self.end = last
+        else:
+            self.start = last
+
+    def end_of_content(self) -> Point:
+        y, x = self.first
+        nlines = self.text.count("\n")
+        if nlines:
+            last_line = self.text[self.text.rfind("\n") + 1 :]
+            return Point(y + nlines, wcswidth(last_line))
+        return Point(y, x + wcswidth(self.text))
+
+    def join(self, other: _TextEdit) -> bool:
+        if other.end_of_content() == self.first:
+            fy, fx = self.first
+            ly, lx = self.last
+            oly, olx = other.last
+            self.first = other.first
+            if ly == fy:
+                self.last = Point(oly, olx + (lx - fx))
+            else:
+                self.last = Point(oly + (ly - fy), lx)
+            self.text = other.text + self.text
+            return True
+
+        if self.last == other.first:
+            self.last = other.last
+            self.text += other.text
+            return True
+
+        return False
 
 
 class TextPad(Themable, Grabbable, Focusable, Gadget):
@@ -57,10 +123,6 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         The text pad's text.
     cursor : Point
         The cursor position.
-    is_selecting : bool
-        Whether there is a selection.
-    has_nonempty_selection : bool
-        Whether selection is non-empty.
     page_lines : int
         Number of rows a page-up or -down moves.
     is_focused : bool
@@ -223,7 +285,11 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         is_enabled: bool = True,
     ):
         self._cursor = Cursor()
+        """The textpad's cursor."""
+        self._prev_x: int | None = None
+        """If the cursor has moved vertically, its previous x-coordinate."""
         self._pad = Text(size=(1, 1), is_transparent=is_transparent)
+        """The textpad's text area."""
         self._scroll_view = ScrollView(
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
             arrow_keys_enabled=False,
@@ -231,6 +297,15 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             alpha=0,
             is_transparent=is_transparent,
         )
+        self._selection: _TextSelection | None = None
+        """Currently selected text."""
+        self._line_widths: list[int] = [0]
+        """Line widths of each line in the text area."""
+        self._undo_stack: list[_TextEdit] = []
+        """Stack of undo text edits."""
+        self._redo_stack: list[_TextEdit] = []
+        """Stack of redo text edits."""
+
         super().__init__(
             size=size,
             pos=pos,
@@ -240,16 +315,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self._last_x = None
-        self._selection_start: Pointlike | None = None
-        self._selection_end: Pointlike | None = None
-        self._line_widths = [0]
-        self._undo_stack = []
-        self._redo_stack = []
-        self._undo_buffer = []
-        self._undo_buffer_type = "add"
         self.alpha = alpha
-
         self._pad.add_gadget(self._cursor)
         self._scroll_view.view = self._pad
         self.add_gadget(self._scroll_view)
@@ -263,80 +329,6 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     def alpha(self, alpha: float):
         self._pad.alpha = alpha
 
-    def on_transparency(self) -> None:
-        """Update gadget after transparency is enabled/disabled."""
-        self._pad.is_transparent = self.is_transparent
-        self._scroll_view.is_transparent = self.is_transparent
-
-    def update_theme(self):
-        """Paint the gadget with current theme."""
-        primary_fg = self.get_color("primary_fg")
-        primary_bg = self.get_color("primary_bg")
-
-        self._pad.canvas["fg_color"] = self._pad.default_fg_color = primary_fg
-        self._pad.canvas["bg_color"] = self._pad.default_bg_color = primary_bg
-        self._highlight_selection()
-
-    def on_add(self):
-        """Bind pad resize to scroll view resize."""
-        super().on_add()
-
-        def resize_pad():
-            height = max(len(self._line_widths), self._scroll_view.port_height)
-            width = max(max(self._line_widths) + 1, self._scroll_view.port_width)
-            self._pad.size = height, width
-            self._highlight_selection()
-
-        resize_pad()
-        self._bind_uid = self._scroll_view.bind("size", resize_pad)
-
-    def on_remove(self):
-        """Unbind pad resize from scroll view resize."""
-        self._scroll_view.unbind(self._bind_uid)
-        super().on_remove()
-
-    def on_focus(self):
-        """Show cursor on focus."""
-        self._cursor.is_enabled = True
-
-    def on_blur(self):
-        """Hide cursor on blur."""
-        self._cursor.is_enabled = False
-
-    def _move_undo_buffer_to_stack(self, buffer_type=None):
-        self._undo_buffer_type = buffer_type
-        if self._undo_buffer:
-            self._undo_stack.append(self._undo_buffer)
-            self._undo_buffer = []
-            self._redo_stack.clear()
-
-    def undo(self):
-        """Undo previous edit."""
-        self._move_undo_buffer_to_stack()
-        if self._undo_stack:
-            redo = []
-            for func, args, selection_start, selection_end, cursor in reversed(
-                self._undo_stack.pop()
-            ):
-                redo.append(func(*args))
-                self._selection_start = selection_start
-                self._selection_end = selection_end
-                self.cursor = cursor
-            self._redo_stack.append(redo)
-
-    def redo(self):
-        """Redo previous undo."""
-        if self._redo_stack and not self._undo_buffer:
-            undo = []
-            for func, args, selection_start, selection_end, cursor in reversed(
-                self._redo_stack.pop()
-            ):
-                undo.append(func(*args))
-                self._selection_start = selection_start
-                self._selection_end = selection_end
-                self.cursor = cursor
-            self._undo_stack.append(undo)
-
     @property
     def text(self) -> str:
         """The text pad's text."""
@@ -344,13 +336,11 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     @text.setter
     def text(self, text: str):
-        self.unselect()
-        self._del_text((0, 0), self.end_text_point)
-        self._add_text((0, 0), text)
-        self._redo_stack.clear()
+        self._selection = None
+        self.replace_text((0, 0), self.end_of_content, text)
         self._undo_stack.clear()
-        self._undo_buffer.clear()
-        self.cursor = self.end_text_point
+        self._redo_stack.clear()
+        self.cursor = self.end_of_content
 
     @property
     def cursor(self) -> Point:
@@ -362,83 +352,40 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         """After setting cursor position, move pad so that cursor is visible."""
         self._cursor.pos = cursor
         self._scroll_view.scroll_to_rect(cursor)
-        if self.is_selecting:
-            self._selection_end = self.cursor
+        if self._selection is not None:
+            self._selection.end = self.cursor
         self._highlight_selection()
 
-    def _highlight_selection(self):
-        self._selection_start = cast(Pointlike, self._selection_start)
-        self._selection_end = cast(Pointlike, self._selection_end)
-
-        fg = self._pad.canvas["fg_color"]
-        bg = self._pad.canvas["bg_color"]
-        fg[:] = self._pad.default_fg_color
-        bg[:] = self._pad.default_bg_color
-
-        if self._selection_start != self._selection_end:
-            if self._selection_start > self._selection_end:
-                sy, sx = self._selection_end
-                ey, ex = self._selection_start
-            else:
-                sy, sx = self._selection_start
-                ey, ex = self._selection_end
-
-            highlight_fg = self.get_color("text_pad_selection_highlight_fg")
-            highlight_bg = self.get_color("text_pad_selection_highlight_bg")
-            ll = self._line_widths
-            if sy == ey:
-                fg[sy, sx:ex] = highlight_fg
-                bg[sy, sx:ex] = highlight_bg
-            else:
-                fg[sy, sx : ll[sy]] = highlight_fg
-                bg[sy, sx : ll[sy]] = highlight_bg
-                fg[ey, :ex] = highlight_fg
-                bg[ey, :ex] = highlight_bg
-                for i in range(sy + 1, ey):
-                    fg[i, : ll[i]] = highlight_fg
-                    bg[i, : ll[i]] = highlight_bg
-        else:  # If no selection or selection is empty, add line highlight.
-            fg[self.cursor.y, :] = self.get_color("text_pad_line_highlight_fg")
-            bg[self.cursor.y, :] = self.get_color("text_pad_line_highlight_bg")
-
     @property
-    def is_selecting(self) -> bool:
-        """Whether there is a selection."""
-        return self._selection_start is not None and self._selection_end is not None
-
-    @property
-    def has_nonempty_selection(self) -> bool:
-        """Whether selection is non-empty."""
-        return self.is_selecting and self._selection_start != self._selection_end
-
-    @property
-    def end_text_point(self) -> Point:
+    def end_of_content(self) -> Point:
         """Point after last character in text."""
         ll = self._line_widths
         return Point(len(ll) - 1, ll[-1])
 
     @property
     def page_lines(self) -> int:
-        """Number of rows a page-up or -down moves."""
+        """Number of rows a page-up or page-down moves."""
         return self._scroll_view.port_height
 
-    def select(self):
-        """Start a new selection at cursor if none."""
-        if not self.is_selecting:
-            self._selection_start = self._selection_end = self.cursor
+    def replace_text(self, start: Pointlike, end: Pointlike, content: str) -> None:
+        """
+        Replace text from ``start`` to ``end`` with ``content``.
 
-    def unselect(self):
-        """Unselect current selection."""
-        self._selection_start = self._selection_end = None
+        Parameters
+        ----------
+        start : Pointlike
+            The start of text to replace.
+        end : Pointlike
+            The end of text to replace.
+        content : str
+            The replacement text.
+        """
+        prev_selection = self._selection
+        prev_cursor = self.cursor
 
-    def delete_selection(self):
-        """Delete current selection."""
-        if self.has_nonempty_selection:
-            self._selection_start = cast(Pointlike, self._selection_start)
-            self._selection_end = cast(Pointlike, self._selection_end)
-            return self._del_text(self._selection_start, self._selection_end)
+        self._selection = None
+        self._prev_x = None
 
-    def _del_text(self, start: Pointlike, end: Pointlike):
         ll = self._line_widths
         pad = self._pad
 
@@ -456,22 +403,16 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             ex = ll[ey]
 
         if sy == ey:
-            contents = canvas_as_text(pad.canvas[sy, sx:ex])
+            text = canvas_as_text(pad.canvas[sy, sx:ex])
         else:
             lines = [canvas_as_text(pad.canvas[sy, sx : ll[sy]])]
-            if ey - sy > 1:
-                lines.append(canvas_as_text(pad.canvas[sy + 1 : ey], ll[sy + 1 : ey]))
-            lines.append(canvas_as_text(pad.canvas[ey, : ll[ey]]))
-            contents = "\n".join(lines)
-
-        selection_start = self._selection_start
-        selection_end = self._selection_end
-        cursor = self.cursor
+            for y in range(sy + 1, ey):
+                lines.append(canvas_as_text(pad.canvas[y, : ll[y]]))
+            lines.append(canvas_as_text(pad.canvas[ey, :ex]))
+            text = "\n".join(lines)
 
         len_end = ll[ey] - ex
         len_start = ll[sy] = sx + len_end
-        if len_start + 1 > pad.width:
-            pad.width = len_start + 1
 
         pad.canvas[sy, sx:len_start] = pad.canvas[ey, ex : ex + len_end]
         pad.canvas[sy, len_start:] = pad.default_cell
@@ -485,41 +426,28 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         width = max(max(ll) + 1, self._scroll_view.port_width)
         pad.size = height, width
 
-        self.unselect()
-        self._last_x = None
-        self.cursor = start
-        return self._add_text, [start, contents], selection_start, selection_end, cursor
+        line_remaining = pad.canvas[sy, sx : ll[sy]].copy()
 
-    def _add_text(self, pos: Pointlike, text: str):
-        y, x = pos
-        pad = self._pad
-        ll = self._line_widths
-        line_remaining = pad.canvas[y, x : ll[y]].copy()
-
-        selection_start = self._selection_start
-        selection_end = self._selection_end
-        cursor = self.cursor
-
-        lines = text.split("\n")  # DO NOT USE `splitlines`.
+        lines = content.split("\n")  # DO NOT USE `splitlines`.
         if len(lines) == 1:
             line = lines[0]
-            width_line = wcswidth(line)
+            line_width = wcswidth(line)
 
-            ll[y] += width_line
-            if ll[y] >= pad.width:
-                pad.width = ll[y] + 1
+            ll[sy] += line_width
+            if ll[sy] >= pad.width:
+                pad.width = ll[sy] + 1
 
-            pad.add_str(line, pos=(y, x))
-            pad.canvas[y, x + width_line : ll[y]] = line_remaining
-            self.cursor = y, x + width_line
+            pad.add_str(line, pos=(sy, sx))
+            pad.canvas[sy, sx + line_width : ll[sy]] = line_remaining
+            self.cursor = sy, sx + line_width
         else:
             first, *lines, last = lines
             newlines = len(lines) + 1
             width_last = wcswidth(last)
-            last_y = y + newlines
+            last_y = sy + newlines
 
-            ll[y] = x + wcswidth(first)
-            for i, line in enumerate(lines, start=y + 1):
+            ll[sy] = sx + wcswidth(first)
+            for i, line in enumerate(lines, start=sy + 1):
                 ll.insert(i, wcswidth(line))
             ll.insert(last_y, width_last + wcswidth(canvas_as_text(line_remaining)))
 
@@ -527,30 +455,78 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             width = max(max(ll) + 1, self._scroll_view.port_width)
             pad.size = height, width
 
-            pad.canvas[y + newlines + 1 :] = pad.canvas[y + 1 : -newlines]
-            pad.canvas[y, ll[y] :] = pad.default_cell
+            pad.canvas[sy + newlines + 1 :] = pad.canvas[sy + 1 : -newlines]
+            pad.canvas[sy, ll[sy] :] = pad.default_cell
 
-            pad.add_str(first, pos=(y, x))
-            for i, line in enumerate(lines, start=y + 1):
+            pad.add_str(first, pos=(sy, sx))
+            for i, line in enumerate(lines, start=sy + 1):
                 pad.add_str(line.ljust(pad.width), pos=(i, 0))
 
             pad.add_str(last, pos=(last_y, 0))
             pad.canvas[last_y, width_last : ll[last_y]] = line_remaining
             pad.canvas[last_y, ll[last_y] :] = pad.default_cell
-
             self.cursor = last_y, width_last
 
-        return (
-            self._del_text,
-            [cursor, self.cursor],
-            selection_start,
-            selection_end,
-            cursor,
+        inverse_edit = _TextEdit(
+            prev_cursor, prev_selection, Point(sy, sx), self.cursor, text
         )
+        if not (self._undo_stack and self._undo_stack[-1].join(inverse_edit)):
+            self._undo_stack.append(inverse_edit)
+
+    def undo(self):
+        """Undo previous edit."""
+        if self._undo_stack:
+            last_edit = self._undo_stack.pop()
+            self._undo_stack, self._redo_stack = self._redo_stack, self._undo_stack
+            self.replace_text(last_edit.start, last_edit.end, last_edit.text)
+            self._undo_stack, self._redo_stack = self._redo_stack, self._undo_stack
+            self._selection = last_edit.selection
+            self.cursor = last_edit.cursor
+
+    def redo(self):
+        """Redo previous undo."""
+        if self._redo_stack:
+            prev_edit = self._redo_stack.pop()
+            self.replace_text(prev_edit.start, prev_edit.end, prev_edit.text)
+            self._selection = prev_edit.selection
+            self.cursor = prev_edit.cursor
+
+    def _highlight_selection(self):
+        fg = self._pad.canvas["fg_color"]
+        bg = self._pad.canvas["bg_color"]
+        fg[:] = self._pad.default_fg_color
+        bg[:] = self._pad.default_bg_color
+
+        if self._selection is not None and self._selection.start != self._selection.end:
+            start, end = self._selection.start, self._selection.end
+            if start > end:
+                sy, sx = end
+                ey, ex = start
+            else:
+                sy, sx = start
+                ey, ex = end
+
+            highlight_fg = self.get_color("text_pad_selection_highlight_fg")
+            highlight_bg = self.get_color("text_pad_selection_highlight_bg")
+            ll = self._line_widths
+            if sy == ey:
+                fg[sy, sx:ex] = highlight_fg
+                bg[sy, sx:ex] = highlight_bg
+            else:
+                fg[sy, sx : ll[sy]] = highlight_fg
+                bg[sy, sx : ll[sy]] = highlight_bg
+                fg[ey, :ex] = highlight_fg
+                bg[ey, :ex] = highlight_bg
+                for i in range(sy + 1, ey):
+                    fg[i, : ll[i]] = highlight_fg
+                    bg[i, : ll[i]] = highlight_bg
+        else:  # Add line highlight.
+            fg[self.cursor.y, :] = self.get_color("text_pad_line_highlight_fg")
+            bg[self.cursor.y, :] = self.get_color("text_pad_line_highlight_bg")
 
     def move_cursor_left(self, n: int = 1):
         """Move cursor left `n` characters."""
-        self._last_x = None
+        self._prev_x = None
         y, x = self._cursor.pos
 
         while n > 0:
@@ -572,7 +548,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def move_cursor_right(self, n: int = 1):
         """Move cursor right `n` characters."""
-        self._last_x = None
+        self._prev_x = None
         y, x = self._cursor.pos
 
         while n > 0:
@@ -584,7 +560,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
                 x += wcswidth(egcs[:n])
                 break
 
-            if y == self.end_text_point.y:
+            if y == self.end_of_content.y:
                 x = self._line_widths[y]
                 break
 
@@ -607,12 +583,12 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         """Move cursor up `n` rows."""
         y, x = self._cursor.pos
 
-        if self._last_x is None or y == x == 0:
-            self._last_x = x
+        if self._prev_x is None or y == x == 0:
+            self._prev_x = x
 
         if y > 0:
             y = max(0, y - n)
-            x = self._fix_x(y, min(self._last_x, self._line_widths[y]))
+            x = self._fix_x(y, min(self._prev_x, self._line_widths[y]))
         else:
             x = 0
 
@@ -621,14 +597,14 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     def move_cursor_down(self, n: int = 1):
         """Move cursor down `n` rows."""
         y, x = self._cursor.pos
-        ey, ex = self.end_text_point
+        ey, ex = self.end_of_content
 
-        if self._last_x is None or y == ey and x == ex:
-            self._last_x = x
+        if self._prev_x is None or y == ey and x == ex:
+            self._prev_x = x
 
         if y < ey:
             y = min(ey, y + n)
-            x = self._fix_x(y, min(self._last_x, self._line_widths[y]))
+            x = self._fix_x(y, min(self._prev_x, self._line_widths[y]))
         else:
             x = ex
 
@@ -636,9 +612,9 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def move_word_left(self):
         """Move cursor a word left."""
-        self._last_x = None
+        self._prev_x = None
         last_x = self.cursor.x
-        first_char_found = False
+        first_char_found = char_is_word_char = False
         while True:
             self.move_cursor_left()
             if self.cursor.x == last_x:
@@ -651,18 +627,17 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
                 if not current_char.isspace():
                     first_char_found = True
                     char_is_word_char = is_word_char(current_char)
-            elif (
-                current_char.isspace()
-                or char_is_word_char != is_word_char(current_char)  # type: ignore
+            elif current_char.isspace() or char_is_word_char != is_word_char(
+                current_char
             ):
                 self.move_cursor_right()
                 break
 
     def move_word_right(self):
         """Move cursor a word right."""
-        self._last_x = None
+        self._prev_x = None
         last_x = self.cursor.x
-        first_char_found = False
+        first_char_found = char_is_word_char = False
         while True:
             self.move_cursor_right()
             if self.cursor.x == last_x:
@@ -675,99 +650,82 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
                 if not current_char.isspace():
                     first_char_found = True
                     char_is_word_char = is_word_char(current_char)
-            elif (
-                current_char.isspace()
-                or char_is_word_char != is_word_char(current_char)  # type: ignore
+            elif current_char.isspace() or char_is_word_char != is_word_char(
+                current_char
             ):
                 break
 
     def _enter(self):
-        self._move_undo_buffer_to_stack()
-        undos = []
-        if undo := self.delete_selection():
-            undos.append(undo)
-        undos.append(self._add_text(self.cursor, "\n"))
-        self._undo_stack.append(undos)
+        if self._selection is None:
+            start = end = self.cursor
+        else:
+            start, end = self._selection.start, self._selection.end
+        self.replace_text(start, end, "\n")
         self._redo_stack.clear()
 
     def _tab(self):
-        self._move_undo_buffer_to_stack()
-        undos = []
-        if undo := self.delete_selection():
-            undos.append(undo)
-        undos.append(self._add_text(self.cursor, "    "))
-        self._undo_stack.append(undos)
+        if self._selection is None:
+            start = end = self.cursor
+        else:
+            start, end = self._selection.start, self._selection.end
+        self.replace_text(start, end, "    ")
         self._redo_stack.clear()
 
     def _backspace(self):
-        if self.has_nonempty_selection:
-            self._move_undo_buffer_to_stack("del")
-            self._undo_buffer.append(self.delete_selection())
-        else:
-            if self._undo_buffer_type != "del":
-                self._move_undo_buffer_to_stack("del")
-
+        if self._selection is None:
             end = self.cursor
             self.move_cursor_left()
             start = self.cursor
             self.cursor = end
-            if start != end:
-                self._undo_buffer.append(self._del_text(start, end))
+            if start == end:
+                return
+        else:
+            start, end = self._selection.start, self._selection.end
+        self.replace_text(start, end, "")
 
     def _delete(self):
-        if self.has_nonempty_selection:
-            self._move_undo_buffer_to_stack("del")
-            self._undo_buffer.append(self.delete_selection())
-        else:
-            if self._undo_buffer_type != "del":
-                self._move_undo_buffer_to_stack("del")
-
+        if self._selection is None:
             start = self.cursor
             self.move_cursor_right()
             end = self.cursor
             self.cursor = start
-            if start != end:
-                self._undo_buffer.append(self._del_text(start, end))
+            if start == end:
+                return
+        else:
+            start, end = self._selection.start, self._selection.end
+        self.replace_text(start, end, "")
 
     def _left(self):
-        if self.has_nonempty_selection:
-            self._selection_start = cast(Pointlike, self._selection_start)
-            self._selection_end = cast(Pointlike, self._selection_end)
-            select_start = min(self._selection_start, self._selection_end)
-            self.unselect()
-            self.cursor = select_start
-        else:
-            self.unselect()
+        if self._selection is None:
             self.move_cursor_left()
+        else:
+            select_start = min(self._selection.start, self._selection.end)
+            self._selection = None
+            self.cursor = select_start
 
     def _right(self):
-        if self.has_nonempty_selection:
-            self._selection_start = cast(Pointlike, self._selection_start)
-            self._selection_end = cast(Pointlike, self._selection_end)
-            select_end = max(self._selection_start, self._selection_end)
-            self.unselect()
-            self.cursor = select_end
-        else:
-            self.unselect()
+        if self._selection is None:
             self.move_cursor_right()
+        else:
+            select_end = max(self._selection.start, self._selection.end)
+            self._selection = None
+            self.cursor = select_end
 
     def _ctrl_left(self):
-        self.unselect()
         self.move_word_left()
 
     def _ctrl_right(self):
-        self.unselect()
+        self._selection = None
         self.move_word_right()
 
     def _ctrl_a(self):
         """Select all."""
-        self._selection_start = 0, 0
-        self._selection_end = self.end_text_point
-        self.cursor = self.end_text_point
+        self._selection = _TextSelection(Point(0, 0), self.end_of_content)
+        self.cursor = self.end_of_content
 
     def _ctrl_d(self):
         """Select word."""
-        self.unselect()
+        self._selection = None
         last_x = self.cursor.x
         while True:
             self.move_cursor_left()
@@ -778,7 +736,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
                 break
             last_x = self.cursor.x
 
-        self.select()
+        self._selection = _TextSelection(self.cursor, self.cursor)
         last_x = self.cursor.x
         while True:
             if not is_word_char(egc_chr(self._pad.canvas[self.cursor]["ord"])):
@@ -789,110 +747,110 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             last_x = self.cursor.x
 
     def _up(self):
-        if self.is_selecting:
-            self._selection_start = cast(Pointlike, self._selection_start)
-            self._selection_end = cast(Pointlike, self._selection_end)
-            select_start = min(self._selection_start, self._selection_end)
-            self.unselect()
+        if self._selection is not None:
+            select_start = min(self._selection.start, self._selection.end)
+            self._selection = None
             self.cursor = select_start
         self.move_cursor_up()
 
     def _down(self):
-        if self.is_selecting:
-            self._selection_start = cast(Pointlike, self._selection_start)
-            self._selection_end = cast(Pointlike, self._selection_end)
-            select_end = max(self._selection_start, self._selection_end)
-            self.unselect()
+        if self._selection is not None:
+            select_end = max(self._selection.start, self._selection.end)
+            self._selection = None
             self.cursor = select_end
         self.move_cursor_down()
 
     def _pgup(self):
-        if self.is_selecting:
-            self._selection_start = cast(Pointlike, self._selection_start)
-            self._selection_end = cast(Pointlike, self._selection_end)
-            select_start = min(self._selection_start, self._selection_end)
-            self.unselect()
+        if self._selection is not None:
+            select_start = min(self._selection.start, self._selection.end)
+            self._selection = None
             self.cursor = select_start
         self.move_cursor_up(self.page_lines)
 
     def _pgdn(self):
-        if self.is_selecting:
-            self._selection_start = cast(Pointlike, self._selection_start)
-            self._selection_end = cast(Pointlike, self._selection_end)
-            select_end = max(self._selection_start, self._selection_end)
-            self.unselect()
+        if self._selection is not None:
+            select_end = max(self._selection.start, self._selection.end)
+            self._selection = None
             self.cursor = select_end
         self.move_cursor_down(self.page_lines)
 
     def _home(self):
-        self.unselect()
-        self._last_x = None
+        self._selection = None
+        self._prev_x = None
         self.cursor = self.cursor.y, 0
 
     def _end(self):
-        self.unselect()
-        self._last_x = None
+        self._selection = None
+        self._prev_x = None
         y = self.cursor.y
         self.cursor = y, self._line_widths[y]
 
     def _shift_left(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.move_cursor_left()
 
     def _shift_right(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.move_cursor_right()
 
     def _shift_ctrl_left(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.move_word_left()
 
     def _shift_ctrl_right(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.move_word_right()
 
     def _shift_up(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.move_cursor_up()
 
     def _shift_down(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.move_cursor_down()
 
     def _shift_pgup(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.move_cursor_up(self.page_lines)
 
     def _shift_pgdn(self):
-        self.select()
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
         self.move_cursor_down(self.page_lines)
 
     def _shift_home(self):
-        self.select()
-        self._last_x = None
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
+        self._prev_x = None
         self.cursor = self.cursor.y, 0
 
     def _shift_end(self):
-        self.select()
-        self._last_x = None
+        if self._selection is None:
+            self._selection = _TextSelection(self.cursor, self.cursor)
+        self._prev_x = None
         y = self.cursor.y
         self.cursor = y, self._line_widths[y]
 
     def _escape(self):
-        if self.has_nonempty_selection:
-            self.unselect()
-            self._highlight_selection()
-        else:
-            self.unselect()
+        if self._selection is None:
             self.blur()
+        else:
+            self._selection = None
+            self._highlight_selection()
 
     def _ascii(self, key):
-        if self.has_nonempty_selection:
-            self._move_undo_buffer_to_stack("add")
-            self._undo_buffer.append(self.delete_selection())
-        elif self._undo_buffer_type != "add":
-            self._move_undo_buffer_to_stack("add")
-        self._undo_buffer.append(self._add_text(self.cursor, key))
+        if self._selection is None:
+            start = end = self.cursor
+        else:
+            start, end = self._selection.start, self._selection.end
+        self.replace_text(start, end, key)
 
     __HANDLERS = {
         ("enter", False, False, False): _enter,
@@ -939,7 +897,9 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             and len(key_event.key) == 1
         ):
             self._ascii(key_event.key)
-        elif handler := self.__HANDLERS.get(astuple(key_event)):
+        elif handler := self.__HANDLERS.get(
+            astuple(key_event)
+        ):  # FIXME: Might break if extra args added to key_event
             handler(self)
         else:
             return super().on_key(key_event)
@@ -951,12 +911,12 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         if not self.is_focused:
             return
 
-        self._move_undo_buffer_to_stack()
-        undos = []
-        if undo := self.delete_selection():
-            undos.append(undo)
-        undos.append(self._add_text(self.cursor, paste_event.paste))
-        self._undo_stack.append(undos)
+        if self._selection is None:
+            start = end = self.cursor
+        else:
+            start = self._selection.start
+            end = self._selection.end
+        self.replace_text(start, end, paste_event.paste)
         self._redo_stack.clear()
 
         return True
@@ -972,10 +932,10 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
             x = min(x, self._line_widths[y])
             if not mouse_event.shift:
-                self.unselect()
+                self._selection = None
 
             self.cursor = y, x
-            self.select()  # Need at least an empty selection for `grab_update`.
+            self._selection = _TextSelection(self.cursor, self.cursor)
 
     def grab_update(self, mouse_event: MouseEvent):
         """Update selection on grab update."""
@@ -1004,5 +964,44 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     def ungrab(self, mouse_event):
         """Clear an empty selection on ungrab."""
         super().ungrab(mouse_event)
-        if not self.has_nonempty_selection:
-            self.unselect()
+        self._selection = None
+
+    def on_transparency(self) -> None:
+        """Update gadget after transparency is enabled/disabled."""
+        self._pad.is_transparent = self.is_transparent
+        self._scroll_view.is_transparent = self.is_transparent
+
+    def update_theme(self):
+        """Paint the gadget with current theme."""
+        primary_fg = self.get_color("primary_fg")
+        primary_bg = self.get_color("primary_bg")
+
+        self._pad.canvas["fg_color"] = self._pad.default_fg_color = primary_fg
+        self._pad.canvas["bg_color"] = self._pad.default_bg_color = primary_bg
+        self._highlight_selection()
+
+    def on_add(self):
+        """Bind pad resize to scroll view resize."""
+        super().on_add()
+
+        def resize_pad():
+            height = max(len(self._line_widths), self._scroll_view.port_height)
+            width = max(max(self._line_widths) + 1, self._scroll_view.port_width)
+            self._pad.size = height, width
+            self._highlight_selection()
+
+        resize_pad()
+        self._bind_uid = self._scroll_view.bind("size", resize_pad)
+
+    def on_remove(self):
+        """Unbind pad resize from scroll view resize."""
+        self._scroll_view.unbind(self._bind_uid)
+        super().on_remove()
+
+    def on_focus(self):
+        """Show cursor on focus."""
+        self._cursor.is_enabled = True
+
+    def on_blur(self):
+        """Hide cursor on blur."""
+        self._cursor.is_enabled = False
