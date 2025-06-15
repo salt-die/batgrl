@@ -59,7 +59,7 @@ def skip_builtin_methods(app, what, name, obj, skip, options):
     except AttributeError:
         return "built-in method" in repr(obj) or skip
     else:
-        return True
+        return obj is not str
 
 
 def setup(sphinx):  # noqa: D103
