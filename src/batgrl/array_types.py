@@ -29,7 +29,7 @@ __all__ = [
 
 cell_dtype = dtype(
     [
-        ("ord", "ulong"),
+        ("ord", "uint32"),
         ("style", "u1"),
         ("fg_color", "u1", (3,)),
         ("bg_color", "u1", (3,)),

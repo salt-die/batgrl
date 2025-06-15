@@ -1,4 +1,5 @@
 from libc.math cimport round, pow
+from libc.stdint cimport uint8_t, uint32_t
 from libc.stdlib cimport div_t, free, div, malloc
 from libc.string cimport memset
 
@@ -23,23 +24,21 @@ from .text_tools import EGC_POOL
 
 logger = get_logger(__name__)
 
-ctypedef unsigned char uint8
-ctypedef unsigned long uint32
 ctypedef enum CellKind: GLYPH, SIXEL, MIXED, SEE_THROUGH_SIXEL
 cdef:
     unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
-    uint8 BOLD = 0b000001
-    uint8 ITALIC = 0b000010
-    uint8 UNDERLINE = 0b000100
-    uint8 STRIKETHROUGH = 0b001000
-    uint8 OVERLINE = 0b010000
-    uint8 REVERSE = 0b100000
-    uint32 EGC_BASE = 0x180000
-    uint32 SPACE_ORD = 0x20
-    uint32 BRAILLE_ORD = 0x2800
-    uint32 END_OF_BRAILLE_ORD = 0x28ff
-    uint32 HALF_BLOCK_ORD = 0x2580
-    uint32 END_OF_GEOMETRY_BLOCK_ORD = 0x25a0
+    uint8_t BOLD = 0b000001
+    uint8_t ITALIC = 0b000010
+    uint8_t UNDERLINE = 0b000100
+    uint8_t STRIKETHROUGH = 0b001000
+    uint8_t OVERLINE = 0b010000
+    uint8_t REVERSE = 0b100000
+    uint32_t EGC_BASE = 0x180000
+    uint32_t SPACE_ORD = 0x20
+    uint32_t BRAILLE_ORD = 0x2800
+    uint32_t END_OF_BRAILLE_ORD = 0x28ff
+    uint32_t HALF_BLOCK_ORD = 0x2580
+    uint32_t END_OF_GEOMETRY_BLOCK_ORD = 0x25a0
 
 
 cdef struct RegionIterator:
@@ -95,17 +94,17 @@ cdef void next_(RegionIterator *it):
     it.done = 1
 
 
-cdef inline bint rgb_eq(uint8 *a, uint8 *b):
+cdef inline bint rgb_eq(uint8_t *a, uint8_t *b):
     return (a[0] == b[0]) & (a[1] == b[1]) & (a[2] == b[2])
 
 
-cdef inline bint rgba_eq(uint8 *a, uint8 *b):
+cdef inline bint rgba_eq(uint8_t *a, uint8_t *b):
     return (a[0] == b[0]) & (a[1] == b[1]) & (a[2] == b[2]) & (a[3] == b[3])
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef inline bint rgba2d_eq(uint8[:, :, ::1] a, uint8[:, :, ::1] b):
+cdef inline bint rgba2d_eq(uint8_t[:, :, ::1] a, uint8_t[:, :, ::1] b):
     cdef size_t h = a.shape[0], w = a.shape[1], y, x
     for y in range(h):
         for x in range(w):
@@ -124,7 +123,7 @@ cdef inline bint cell_eq(Cell *a, Cell *b):
 
 
 cdef inline bint see_through_cell_eq(
-    Cell *a, Cell *b, uint8[:, :, ::1] g, uint8[:, :, ::1] pg
+    Cell *a, Cell *b, uint8_t[:, :, ::1] g, uint8_t[:, :, ::1] pg
 ):
     return (
         a.ord == b.ord
@@ -136,25 +135,27 @@ cdef inline bint see_through_cell_eq(
     )
 
 
-cdef inline size_t graphics_cell_height(Cell[:, ::1] cells, uint8[:, :, ::1] graphics):
+cdef inline size_t graphics_cell_height(
+    Cell[:, ::1] cells, uint8_t[:, :, ::1] graphics
+):
     return graphics.shape[0] // cells.shape[0]
 
 
-cdef inline size_t graphics_cell_width(Cell[:, ::1] cells, uint8[:, :, ::1] graphics):
+cdef inline size_t graphics_cell_width(Cell[:, ::1] cells, uint8_t[:, :, ::1] graphics):
     return graphics.shape[1] // cells.shape[1]
 
 
-cdef inline void composite(uint8 *dst, uint8 *src, double alpha):
+cdef inline void composite(uint8_t *dst, uint8_t *src, double alpha):
     cdef double b = <double>dst[0]
-    dst[0] = <uint8>((<double>src[0] - b) * alpha + b)
+    dst[0] = <uint8_t>((<double>src[0] - b) * alpha + b)
     b = <double>dst[1]
-    dst[1] = <uint8>((<double>src[1] - b) * alpha + b)
+    dst[1] = <uint8_t>((<double>src[1] - b) * alpha + b)
     b = <double>dst[2]
-    dst[2] = <uint8>((<double>src[2] - b) * alpha + b)
+    dst[2] = <uint8_t>((<double>src[2] - b) * alpha + b)
 
 
 cdef inline bint composite_sixels_on_cell(
-    uint8 *bg, uint8 *graphics, uint8 *rgba, double alpha
+    uint8_t *bg, uint8_t *graphics, uint8_t *rgba, double alpha
 ):
     if rgba[3]:
         graphics[0] = bg[0]
@@ -168,12 +169,12 @@ cdef inline bint composite_sixels_on_cell(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef inline double average_graphics(uint8 *bg, uint8 [:, :, ::1] graphics):
+cdef inline double average_graphics(uint8_t *bg, uint8_t [:, :, ::1] graphics):
     cdef:
         size_t h = graphics.shape[0]
         size_t w = graphics.shape[1]
         size_t y, x
-        uint32 r = 0, g = 0, b = 0, n = 0
+        uint32_t r = 0, g = 0, b = 0, n = 0
 
     for y in range(h):
         for x in range(w):
@@ -184,25 +185,25 @@ cdef inline double average_graphics(uint8 *bg, uint8 [:, :, ::1] graphics):
                 b += graphics[y, x, 2]
     if not n:
         return 0
-    bg[0] = <uint8>(r // n)
-    bg[1] = <uint8>(g // n)
-    bg[2] = <uint8>(b // n)
+    bg[0] = <uint8_t>(r // n)
+    bg[1] = <uint8_t>(g // n)
+    bg[2] = <uint8_t>(b // n)
     return <double>n / <double>(h * w)
 
 
-cdef inline void lerp_rgb(uint8 *src, uint8 *dst, double p):
+cdef inline void lerp_rgb(uint8_t *src, uint8_t *dst, double p):
     cdef double negp = 1 - p
-    dst[0] = <uint8>(<double>src[0] * p + <double>dst[0] * negp)
-    dst[1] = <uint8>(<double>src[1] * p + <double>dst[1] * negp)
-    dst[2] = <uint8>(<double>src[2] * p + <double>dst[2] * negp)
+    dst[0] = <uint8_t>(<double>src[0] * p + <double>dst[0] * negp)
+    dst[1] = <uint8_t>(<double>src[1] * p + <double>dst[1] * negp)
+    dst[2] = <uint8_t>(<double>src[2] * p + <double>dst[2] * negp)
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef inline double average_quant(
-    uint8 *fg,
+    uint8_t *fg,
     bint *pixels,
-    uint8[:, :, ::1] texture,
+    uint8_t[:, :, ::1] texture,
     size_t y,
     size_t x,
     size_t h,
@@ -233,21 +234,21 @@ cdef inline double average_quant(
         quant_fg[0] /= nfg
         quant_fg[1] /= nfg
         quant_fg[2] /= nfg
-        fg[0] = <uint8>quant_fg[0]
-        fg[1] = <uint8>quant_fg[1]
-        fg[2] = <uint8>quant_fg[2]
+        fg[0] = <uint8_t>quant_fg[0]
+        fg[1] = <uint8_t>quant_fg[1]
+        fg[2] = <uint8_t>quant_fg[2]
         return average_alpha / nfg
     return average_alpha
 
 
-cdef inline uint8 _100_to_uint8(uint8 c):
-    return <uint8>(<double>c / 100.0 * 255.0)
+cdef inline uint8_t _100_to_uint8_t(uint8_t c):
+    return <uint8_t>(<double>c / 100.0 * 255.0)
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef void opaque_pane_render(
-    Cell[:, ::1] cells, uint8 *bg_color, CRegion *cregion
+    Cell[:, ::1] cells, uint8_t *bg_color, CRegion *cregion
 ):
     cdef:
         RegionIterator it
@@ -268,9 +269,9 @@ cdef void opaque_pane_render(
 @cython.wraparound(False)
 cdef void trans_pane_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
-    uint8 *bg_color,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
+    uint8_t *bg_color,
     double alpha,
     CRegion *cregion,
 ):
@@ -304,8 +305,8 @@ cdef void trans_pane_render(
 @cython.wraparound(False)
 cpdef void pane_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     bint is_transparent,
     Region region,
     tuple[int, int, int] bg_color,
@@ -313,7 +314,7 @@ cpdef void pane_render(
 ):
     cdef:
         CRegion *cregion = &region.cregion
-        uint8[3] bg
+        uint8_t[3] bg
 
     bg[0] = bg_color[0]
     bg[1] = bg_color[1]
@@ -346,8 +347,8 @@ cdef void opaque_text_render(
 @cython.wraparound(False)
 cdef void trans_text_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
     Cell[:, ::1] self_canvas,
@@ -359,7 +360,7 @@ cdef void trans_text_render(
         size_t h = graphics_cell_height(cells, graphics)
         size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox, gy, gx
-        uint8[3] rgb
+        uint8_t[3] rgb
         double p
         Cell *dst
         Cell *src
@@ -404,8 +405,8 @@ cdef void trans_text_render(
 @cython.wraparound(False)
 cpdef void text_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     tuple[int, int] abs_pos,
     bint is_transparent,
     Cell[:, ::1] self_canvas,
@@ -430,13 +431,13 @@ cdef void opaque_full_graphics_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    uint8_t[:, :, ::1] self_texture,
     CRegion *cregion,
 ):
     cdef:
         RegionIterator it
         Cell *cell
-        uint8 *bg_color
+        uint8_t *bg_color
 
     init_iter(&it, cregion)
     while not it.done:
@@ -454,11 +455,11 @@ cdef void opaque_full_graphics_render(
 @cython.wraparound(False)
 cdef void trans_full_graphics_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    uint8_t[:, :, ::1] self_texture,
     double alpha,
     CRegion *cregion,
 ):
@@ -471,7 +472,7 @@ cdef void trans_full_graphics_render(
         size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox, gy, gx
         Cell *dst
-        uint8 *bg_color
+        uint8_t *bg_color
         double a
 
     init_iter(&it, cregion)
@@ -498,7 +499,7 @@ cdef void opaque_half_graphics_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    uint8_t[:, :, ::1] self_texture,
     CRegion *cregion,
 ):
     cdef:
@@ -526,11 +527,11 @@ cdef void opaque_half_graphics_render(
 @cython.wraparound(False)
 cdef void trans_half_graphics_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    uint8_t[:, :, ::1] self_texture,
     double alpha,
     CRegion *cregion,
 ):
@@ -545,8 +546,8 @@ cdef void trans_half_graphics_render(
         size_t oy, ox, gy, gx
         Cell *dst
         double a_top, a_bot
-        uint8 *rgba_top
-        uint8 *rgba_bot
+        uint8_t *rgba_top
+        uint8_t *rgba_bot
 
     init_iter(&it, cregion)
     while not it.done:
@@ -609,11 +610,11 @@ cdef void trans_half_graphics_render(
 @cython.wraparound(False)
 cdef void opaque_sixel_graphics_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    uint8_t[:, :, ::1] self_texture,
     CRegion *cregion,
 ):
     cdef:
@@ -644,7 +645,7 @@ cdef void opaque_sixel_graphics_render(
 DEF VARIANCE_THRESHOLD = 100
 
 cdef bint is_low_variance_region(
-    uint8[:, :, ::1] texture, int src_y, int src_x, size_t h, size_t w, uint8 *rgba
+    uint8_t[:, :, ::1] texture, int src_y, int src_x, size_t h, size_t w, uint8_t *rgba
 ):
     cdef:
         double[4] mean_rgba, variance
@@ -665,10 +666,10 @@ cdef bint is_low_variance_region(
     mean_rgba[1] /= area
     mean_rgba[2] /= area
     mean_rgba[3] /= area
-    rgba[0] = <uint8>mean_rgba[0]
-    rgba[1] = <uint8>mean_rgba[1]
-    rgba[2] = <uint8>mean_rgba[2]
-    rgba[3] = <uint8>mean_rgba[3]
+    rgba[0] = <uint8_t>mean_rgba[0]
+    rgba[1] = <uint8_t>mean_rgba[1]
+    rgba[2] = <uint8_t>mean_rgba[2]
+    rgba[3] = <uint8_t>mean_rgba[3]
 
     for y in range(src_y, src_y + h):
         for x in range(src_x, src_x + w):
@@ -691,12 +692,12 @@ cdef bint is_low_variance_region(
 
 
 cdef:
-    uint32[60] SEXTANT_REGIONS = [
+    uint32_t[60] SEXTANT_REGIONS = [
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23,
         24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 43, 44,
         45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62,
     ]
-    uint32[230] OCTANT_REGIONS = [
+    uint32_t[230] OCTANT_REGIONS = [
         4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28,
         29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 41, 42, 43, 44, 45, 46, 47, 48, 49,
         50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 65, 66, 67, 68, 69, 70, 71,
@@ -712,13 +713,13 @@ cdef:
         230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 241, 242, 243, 244, 246, 247,
         248, 249, 251, 253, 254,
     ]
-    uint32[8] SPECIAL_BLOCK_CHARS = [
+    uint32_t[8] SPECIAL_BLOCK_CHARS = [
         0x1cea0, 0x1cea3, 0x1cea8, 0x1ceab, 0x1fb82, 0x1fb85, 0x1fbe6, 0x1fbe7
     ]
-    uint32[8] SPECIAL_REGIONS = [128, 64, 1, 2, 3, 63, 20, 40]
+    uint32_t[8] SPECIAL_REGIONS = [128, 64, 1, 2, 3, 63, 20, 40]
 
 
-cdef bint is_block_char(uint32 ord_):
+cdef bint is_block_char(uint32_t ord_):
     if (
         ord_ == SPACE_ORD
         or HALF_BLOCK_ORD <= ord_ < END_OF_GEOMETRY_BLOCK_ORD  # geometric block
@@ -735,137 +736,153 @@ cdef bint is_block_char(uint32 ord_):
     return 0
 
 
-ctypedef bint (*where_glyph)(double v, double u, uint32 region, uint8 block_height)
+ctypedef bint (*where_glyph)(double v, double u, uint32_t region, uint8_t block_height)
 
 cdef struct where_fg_result:
     where_glyph where_fg
-    uint32 region
-    uint8 block_height
+    uint32_t region
+    uint8_t block_height
 
 
 # The following functions are used to composite block glyphs onto sixel textures.
 # Where they return 0, the background color is used to composite, else the foreground
 # color.
-cdef bint default_glyph(double v, double u, uint32 region, uint8 block_height):
+cdef bint default_glyph(double v, double u, uint32_t region, uint8_t block_height):
     return 0
 
-cdef bint upper_half(double v, double u, uint32 region, uint8 block_height):
+cdef bint upper_half(double v, double u, uint32_t region, uint8_t block_height):
     return v < .5
 
-cdef bint lower_one_eighth(double v, double u, uint32 region, uint8 block_height):
+cdef bint lower_one_eighth(double v, double u, uint32_t region, uint8_t block_height):
     return v >= .875
 
-cdef bint lower_one_quarter(double v, double u, uint32 region, uint8 block_height):
+cdef bint lower_one_quarter(double v, double u, uint32_t region, uint8_t block_height):
     return v >= .75
 
-cdef bint lower_three_eighths(double v, double u, uint32 region, uint8 block_height):
+cdef bint lower_three_eighths(
+    double v, double u, uint32_t region, uint8_t block_height
+):
     return v >= .625
 
-cdef bint lower_half(double v, double u, uint32 region, uint8 block_height):
+cdef bint lower_half(double v, double u, uint32_t region, uint8_t block_height):
     return v >= .5
 
-cdef bint lower_five_eighths(double v, double u, uint32 region, uint8 block_height):
+cdef bint lower_five_eighths(double v, double u, uint32_t region, uint8_t block_height):
     return v >= .375
 
-cdef bint lower_three_quarters(double v, double u, uint32 region, uint8 block_height):
+cdef bint lower_three_quarters(
+    double v, double u, uint32_t region, uint8_t block_height
+):
     return v >= .25
 
-cdef bint lower_seven_eighths(double v, double u, uint32 region, uint8 block_height):
+cdef bint lower_seven_eighths(
+    double v, double u, uint32_t region, uint8_t block_height
+):
     return v >= .125
 
-cdef bint full(double v, double u, uint32 region, uint8 block_height):
+cdef bint full(double v, double u, uint32_t region, uint8_t block_height):
     return 1
 
-cdef bint left_seven_eigths(double v, double u, uint32 region, uint8 block_height):
+cdef bint left_seven_eigths(double v, double u, uint32_t region, uint8_t block_height):
     return u < .875
 
-cdef bint left_three_quarters(double v, double u, uint32 region, uint8 block_height):
+cdef bint left_three_quarters(
+    double v, double u, uint32_t region, uint8_t block_height
+):
     return u < .75
 
-cdef bint left_five_eights(double v, double u, uint32 region, uint8 block_height):
+cdef bint left_five_eights(double v, double u, uint32_t region, uint8_t block_height):
     return u < .625
 
-cdef bint left_half(double v, double u, uint32 region, uint8 block_height):
+cdef bint left_half(double v, double u, uint32_t region, uint8_t block_height):
     return u < .5
 
-cdef bint left_three_eighths(double v, double u, uint32 region, uint8 block_height):
+cdef bint left_three_eighths(double v, double u, uint32_t region, uint8_t block_height):
     return u < .375
 
-cdef bint left_one_quarter(double v, double u, uint32 region, uint8 block_height):
+cdef bint left_one_quarter(double v, double u, uint32_t region, uint8_t block_height):
     return u < .25
 
-cdef bint left_one_eighth(double v, double u, uint32 region, uint8 block_height):
+cdef bint left_one_eighth(double v, double u, uint32_t region, uint8_t block_height):
     return u < .125
 
-cdef bint right_half(double v, double u, uint32 region, uint8 block_height):
+cdef bint right_half(double v, double u, uint32_t region, uint8_t block_height):
     return u >= .5
 
-cdef bint light_shade(double v, double u, uint32 region, uint8 block_height):
+cdef bint light_shade(double v, double u, uint32_t region, uint8_t block_height):
     cdef int y = <int>(20.0 * v)
     cdef int x = <int>(10.0 * u)
     if y % 2 == 0:
         return x % 4 == 0
     return x % 4 == 2
 
-cdef bint medium_shade(double v, double u, uint32 region, uint8 block_height):
+cdef bint medium_shade(double v, double u, uint32_t region, uint8_t block_height):
     cdef int y = <int>(20.0 * v)
     cdef int x = <int>(10.0 * u)
     if y % 2 == 0:
         return x % 2 == 0
     return x % 2 == 1
 
-cdef bint dark_shade(double v, double u, uint32 region, uint8 block_height):
+cdef bint dark_shade(double v, double u, uint32_t region, uint8_t block_height):
     cdef int y = <int>(20.0 * v)
     cdef int x = <int>(10.0 * u)
     if y % 2 == 0:
         return x % 4 != 0
     return x % 4 != 2
 
-cdef bint upper_one_eighth(double v, double u, uint32 region, uint8 block_height):
+cdef bint upper_one_eighth(double v, double u, uint32_t region, uint8_t block_height):
     return v < .125
 
-cdef bint right_one_eighth(double v, double u, uint32 region, uint8 block_height):
+cdef bint right_one_eighth(double v, double u, uint32_t region, uint8_t block_height):
     return u >= .875
 
-cdef bint quadrant_lower_left(double v, double u, uint32 region, uint8 block_height):
+cdef bint quadrant_lower_left(
+    double v, double u, uint32_t region, uint8_t block_height
+):
     return v >= .5 and u < .5
 
-cdef bint quadrant_lower_right(double v, double u, uint32 region, uint8 block_height):
+cdef bint quadrant_lower_right(
+    double v, double u, uint32_t region, uint8_t block_height
+):
     return v >= .5 and u >= .5
 
-cdef bint quadrant_upper_left(double v, double u, uint32 region, uint8 block_height):
+cdef bint quadrant_upper_left(
+    double v, double u, uint32_t region, uint8_t block_height
+):
     return v < .5 and u < .5
 
 cdef bint quadrant_upper_left_and_lower_left_and_lower_right(
-    double v, double u, uint32 region, uint8 block_height
+    double v, double u, uint32_t region, uint8_t block_height
 ):
     return v >= .5 or u < .5
 
 cdef bint quadrant_upper_left_and_lower_right(
-    double v, double u, uint32 region, uint8 block_height
+    double v, double u, uint32_t region, uint8_t block_height
 ):
     return v < .5 and u < .5 or v >= .5 and u >= .5
 
 cdef bint quadrant_upper_left_and_upper_right_and_lower_left(
-    double v, double u, uint32 region, uint8 block_height
+    double v, double u, uint32_t region, uint8_t block_height
 ):
     return v < .5 or u < .5
 
 cdef bint quadrant_upper_left_and_upper_right_and_lower_right(
-    double v, double u, uint32 region, uint8 block_height
+    double v, double u, uint32_t region, uint8_t block_height
 ):
     return v < .5 or u >= .5
 
-cdef bint quadrant_upper_right(double v, double u, uint32 region, uint8 block_height):
+cdef bint quadrant_upper_right(
+    double v, double u, uint32_t region, uint8_t block_height
+):
     return v < .5 and u >= .5
 
 cdef bint quadrant_upper_right_and_lower_left(
-    double v, double u, uint32 region, uint8 block_height
+    double v, double u, uint32_t region, uint8_t block_height
 ):
     return v < .5 and u >= .5 or v >= .5 and u < .5
 
 cdef bint quadrant_upper_right_and_lower_left_and_lower_right(
-    double v, double u, uint32 region, uint8 block_height
+    double v, double u, uint32_t region, uint8_t block_height
 ):
     return v >= .5 or u >= .5
 
@@ -906,15 +923,15 @@ cdef where_glyph[32] where_glyphs = [
 
 
 cdef bint block_char_legacy_block(
-    double v, double u, uint32 region, uint8 block_height
+    double v, double u, uint32_t region, uint8_t block_height
 ):
-    cdef uint32 reg_enum = 2 * <uint32>(v * block_height)
+    cdef uint32_t reg_enum = 2 * <uint32_t>(v * block_height)
     if u >= .5:
         reg_enum += 1
     return (1 << reg_enum) & region
 
 
-cdef inline where_fg_result get_where_fg(uint32 ord_):
+cdef inline where_fg_result get_where_fg(uint32_t ord_):
     cdef:
         where_fg_result result
         int i
@@ -944,11 +961,11 @@ cdef inline where_fg_result get_where_fg(uint32 ord_):
 @cython.wraparound(False)
 cdef void trans_sixel_graphics_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    uint8_t[:, :, ::1] self_texture,
     double alpha,
     CRegion *cregion,
 ):
@@ -961,8 +978,8 @@ cdef void trans_sixel_graphics_render(
         int h = <int>graphics_cell_height(cells, graphics)
         int w = <int>graphics_cell_width(cells, graphics)
         int oy, ox, gy, gx, y, x
-        uint8 *rgba
-        uint8[4] mean
+        uint8_t *rgba
+        uint8_t[4] mean
         double a
         where_fg_result where_fg
         Cell *cell
@@ -1081,18 +1098,18 @@ cdef void opaque_braille_graphics_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    uint8_t[:, :, ::1] self_texture,
     CRegion *cregion,
 ):
     cdef:
         RegionIterator it
         int src_y, src_x
-        uint8[3] fg
+        uint8_t[3] fg
         bint[8] pixels
         Cell *cell
-        uint8 i
+        uint8_t i
         double average_alpha
-        uint32 ord_
+        uint32_t ord_
 
     init_iter(&it, cregion)
     while not it.done:
@@ -1124,11 +1141,11 @@ cdef void opaque_braille_graphics_render(
 @cython.wraparound(False)
 cdef void trans_braille_graphics_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    uint8_t[:, :, ::1] self_texture,
     double alpha,
     CRegion *cregion,
 ):
@@ -1140,13 +1157,13 @@ cdef void trans_braille_graphics_render(
         int src_y, src_x
         bint[8] pixels
         Cell *cell
-        uint8 i
+        uint8_t i
         size_t h = graphics_cell_height(cells, graphics)
         size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox
-        uint8[3] rgb, fg
+        uint8_t[3] rgb, fg
         double p, average_alpha
-        uint32 ord_
+        uint32_t ord_
 
     init_iter(&it, cregion)
     while not it.done:
@@ -1189,12 +1206,12 @@ cdef void trans_braille_graphics_render(
 
 cdef:
     # " ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█"
-    uint32[16] QUADS = [
+    uint32_t[16] QUADS = [
         0x20, 0x2598, 0x259d, 0x2580, 0x2596, 0x258c, 0x259e, 0x259b,
         0x2597, 0x259a, 0x2590, 0x259c, 0x2584, 0x2599, 0x259f, 0x2588,
     ]
     # " 🬀🬁🬂🬃🬄🬅🬆🬇🬈🬉🬊🬋🬌🬍🬎🬏🬐🬑🬒🬓▌🬔🬕🬖🬗🬘🬙🬚🬛🬜🬝🬞🬟🬠🬡🬢🬣🬤🬥🬦🬧▐🬨🬩🬪🬫🬬🬭🬮🬯🬰🬱🬲🬳🬴🬵🬶🬷🬸🬹🬺🬻█"
-    uint32[64] SEXTANTS = [
+    uint32_t[64] SEXTANTS = [
         0x20, 0x1fb00, 0x1fb01, 0x1fb02, 0x1fb03, 0x1fb04, 0x1fb05, 0x1fb06,
         0x1fb07, 0x1fb08, 0x1fb09, 0x1fb0a, 0x1fb0b, 0x1fb0c, 0x1fb0d, 0x1fb0e,
         0x1fb0f, 0x1fb10, 0x1fb11, 0x1fb12, 0x1fb13, 0x258c, 0x1fb14, 0x1fb15,
@@ -1208,7 +1225,7 @@ cdef:
     # "𜺣𜴶𜴷𜴸𜴹𜴺𜴻𜴼𜴽𜴾𜴿𜵀𜵁𜵂𜵃𜵄▖𜵅𜵆𜵇𜵈▌𜵉𜵊𜵋𜵌▞𜵍𜵎𜵏𜵐▛𜵑𜵒𜵓𜵔𜵕𜵖𜵗𜵘𜵙𜵚𜵛𜵜𜵝𜵞𜵟𜵠𜵡𜵢𜵣𜵤𜵥𜵦𜵧𜵨𜵩𜵪𜵫𜵬𜵭𜵮𜵯𜵰"
     # "𜺠𜵱𜵲𜵳𜵴𜵵𜵶𜵷𜵸𜵹𜵺𜵻𜵼𜵽𜵾𜵿𜶀𜶁𜶂𜶃𜶄𜶅𜶆𜶇𜶈𜶉𜶊𜶋𜶌𜶍𜶎𜶏▗𜶐𜶑𜶒𜶓▚𜶔𜶕𜶖𜶗▐𜶘𜶙𜶚𜶛▜𜶜𜶝𜶞𜶟𜶠𜶡𜶢𜶣𜶤𜶥𜶦𜶧𜶨𜶩𜶪𜶫"
     # "▂𜶬𜶭𜶮𜶯𜶰𜶱𜶲𜶳𜶴𜶵𜶶𜶷𜶸𜶹𜶺𜶻𜶼𜶽𜶾𜶿𜷀𜷁𜷂𜷃𜷄𜷅𜷆𜷇𜷈𜷉𜷊𜷋𜷌𜷍𜷎𜷏𜷐𜷑𜷒𜷓𜷔𜷕𜷖𜷗𜷘𜷙𜷚▄𜷛𜷜𜷝𜷞▙𜷟𜷠𜷡𜷢▟𜷣▆𜷤𜷥█"
-    uint32[256] OCTANTS = [
+    uint32_t[256] OCTANTS = [
         0x20, 0x1cea8, 0x1ceab, 0x1fb82, 0x1cd00, 0x2598, 0x1cd01, 0x1cd02,
         0x1cd03, 0x1cd04, 0x259d, 0x1cd05, 0x1cd06, 0x1cd07, 0x1cd08, 0x2580,
         0x1cd09, 0x1cd0a, 0x1cd0b, 0x1cd0c, 0x1fbe6, 0x1cd0d, 0x1cd0e, 0x1cd0f,
@@ -1244,26 +1261,26 @@ cdef:
     ]
 
 
-cdef inline uint32 block_quant(
-    uint8 *fg,
-    uint8 *bg,
-    uint8[3] *pixels,
-    uint32 *luminances,
-    uint8 h,
+cdef inline uint32_t block_quant(
+    uint8_t *fg,
+    uint8_t *bg,
+    uint8_t[3] *pixels,
+    uint32_t *luminances,
+    uint8_t h,
 ):
     # See: https://en.wikipedia.org/wiki/Color_Cell_Compression
     cdef:
-        uint8 nfg = 0, nbg = 0, i, n = 2 * h
-        uint32 average_luminance = 0, glyph_index = 0
+        uint8_t nfg = 0, nbg = 0, i, n = 2 * h
+        uint32_t average_luminance = 0, glyph_index = 0
         double[3] total_fg, total_bg
 
     memset(&total_fg, 0, sizeof(double) * 3)
     memset(&total_bg, 0, sizeof(double) * 3)
     for i in range(n):
         luminances[i] = (
-            3 * <uint32>pixels[i][0]
-            + 10 * <uint32>pixels[i][1]
-            + <uint32>pixels[i][2]
+            3 * <uint32_t>pixels[i][0]
+            + 10 * <uint32_t>pixels[i][1]
+            + <uint32_t>pixels[i][2]
         ) // 14
 
     for i in range(n):
@@ -1300,12 +1317,12 @@ cdef inline uint32 block_quant(
         total_bg[1] = total_fg[1]
         total_bg[2] = total_fg[2]
 
-    fg[0] = <uint8>total_fg[0]
-    fg[1] = <uint8>total_fg[1]
-    fg[2] = <uint8>total_fg[2]
-    bg[0] = <uint8>total_bg[0]
-    bg[1] = <uint8>total_bg[1]
-    bg[2] = <uint8>total_bg[2]
+    fg[0] = <uint8_t>total_fg[0]
+    fg[1] = <uint8_t>total_fg[1]
+    fg[2] = <uint8_t>total_fg[2]
+    bg[0] = <uint8_t>total_bg[0]
+    bg[1] = <uint8_t>total_bg[1]
+    bg[2] = <uint8_t>total_bg[2]
 
     return glyph_index
 
@@ -1316,20 +1333,20 @@ cdef void opaque_block_char_graphics_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    uint8_t[:, :, ::1] self_texture,
     CRegion *cregion,
-    uint8 block_height,
+    uint8_t block_height,
 ):
     cdef:
         RegionIterator it
         int src_y, src_x, y, x
         Cell *dst
-        uint32 *glyphs
-        uint8 i, n = block_height * 2
+        uint32_t *glyphs
+        uint8_t i, n = block_height * 2
         div_t div_result
-        uint8[3] fg, bg
-        uint8[8][3] pixels
-        uint32[8] luminances
+        uint8_t[3] fg, bg
+        uint8_t[8][3] pixels
+        uint32_t[8] luminances
 
     if block_height == 2:
         glyphs = &QUADS[0]
@@ -1360,10 +1377,10 @@ cdef void opaque_block_char_graphics_render(
         next_(&it)
 
 
-cdef bint is_low_variance_pixels(uint8[3] *pixels, uint8 n):
+cdef bint is_low_variance_pixels(uint8_t[3] *pixels, uint8_t n):
     cdef:
         double[3] mean_rgb, variance
-        uint8 i
+        uint8_t i
 
     memset(&mean_rgb, 0, sizeof(double) * 3)
     memset(&variance, 0, sizeof(double) * 3)
@@ -1393,14 +1410,14 @@ cdef bint is_low_variance_pixels(uint8[3] *pixels, uint8 n):
 @cython.wraparound(False)
 cdef void trans_block_char_graphics_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    uint8_t[:, :, ::1] self_texture,
     double alpha,
     CRegion *cregion,
-    uint8 block_height,
+    uint8_t block_height,
 ):
     cdef:
         RegionIterator it
@@ -1412,13 +1429,13 @@ cdef void trans_block_char_graphics_render(
         div_t div_result
         double[4] average_rgba
         double a
-        uint8 i, n = block_height * 2
-        uint8[3] fg, bg
-        uint8[4] mean_rbga
-        uint8[8][3] pixels
-        uint32[8] luminances
-        uint32 *glyphs
-        uint32 glyph_index
+        uint8_t i, n = block_height * 2
+        uint8_t[3] fg, bg
+        uint8_t[4] mean_rbga
+        uint8_t[8][3] pixels
+        uint32_t[8] luminances
+        uint32_t *glyphs
+        uint32_t glyph_index
 
     if block_height == 2:
         glyphs = &QUADS[0]
@@ -1483,9 +1500,9 @@ cdef void trans_block_char_graphics_render(
                 pixels[i] = dst.bg_color
                 composite(&pixels[i][0], &self_texture[y, x, 0], a)
             if is_low_variance_pixels(&pixels[0], n):
-                fg[0] = <uint8>(average_rgba[0] / n)
-                fg[1] = <uint8>(average_rgba[1] / n)
-                fg[2] = <uint8>(average_rgba[2] / n)
+                fg[0] = <uint8_t>(average_rgba[0] / n)
+                fg[1] = <uint8_t>(average_rgba[1] / n)
+                fg[2] = <uint8_t>(average_rgba[2] / n)
                 a = alpha * average_rgba[3] / n / 255
                 composite(&dst.fg_color[0], &fg[0], a)
                 composite(&dst.bg_color[0], &fg[0], a)
@@ -1504,19 +1521,19 @@ cdef void trans_block_char_graphics_render(
 @cython.wraparound(False)
 cpdef void graphics_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     tuple[int, int] abs_pos,
     str blitter,
     bint is_transparent,
-    uint8[:, :, ::1] self_texture,
+    uint8_t[:, :, ::1] self_texture,
     double alpha,
     Region region,
 ):
     cdef:
         CRegion *cregion = &region.cregion
         int abs_y = abs_pos[0], abs_x = abs_pos[1]
-        uint8 block_height
+        uint8_t block_height
 
     if blitter == "full":
         if is_transparent:
@@ -1672,8 +1689,8 @@ cdef void opaque_text_field_render(
 @cython.wraparound(False)
 cdef void trans_text_field_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
     double[:, ::1] coords,
@@ -1687,7 +1704,7 @@ cdef void trans_text_field_render(
         size_t h = graphics_cell_height(cells, graphics)
         size_t w = graphics_cell_width(cells, graphics)
         size_t oy, ox, gy, gx, cwidth
-        uint8[3] rgb
+        uint8_t[3] rgb
         double p
         Cell *dst
         Cell *src
@@ -1753,8 +1770,8 @@ cdef void trans_text_field_render(
 @cython.wraparound(False)
 cpdef void text_field_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     tuple[int, int] abs_pos,
     bint is_transparent,
     double[:, ::1] coords,
@@ -1781,7 +1798,7 @@ cdef void opaque_full_graphics_field_render(
     int abs_y,
     int abs_x,
     double[:, ::1] coords,
-    uint8[:, ::1] particles,
+    uint8_t[:, ::1] particles,
     CRegion *cregion,
 ):
     cdef:
@@ -1806,12 +1823,12 @@ cdef void opaque_full_graphics_field_render(
 @cython.wraparound(False)
 cdef void trans_full_graphics_field_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
     double[:, ::1] coords,
-    uint8[:, ::1] particles,
+    uint8_t[:, ::1] particles,
     double alpha,
     CRegion *cregion,
 ):
@@ -1826,7 +1843,7 @@ cdef void trans_full_graphics_field_render(
         size_t oy, ox, gy, gx
         Cell *dst
         double a
-        uint8 *src_rgba
+        uint8_t *src_rgba
 
     for i in range(nparticles):
         py = <int>coords[i][0] + abs_y
@@ -1855,7 +1872,7 @@ cdef void opaque_half_graphics_field_render(
     int abs_y,
     int abs_x,
     double[:, ::1] coords,
-    uint8[:, ::1] particles,
+    uint8_t[:, ::1] particles,
     CRegion *cregion,
 ):
     cdef:
@@ -1863,7 +1880,7 @@ cdef void opaque_half_graphics_field_render(
         double py, px
         int ipy, ipx
         Cell *dst
-        uint8 *dst_rgb
+        uint8_t *dst_rgb
 
     for i in range(nparticles):
         py = coords[i][0] + abs_y
@@ -1890,12 +1907,12 @@ cdef void opaque_half_graphics_field_render(
 @cython.wraparound(False)
 cdef void trans_half_graphics_field_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
     double[:, ::1] coords,
-    uint8[:, ::1] particles,
+    uint8_t[:, ::1] particles,
     double alpha,
     CRegion *cregion,
 ):
@@ -1911,8 +1928,8 @@ cdef void trans_half_graphics_field_render(
         size_t oy, ox, gy, gx, gtop, gbot
         Cell *dst
         double a
-        uint8 *src_rgba
-        uint8 *dst_rgb
+        uint8_t *src_rgba
+        uint8_t *dst_rgb
 
     for i in range(nparticles):
         py = coords[i][0] + abs_y
@@ -1964,12 +1981,12 @@ cdef void trans_half_graphics_field_render(
 @cython.wraparound(False)
 cdef void opaque_sixel_graphics_field_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
     double[:, ::1] coords,
-    uint8[:, ::1] particles,
+    uint8_t[:, ::1] particles,
     CRegion *cregion,
 ):
     cdef:
@@ -2018,12 +2035,12 @@ cdef void opaque_sixel_graphics_field_render(
 @cython.wraparound(False)
 cdef void trans_sixel_graphics_field_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
     double[:, ::1] coords,
-    uint8[:, ::1] particles,
+    uint8_t[:, ::1] particles,
     double alpha,
     CRegion *cregion,
 ):
@@ -2079,7 +2096,7 @@ cdef void trans_sixel_graphics_field_render(
 
 
 cdef struct BraillePixel:
-    uint32 ord
+    uint32_t ord
     double[4] total_fg
     unsigned int ncolors
 
@@ -2091,7 +2108,7 @@ cdef void opaque_braille_graphics_field_render(
     int abs_y,
     int abs_x,
     double[:, ::1] coords,
-    uint8[:, ::1] particles,
+    uint8_t[:, ::1] particles,
     CRegion *cregion,
 ):
     cdef:
@@ -2141,9 +2158,9 @@ cdef void opaque_braille_graphics_field_render(
         dst = &cells[(i // w) + y, (i % w) + x]
         dst.ord = pixel.ord
         dst.style = 0
-        dst.fg_color[0] = <uint8>(pixel.total_fg[0] / pixel.ncolors)
-        dst.fg_color[1] = <uint8>(pixel.total_fg[1] / pixel.ncolors)
-        dst.fg_color[2] = <uint8>(pixel.total_fg[2] / pixel.ncolors)
+        dst.fg_color[0] = <uint8_t>(pixel.total_fg[0] / pixel.ncolors)
+        dst.fg_color[1] = <uint8_t>(pixel.total_fg[1] / pixel.ncolors)
+        dst.fg_color[2] = <uint8_t>(pixel.total_fg[2] / pixel.ncolors)
 
     free(pixels)
 
@@ -2152,12 +2169,12 @@ cdef void opaque_braille_graphics_field_render(
 @cython.wraparound(False)
 cdef void trans_braille_graphics_field_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     int abs_y,
     int abs_x,
     double[:, ::1] coords,
-    uint8[:, ::1] particles,
+    uint8_t[:, ::1] particles,
     double alpha,
     CRegion *cregion,
 ):
@@ -2173,7 +2190,7 @@ cdef void trans_braille_graphics_field_render(
         size_t w = graphics_cell_width(cells, graphics)
         size_t rh, rw
         int pgy, pgx
-        uint8[3] rgb
+        uint8_t[3] rgb
 
     bounding_rect(cregion, &y, &x, &rh, &rw)
     cdef:
@@ -2233,9 +2250,9 @@ cdef void trans_braille_graphics_field_render(
         dst.ord = pixel.ord
         dst.style = 0
 
-        rgb[0] = <uint8>(pixel.total_fg[0] / pixel.ncolors)
-        rgb[1] = <uint8>(pixel.total_fg[1] / pixel.ncolors)
-        rgb[2] = <uint8>(pixel.total_fg[2] / pixel.ncolors)
+        rgb[0] = <uint8_t>(pixel.total_fg[0] / pixel.ncolors)
+        rgb[1] = <uint8_t>(pixel.total_fg[1] / pixel.ncolors)
+        rgb[2] = <uint8_t>(pixel.total_fg[2] / pixel.ncolors)
         composite(
             &dst.fg_color[0], &rgb[0], pixel.total_fg[3] / 255 / pixel.ncolors * alpha
         )
@@ -2246,13 +2263,13 @@ cdef void trans_braille_graphics_field_render(
 @cython.wraparound(False)
 cpdef void graphics_field_render(
     Cell[:, ::1] cells,
-    uint8[:, :, ::1] graphics,
-    uint8[:, ::1] kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, ::1] kind,
     tuple[int, int] abs_pos,
     str blitter,
     bint is_transparent,
     double[:, ::1] coords,
-    uint8[:, ::1] particles,
+    uint8_t[:, ::1] particles,
     double alpha,
     Region region,
 ):
@@ -2381,7 +2398,7 @@ cdef inline void normalize_canvas(Cell[:, ::1] cells, int[:, ::1] widths):
                     last_wide_x = -1
 
 
-cdef inline void write_sgr(fbuf *f, uint8 param, bint *first):
+cdef inline void write_sgr(fbuf *f, uint8_t param, bint *first):
     if first[0]:
         fbuf_printf(f, "\x1b[%d", param)
         first[0] = 0
@@ -2389,7 +2406,7 @@ cdef inline void write_sgr(fbuf *f, uint8 param, bint *first):
         fbuf_printf(f, ";%d", param)
 
 
-cdef inline void write_rgb(fbuf *f, uint8 fg, uint8 *rgb, bint *first):
+cdef inline void write_rgb(fbuf *f, uint8_t fg, uint8_t *rgb, bint *first):
     if first[0]:
         fbuf_printf(f, "\x1b[%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
         first[0] = 0
@@ -2485,11 +2502,11 @@ cpdef void terminal_render(
     Cell[:, ::1] cells,
     Cell[:, ::1] prev_cells,
     int[:, ::1] widths,
-    uint8[:, :, ::1] graphics,
-    uint8[:, :, ::1] prev_graphics,
-    uint8[:, :, ::1] sgraphics,
-    uint8[:, ::1] kind,
-    uint8[:, ::1] prev_kind,
+    uint8_t[:, :, ::1] graphics,
+    uint8_t[:, :, ::1] prev_graphics,
+    uint8_t[:, :, ::1] sgraphics,
+    uint8_t[:, ::1] kind,
+    uint8_t[:, ::1] prev_kind,
     tuple[int, int] aspect_ratio,
 ):
     normalize_canvas(cells, widths)
@@ -2505,7 +2522,7 @@ cpdef void terminal_render(
         ssize_t cursor_y = -1, cursor_x = -1
         Cell *last_sgr = NULL
         bint emit_sixel = 0
-        uint8 *quant_color
+        uint8_t *quant_color
         unsigned int aspect_h = aspect_ratio[0], aspect_w = aspect_ratio[1]
 
     if fbuf_putn(f, "\x1b7", 2):  # Save cursor
@@ -2626,9 +2643,9 @@ cpdef void terminal_render(
                 gy = y * cell_h
                 gx = x * cell_w
                 quant_color = octree.qs.table + 3 * sgraphics[gy, gx, 0]
-                cells[y, x].bg_color[0] = _100_to_uint8(quant_color[0])
-                cells[y, x].bg_color[1] = _100_to_uint8(quant_color[1])
-                cells[y, x].bg_color[2] = _100_to_uint8(quant_color[2])
+                cells[y, x].bg_color[0] = _100_to_uint8_t(quant_color[0])
+                cells[y, x].bg_color[1] = _100_to_uint8_t(quant_color[1])
+                cells[y, x].bg_color[2] = _100_to_uint8_t(quant_color[2])
                 if write_glyph(
                     f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, &last_sgr
                 ):
