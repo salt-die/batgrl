@@ -11,7 +11,7 @@ from collections.abc import Callable
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 
-from wcwidth import wcswidth
+from uwcwidth import wcswidth
 
 from ..terminal.events import KeyEvent, PasteEvent
 from .behaviors.focusable import Focusable
