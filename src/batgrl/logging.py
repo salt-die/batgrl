@@ -56,7 +56,18 @@ else:
 
 
 class CustomLogger(LoggerClass):
-    """A standard logger with methods for ``ANSI`` and ``EVENTS`` logging."""
+    """
+    A standard logger with methods for ``ANSI`` and ``EVENTS`` logging.
+
+    Methods
+    -------
+    ansi(msg)
+        Log the given message with the severity ``"ANSI"``.
+    events(msg)
+        Log the given message with the severity ``"EVENTS"``.
+    is_enabled_for(log_level)
+        Similar to ``Logger.isEnabledFor``, but also accepts level names.
+    """
 
     def ansi(self, msg: str, *args, **kwargs) -> None:
         """Log the given message with the severity ``"ANSI"``."""
