@@ -37,8 +37,9 @@ cdef:
     uint32 EGC_BASE = 0x180000
     uint32 SPACE_ORD = 0x20
     uint32 BRAILLE_ORD = 0x2800
+    uint32 END_OF_BRAILLE_ORD = 0x28ff
     uint32 HALF_BLOCK_ORD = 0x2580
-    uint32 END_OF_GEOMETRY_BLOCK_ORD = HALF_BLOCK_ORD + 0x20
+    uint32 END_OF_GEOMETRY_BLOCK_ORD = 0x25a0
 
 
 cdef struct RegionIterator:
@@ -1102,12 +1103,18 @@ cdef void opaque_braille_graphics_render(
         )
         if average_alpha:
             cell = &cells[it.y, it.x]
-            ord_ = 10240
+            cell.style = 0
+            ord_ = BRAILLE_ORD
             for i in range(8):
                 if pixels[i]:
                     ord_ += BRAILLE_ENUM[i]
+
+            if ord_ == BRAILLE_ORD:
+                cell.ord = SPACE_ORD
+                next_(&it)
+                continue
+
             cell.ord = ord_
-            cell.style = 0
             cell.fg_color = cell.bg_color
             composite(&cell.fg_color[0], &fg[0], average_alpha)
         next_(&it)
@@ -1152,12 +1159,18 @@ cdef void trans_braille_graphics_render(
             next_(&it)
             continue
         cell = &cells[it.y, it.x]
-        ord_ = 10240
+        cell.style = 0
+        ord_ = BRAILLE_ORD
         for i in range(8):
             if pixels[i]:
                 ord_ += BRAILLE_ENUM[i]
+
+        if ord_ == BRAILLE_ORD:
+            cell.ord = SPACE_ORD
+            next_(&it)
+            continue
+
         cell.ord = ord_
-        cell.style = 0
         if kind[it.y, it.x] & SIXEL:
             oy = it.y * h
             ox = it.x * w
@@ -2106,8 +2119,8 @@ cdef void opaque_braille_graphics_field_render(
             continue
         pixel = &pixels[(ipy - y) * w + ipx - x]
         # ! Why isn't pixel.ord == 0 sufficient?
-        if pixel.ord < 10240 or pixel.ord > 10495:
-            pixel.ord = 10240
+        if pixel.ord < BRAILLE_ORD or pixel.ord > END_OF_BRAILLE_ORD:
+            pixel.ord = BRAILLE_ORD
         pgy = <int>((py - ipy) * 4)
         pgx = <int>((px - ipx) * 2)
         pixel.ord |= BRAILLE_ENUM[pgy * 2 + pgx]
@@ -2119,7 +2132,11 @@ cdef void opaque_braille_graphics_field_render(
     for i in range(h * w):
         pixel = &pixels[i]
         # ! Why does pixel.ord need to be checked?
-        if not pixel.ncolors or pixel.ord < 10240 or pixel.ord > 10495:
+        if (
+            not pixel.ncolors
+            or pixel.ord < BRAILLE_ORD
+            or pixel.ord > END_OF_BRAILLE_ORD
+        ):
             continue
         dst = &cells[(i // w) + y, (i % w) + x]
         dst.ord = pixel.ord
@@ -2179,8 +2196,8 @@ cdef void trans_braille_graphics_field_render(
         pixel = &pixels[(ipy - y) * rw + ipx - x]
         # ! Why isn't pixel.ord == 0 sufficient?
         # ! Assumed if ord is braille, that background has already been composited.
-        if pixel.ord < 10240 or pixel.ord > 10495:
-            pixel.ord = 10240
+        if pixel.ord < BRAILLE_ORD or pixel.ord > END_OF_BRAILLE_ORD:
+            pixel.ord = BRAILLE_ORD
             if kind[ipy, ipx] & SIXEL:
                 oy = ipy * h
                 ox = ipx * w
@@ -2206,7 +2223,11 @@ cdef void trans_braille_graphics_field_render(
     for i in range(rh * rw):
         pixel = &pixels[i]
         # ! Why does pixel.ord need to be checked?
-        if not pixel.ncolors or pixel.ord < 10240 or pixel.ord > 10495:
+        if (
+            not pixel.ncolors
+            or pixel.ord < BRAILLE_ORD
+            or pixel.ord > END_OF_BRAILLE_ORD
+        ):
             continue
         dst = &cells[(i // rw) + y, (i % rw) + x]
         dst.ord = pixel.ord
