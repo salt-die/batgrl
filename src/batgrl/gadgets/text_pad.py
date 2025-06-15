@@ -178,6 +178,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     Methods
     -------
+    replace_text(start, end, content)
+        Replace text from ``start`` to ``end`` with ``content``.
     undo()
         Undo previous edit.
     redo()
