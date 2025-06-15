@@ -55,8 +55,8 @@ class ColumnStyle:
     Parameters
     ----------
     render : Callable[[T], str] | None, default: None
-        A callable that renders column data into a string. Uses the
-        built-in `str` by default.
+        A callable that renders column data into a string. Uses the built-in ``str`` by
+        default.
     alignment : Literal["center", "left", "right"], default: "left"
         Alignment of the column.
     padding : int, default: 1
@@ -80,19 +80,33 @@ class ColumnStyle:
         Whether sorting is allowed for column.
     """
 
-    render: Callable[[SupportsLessThan], str] = str
+    render: Callable[[SupportsLessThan], str]
     """
     A callable that renders column data into a string. Uses the built-in `str` by
     default.
     """
-    alignment: Literal["center", "left", "right"] = "left"
+    alignment: Literal["center", "left", "right"]
     """Alignment of the column."""
-    padding: int = 1
+    padding: int
     """Left and right padding of column."""
-    min_width: int = 0
+    min_width: int
     """Minimum width of column."""
-    allow_sorting: bool = True
+    allow_sorting: bool
     """Whether sorting is allowed for column."""
+
+    def __init__(
+        self,
+        render: Callable[[SupportsLessThan], str] | None = None,
+        alignment: Literal["center", "left", "right"] = "left",
+        padding: int = 1,
+        min_width: int = 0,
+        allow_sorting: bool = True,
+    ):
+        self.render = str if render is None else render
+        self.alignment = alignment
+        self.padding = padding
+        self.min_width = min_width
+        self.allow_sorting = allow_sorting
 
 
 class _SortState(str, Enum):
