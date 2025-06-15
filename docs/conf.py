@@ -38,11 +38,17 @@ numpydoc_show_inherited_class_members = {
     "batgrl.colors.color_types.Color": False,
     "batgrl.colors.color_types.AColor": False,
     "batgrl.colors.color_types.ColorTheme": False,
+    "batgrl.gadgets.data_table.ColumnStyle": False,
     "batgrl.gadgets.gadget.PosHint": False,
     "batgrl.gadgets.gadget.SizeHint": False,
+    "batgrl.gadgets.gadget.TotalPosHint": False,
+    "batgrl.gadgets.gadget.TotalSizeHint": False,
     "batgrl.geometry.basic.Point": False,
     "batgrl.geometry.basic.Size": False,
     "batgrl.figfont.FullLayout": False,
+    "batgrl.logging.CustomLogger": False,
+    "batgrl.logging.LogLevel": False,
+    "batgrl.text_tools.Style": False,
 }
 
 
