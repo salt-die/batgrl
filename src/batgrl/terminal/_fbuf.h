@@ -111,21 +111,21 @@ static inline ssize_t fbuf_putucs4(fbuf *f, uint32_t wc){
         return 0;
     }
     if(wc < 0x800){
-        f->buf[f->len++] = (wc>>6) | 0xC0;
-        f->buf[f->len++] = (wc & 0x3F) | 0x80;
+        f->buf[f->len++] = (wc>>6) | 0xc0;
+        f->buf[f->len++] = (wc & 0x3f) | 0x80;
         return 0;
     }
     if(wc < 0x10000){
-        f->buf[f->len++] = (wc>>12) | 0xE0;
-        f->buf[f->len++] = ((wc>>6) & 0x3F) | 0x80;
-        f->buf[f->len++] = (wc & 0x3F) | 0x80;
+        f->buf[f->len++] = (wc>>12) | 0xe0;
+        f->buf[f->len++] = ((wc>>6) & 0x3f) | 0x80;
+        f->buf[f->len++] = (wc & 0x3f) | 0x80;
         return 0;
     }
     if(wc < 0x110000) {
-        f->buf[f->len++] = (wc>>18) | 0xF0;
-        f->buf[f->len++] = ((wc>>12) & 0x3F) | 0x80;
-        f->buf[f->len++] = ((wc>>6) & 0x3F) | 0x80;
-        f->buf[f->len++] = (wc & 0x3F) | 0x80;
+        f->buf[f->len++] = (wc>>18) | 0xf0;
+        f->buf[f->len++] = ((wc>>12) & 0x3f) | 0x80;
+        f->buf[f->len++] = ((wc>>6) & 0x3f) | 0x80;
+        f->buf[f->len++] = (wc & 0x3f) | 0x80;
         return 0;
     }
     return -1;
