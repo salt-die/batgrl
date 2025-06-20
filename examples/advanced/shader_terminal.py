@@ -13,7 +13,6 @@ import moderngl
 import numpy as np
 from batgrl.app import App
 from batgrl.gadgets.graphics import Graphics
-from batgrl.texture_tools import resize_texture
 
 VERTEX_SHADER = """
     out vec2 position;
@@ -65,9 +64,6 @@ void main() {
 """
 context = moderngl.create_context(standalone=True)
 program = context.program(vertex_shader=VERTEX_SHADER, fragment_shader=FRAGMENT_SHADER)
-program["iResolution"] = width, height = 640, 480
-fbo = context.simple_framebuffer((width, height), components=4, dtype="f4")
-fbo.use()
 vao = context.vertex_array(program, [])
 vao.vertices = 3
 
@@ -76,10 +72,23 @@ class ModernGlApp(App):
     async def on_start(self):
         graphics = Graphics(
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
+            # alpha channel will be all 0, so set is_transparent to False to ignore
             is_transparent=False,
             blitter="sextant",
         )
         self.add_gadget(graphics)
+
+        h = w = fbo = None
+
+        def on_size():
+            nonlocal h, w, fbo
+            h, w = graphics.texture.shape[:2]
+            program["iResolution"] = w, h
+            fbo = context.simple_framebuffer((w, h), components=4, dtype="f4")
+            fbo.use()
+
+        on_size()
+        graphics.bind("size", on_size)
 
         start = time.perf_counter()
         while True:
@@ -87,13 +96,10 @@ class ModernGlApp(App):
             vao.render()
 
             fbo_read = fbo.read(components=4, dtype="f4")
-            output = (
+            graphics.texture[::-1] = (
                 (np.frombuffer(fbo_read, dtype="f4") * 255)
                 .astype(np.uint8)
-                .reshape(height, width, 4)
-            )
-            resize_texture(
-                output[::-1], graphics.texture.shape[:2], out=graphics.texture
+                .reshape(h, w, 4)
             )
             await asyncio.sleep(0)
 
