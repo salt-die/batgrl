@@ -901,7 +901,7 @@ class Gadget:
         """
         self_top, self_left = self.absolute_pos
         self_bottom = self_top + self.height
-        self_right = self.left + self.width
+        self_right = self_left + self.width
 
         other_top, other_left = other.absolute_pos
         other_bottom = other_top + other.height
