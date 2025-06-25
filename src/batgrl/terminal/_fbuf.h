@@ -9,12 +9,12 @@
 #include <stdio.h>
 #include <stdint.h>
 #ifdef _WIN32
-    #include <Windows.h>
-    #include <io.h>
+#include <Windows.h>
+#include <io.h>
 typedef SSIZE_T ssize_t;
 #else
-    #include <unistd.h>
-    #include <poll.h>
+#include <unistd.h>
+#include <poll.h>
 #endif
 
 
@@ -227,8 +227,8 @@ decode_utf16(fbuf *f, unsigned short utf16) {
         _HIGH_SURROGATE = (codepoint)utf16;
     }
     else if (
-             ((utf16 & SURROGATE_MASK) == LOW_SURROGATE_VALUE) &&
-             _HIGH_SURROGATE
+        ((utf16 & SURROGATE_MASK) == LOW_SURROGATE_VALUE) &&
+        _HIGH_SURROGATE
     ) {
         codepoint result = _HIGH_SURROGATE & SURROGATE_CODEPOINT_MASK;
         result <<= SURROGATE_CODEPOINT_BITS;
@@ -250,8 +250,7 @@ fbuf_read_fd(fbuf *f, int fd, int *size_event) {
         return -1;
     }
     INPUT_RECORD *records = (INPUT_RECORD *)malloc(
-        sizeof(INPUT_RECORD) *
-        nevents
+        sizeof(INPUT_RECORD) * nevents
     );
     if (!records) {
         return -1;
