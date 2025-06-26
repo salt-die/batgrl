@@ -648,8 +648,7 @@ class Gadget:
     def is_transparent(self, is_transparent: bool):
         if is_transparent != self._is_transparent:
             self._is_transparent = is_transparent
-            if self.root is not None:
-                self._invalidate_regions()
+            self._invalidate_regions()
             self.on_transparency()
 
     @property
@@ -665,8 +664,7 @@ class Gadget:
     def is_visible(self, is_visible: bool):
         if is_visible != self._is_visible:
             self._is_visible = is_visible
-            if self.root is not None:
-                self._invalidate_regions()
+            self._invalidate_regions()
 
     @property
     def is_enabled(self) -> bool:
@@ -681,8 +679,7 @@ class Gadget:
     def is_enabled(self, is_enabled: bool):
         if is_enabled != self._is_enabled:
             self._is_enabled = is_enabled
-            if self.root is not None:
-                self._invalidate_regions()
+            self._invalidate_regions()
 
     @property
     def root(self) -> _Root | None:
