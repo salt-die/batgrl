@@ -1,9 +1,7 @@
 """A growable string buffer."""
+from libc.stdint cimport uint32_t, uint64_t
 
 cdef extern from "_fbuf.h":
-    ctypedef unsigned long uint32_t
-    ctypedef unsigned long long uint64_t
-
     struct fbuf:
         uint64_t size, len
         char *buf
