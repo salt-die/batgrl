@@ -1,6 +1,6 @@
 """Tools for text."""
 
-from enum import IntFlag
+from enum import Enum
 from typing import Final
 
 import numpy as np
@@ -45,7 +45,7 @@ HORIZONTAL_BLOCKS: Final = " ▏▎▍▌▋▊▉█"
 logger = get_logger(__name__)
 
 
-class Style(IntFlag):
+class Style(np.uint8, Enum):
     """The graphic rendition parameters of a terminal cell."""
 
     # ! Don't use auto() as these must match the definitions in _rendering.pyx.
@@ -334,7 +334,7 @@ def add_text(
     size, cells = _parse_batgrl_md(text) if markdown else _text_to_cells(text)
     if canvas.ndim == 1:  # Pre-pend an axis if canvas is one-dimensional.
         canvas = canvas[None]
-    rows, columns = canvas.shape
+    rows, columns = canvas.shape  # type: ignore
     if not truncate_text and (size.height > rows or size.width > columns):
         raise IndexError("Text does not fit in canvas.")
     _write_cells_to_canvas(cells, canvas, fg_color, bg_color)
@@ -361,7 +361,7 @@ def canvas_as_text(
     """
     if canvas.ndim == 1:  # Pre-pend an axis if canvas is one-dimensional.
         canvas = canvas[None]
-    rows, columns = canvas.shape
+    rows, columns = canvas.shape  # type: ignore
     if line_widths is None:
         line_widths = [columns] * rows
     elif len(line_widths) < rows:
