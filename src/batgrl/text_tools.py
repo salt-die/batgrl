@@ -1,7 +1,7 @@
 """Tools for text."""
 
 from enum import Enum
-from typing import Final
+from typing import Final, cast
 
 import numpy as np
 from ugrapheme import grapheme_iter
@@ -260,7 +260,12 @@ def _text_to_cells(text: str) -> tuple[Size, list[list[Cell0D]]]:
     return Size(len(cells), max_width), cells
 
 
-def _write_cells_to_canvas(cells, canvas, fg_color, bg_color) -> None:
+def _write_cells_to_canvas(
+    cells: list[list[Cell0D]],
+    canvas: Cell2D,
+    fg_color: Color | None,
+    bg_color: Color | None,
+) -> None:
     """Write a list of lists of cells to a canvas array."""
     _, columns = canvas.shape
     for cell_line, canvas_line in zip(cells, canvas):
@@ -334,7 +339,8 @@ def add_text(
     size, cells = _parse_batgrl_md(text) if markdown else _text_to_cells(text)
     if canvas.ndim == 1:  # Pre-pend an axis if canvas is one-dimensional.
         canvas = canvas[None]
-    rows, columns = canvas.shape  # type: ignore
+    canvas = cast(Cell2D, canvas)
+    rows, columns = canvas.shape
     if not truncate_text and (size.height > rows or size.width > columns):
         raise IndexError("Text does not fit in canvas.")
     _write_cells_to_canvas(cells, canvas, fg_color, bg_color)
@@ -361,7 +367,8 @@ def canvas_as_text(
     """
     if canvas.ndim == 1:  # Pre-pend an axis if canvas is one-dimensional.
         canvas = canvas[None]
-    rows, columns = canvas.shape  # type: ignore
+    canvas = cast(Cell2D, canvas)
+    rows, columns = canvas.shape
     if line_widths is None:
         line_widths = [columns] * rows
     elif len(line_widths) < rows:
