@@ -106,4 +106,5 @@ class ModernGlApp(App):
             await asyncio.sleep(0)
 
 
-ModernGlApp().run()
+if __name__ == "__main__":
+    ModernGlApp().run()
