@@ -60,8 +60,8 @@ async def black_hole_effect(text: Text):
     field.particles_from_cells(text.canvas)
 
     all_particles = list(_BlackHoleParticle.iter_from_field(field))
-
-    coords = cast(Coords, RNG.random((field.nparticles, 2)) * text.size)
+    coords = RNG.random((field.nparticles, 2)) * text.size  # type: ignore
+    coords = cast(Coords, coords)
     for particle, position in zip(all_particles, coords):
         particle.final_ord = particle.cell["ord"]  # type: ignore
         particle.final_fg_color = Color(*particle.cell["fg_color"].tolist())

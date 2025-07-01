@@ -3,6 +3,7 @@
 import asyncio
 from dataclasses import dataclass
 from random import randrange
+from typing import cast
 
 import numpy as np
 
@@ -36,10 +37,10 @@ async def spotlights_effect(text: Text):
     cover = Text(size=text.size)
     cover.canvas[:] = text.canvas
 
-    in_fg = text.canvas["fg_color"]
-    in_bg = text.canvas["bg_color"]
-    out_fg = cover.canvas["fg_color"]
-    out_bg = cover.canvas["bg_color"]
+    in_fg = cast(RGB_2D, text.canvas["fg_color"])
+    in_bg = cast(RGB_2D, text.canvas["bg_color"])
+    out_fg = cast(RGB_2D, cover.canvas["fg_color"])
+    out_bg = cast(RGB_2D, cover.canvas["bg_color"])
 
     spotlights = [
         _SpotLight(pos=_random_point(text.size), color=RED),

@@ -1,7 +1,7 @@
 """A graphic gadget."""
 
 from pathlib import Path
-from typing import Final, Literal
+from typing import Final, Literal, cast
 
 import cv2
 import numpy as np
@@ -49,12 +49,12 @@ def scale_geometry[T: (Point, Size)](blitter: Blitter, point_or_size: T) -> T:
     ----------
     blitter : Blitter
         Blitter from which pixel geometry is chosen.
-    point_or_size : T
+    point_or_size : (Point, Size)
         A point or size to scale.
 
     Returns
     -------
-    T
+    (Point, Size)
         The scaled geometry.
     """
     h, w = _BLITTER_GEOMETRY[blitter]
@@ -250,7 +250,9 @@ class Graphics(Gadget):
         self.alpha = alpha
         self._interpolation: Interpolation
         self.interpolation = interpolation
-        self.texture: RGBA_2D = np.full((1, 1, 4), default_color, np.uint8)
+        self.texture: RGBA_2D = cast(
+            RGBA_2D, np.full((1, 1, 4), default_color, np.uint8)
+        )
         self._blitter: Blitter
         self.blitter = blitter  # Property setter will correctly resize texture.
 
