@@ -1,9 +1,11 @@
 """Functions for blending colors and creating color gradients."""
 
-from itertools import pairwise
 from math import sin, tau
+from typing import cast
 
-from ..geometry import lerp
+import numpy as np
+
+from ..geometry import clamp, lerp, normalize
 from ..geometry.easings import EASINGS, Easing
 from .color_types import AColor, Color
 
@@ -68,49 +70,54 @@ def lerp_colors[T: (Color, AColor, tuple[int, ...])](a: T, b: T, p: float) -> T:
     (Color, AColor, tuple[int, ...])
         The linear interpolation of ``a`` and ``b``.
     """
-    color = (round(lerp(c1, c2, p)) for c1, c2 in zip(a, b))
+    color = (clamp(round(lerp(c1, c2, p)), 0, 255) for c1, c2 in zip(a, b))
     if isinstance(a, (Color, AColor)):
         return type(a)(*color)
-    return tuple(color)  # type: ignore
+    return cast(T, tuple(color))
 
 
 def gradient[T: (Color, AColor, tuple[int, ...])](
-    *color_stops: T, n: int, easing: Easing = "linear"
+    *colors: T, n: int, easing: Easing = "linear"
 ) -> list[T]:
     r"""
-    Return a smooth gradient of length ``n`` between all colors in ``color_stops``.
+    Return a smooth gradient of length ``n`` between all colors in ``colors``.
 
     Parameters
     ----------
-    \*color_stops : (Color, AColor, tuple[int, ...])
-        Colors between each gradient.
+    \*colors : (Color, AColor, tuple[int, ...])
+        Pairwise colors determine start and end of each subgradient.
     n : int
-        Length of gradient. Must be equal to or larger than ``color_stops``.
+        Length of gradient. Must be equal to or larger than ``colors``.
     easing : Easing, default: "linear"
-        Easing applied to interpolations between ``color stops``.
+        Easing applied to entire gradient.
 
     Returns
     -------
     list[(Color, AColor, tuple[int, ...])]
-        A smooth gradient between all colors in ``color_stops``.
+        A smooth gradient between all colors in ``colors``.
     """
-    ncolors = len(color_stops)
+    ncolors = len(colors)
     if n < ncolors:
-        raise ValueError(f"gradient too small to contain all color stops ({n=})")
+        raise ValueError(f"gradient too small to contain all colors ({n=})")
     if ncolors == 1:
-        return [color_stops[0]] * n
+        return [colors[0]] * n
 
     ease = EASINGS[easing]
-    d, r = divmod(n - ncolors, ncolors - 1)
+    pcolors: list[float] = np.linspace(0.0, 1.0, ncolors).tolist()
+    eased_pcolors = [ease(p) for p in pcolors]
+
+    i = 1
     gradient: list[T] = []
-    b = color_stops[0]
-    for i, (a, b) in enumerate(pairwise(color_stops)):
-        gradient.append(a)
-        len_ = d + (i < r)
-        gradient.extend(
-            lerp_colors(a, b, ease((j + 1) / (len_ + 1))) for j in range(len_)
+    for p in np.linspace(0.0, 1.0, n).tolist():
+        while p > pcolors[i]:
+            i += 1
+        gradient.append(
+            lerp_colors(
+                colors[i - 1],
+                colors[i],
+                normalize(ease(p), eased_pcolors[i - 1], eased_pcolors[i]),
+            )
         )
-    gradient.append(b)
     return gradient
 
 

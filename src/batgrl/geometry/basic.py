@@ -15,6 +15,7 @@ __all__ = [
     "Sizelike",
     "clamp",
     "lerp",
+    "normalize",
     "points_on_circle",
     "rect_slice",
     "round_down",
@@ -29,16 +30,16 @@ def clamp[T: (float, int)](value: T, min: T | None, max: T | None) -> T:
 
     Parameters
     ----------
-    value : T
+    value : (float, int)
         Value to clamp.
-    min : T | None
+    min : (float, int) | None
         Minimum of clamped value.
-    max : T | None
+    max : (float, int) | None
         Maximum of clamped value.
 
     Returns
     -------
-    T
+    (float, int)
         A value between `min` and `max`, inclusive.
     """
     if min is not None and value < min:
@@ -53,6 +54,11 @@ def clamp[T: (float, int)](value: T, min: T | None, max: T | None) -> T:
 def lerp(a: float, b: float, p: float) -> float:
     """Linear interpolation of `a` to `b` with proportion `p`."""
     return (1.0 - p) * a + p * b
+
+
+def normalize(p: float, start: float, end: float) -> float:
+    """Return ``p`` as a proportion of the interval from ``start`` to ``end``."""
+    return (p - start) / (end - start)
 
 
 def points_on_circle(
