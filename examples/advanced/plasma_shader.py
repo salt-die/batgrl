@@ -24,6 +24,8 @@ from batgrl.app import App
 from batgrl.gadgets.graphics import Graphics, scale_geometry
 from batgrl.gadgets.text import Text
 
+MARQUEE = "batgrl   "
+LEN = len(MARQUEE)
 VERTEX_SHADER = """
 #version 460 core
 
@@ -336,12 +338,31 @@ class Lasers(Text):
         self.vao.vertices = 3
         self.on_size()  # Create fbo
 
+    def on_add(self):
+        super().on_add()
+        self._scroll_task = asyncio.create_task(self._scroll_marquee())
+
+    async def _scroll_marquee(self):
+        while True:
+            h, w = self.size
+            t = time.perf_counter() * 0.4
+            self.positions += self.velocities * np.sin(t)
+            self.positions %= LEN
+            for y in range(h):
+                i = int(self.positions[y].item())
+                self.chars[y] = self.marquee[i : i + w]
+            await asyncio.sleep(0)
+
     def on_size(self):
         super().on_size()
         h, w = self.canvas.shape
+        self.marquee = np.array(list(MARQUEE))[np.arange(w + LEN) % LEN]
+        self.positions = (np.arange(h) % LEN).astype(float)
+        self.velocities = (np.arange(h) - h / 2) * 0.03
         for y in range(h):
-            for x in range(w):
-                self.chars[y, x] = "batgrl "[(y + x) % 7]
+            i = int(self.positions[y].item())
+            self.chars[y] = self.marquee[i : i + w]
+        self.canvas["style"] |= 2
         self.program["iResolution"] = w, h
         self.fbo = context.simple_framebuffer((w, h), components=4, dtype="f4")
 
