@@ -313,7 +313,7 @@ mainImage(in vec2 fragCoord) {
         0.1 * nz * nz * vec3(0.12, 0.12, .5)
         + 0.05 * nz2 * nz2 * vec3(0.55, 0.2, .55)
     ) * 0.8;
-    return vec4(col * 1.3, .78);
+    return clamp(vec4(col * 1.3, .78), 0.0, 1.0);
 }
 
 void
