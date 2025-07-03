@@ -8,7 +8,8 @@
 A shader example with transparency.
 
 A combination of two shadertoys:
-- https://www.shadertoy.com/view/t3t3DN by szd
+
+- https://www.shadertoy.com/view/llSGzW by netgrind
 - https://www.shadertoy.com/view/mdjGWG by kishimisu
 
 Your terminal font will need to support octants else `Plasma` blitter needs to change to
@@ -22,7 +23,7 @@ import moderngl
 import numpy as np
 from batgrl.app import App
 from batgrl.gadgets.graphics import Graphics, scale_geometry
-from batgrl.gadgets.text import Text
+from batgrl.gadgets.text import Style, Text
 
 MARQUEE = "batgrl   "
 LEN = len(MARQUEE)
@@ -37,61 +38,30 @@ void main() {
     position = gl_Position.xy * 0.5 + 0.5;
 }
 """
-LASER_SHADER = """
+WAVES_SHADER = """
 #version 460 core
 
 in vec2 position;
 uniform float iTime;
 uniform vec2 iResolution;
 
-vec3
-hsv2rgb(vec3 c) {
-    vec3 rgb = abs(mod(c.x * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0;
-    rgb = clamp(rgb, 0.0, 1.0);
-    rgb = rgb * rgb * (3.0 - 2.0 * rgb);
-    return c.z * mix(vec3(1.0), rgb, c.y);
-}
-
-float
-organicZone(vec2 p) {
-    float z = sin(p.y * 3.5 + p.x * 2.0 + iTime * 0.8);
-    z += sin(p.y * 8.0 - p.x * 2.5 + iTime * 1.0) * 0.5;
-    return z * 0.5;
-}
-
-vec3
-getcolor(vec2 uv, float baseHue) {
-    float zoneOff = organicZone(uv);
-    float hue = mod(baseHue + zoneOff * 0.1, 1.);
-    float sat = 0.8;
-    float val = 0.3;
-    return hsv2rgb(vec3(hue, sat, val));
-}
-
-float
-rand(float seed) {
-    seed = fract(seed * 0.1031);
-    seed *= seed + 33.33;
-    seed *= seed + seed;
-    return fract(seed);
-}
-
 vec4
-mainImage(in vec2 fragCoord) {
-    vec2 uv = fragCoord / iResolution.xy;
-    const float count = 10.0;
-    vec3 final_col = vec3(0.0);
-    float overlap = 0.0;
-    for (float i = 0.0; i < count; i++) {
-        vec3 col = getcolor(uv, 0.75);
-        vec2 pos = vec2(
-            sin(rand(i) / 1.137938 + sin(rand(i) + 2.2373194 * iTime / 1.5)) * 0.4 + 0.5
-        );
-        float radius = mix(0.0, 0.02, 0.5 + 0.01 * sin(uv.x));
-        float c = radius / abs(uv.x - pos.x);
-        final_col += (c * col);
-    }
-    return clamp(vec4(final_col, 1.0), 0.0, 1.0);
+mainImage(in vec2 fragCoord)
+{
+    float i = iTime;
+	vec2 uv = fragCoord.xy / iResolution.xy * 2.0 - 1.0;
+    vec4 c = vec4(1.0);
+    float d = length(uv);
+    float a = atan(uv.y, uv.x) + sin(i * .2) *.5;
+    uv.x = cos(a) * d;
+    uv.y = sin(a) * d;
+
+    d -= i;
+    uv.x += sin(uv.y * 2. + i) * .1;
+    uv += sin(uv * 1234.567 + i) * .0005;
+    c.r = abs(mod(uv.y + uv.x * 2. * d, uv.x * 1.1));
+
+	return c.rrra;
 }
 
 void
@@ -315,7 +285,7 @@ mainImage(in vec2 fragCoord) {
         0.1 * nz * nz * vec3(0.12, 0.12, .5)
         + 0.05 * nz2 * nz2 * vec3(0.55, 0.2, .55)
     ) * 0.8;
-    return clamp(vec4(col * 1.3, .78), 0.0, 1.0);
+    return clamp(vec4(col * 1.3, .65), 0.0, 1.0);
 }
 
 void
@@ -323,14 +293,15 @@ main() {
     gl_FragColor = mainImage(position * iResolution);
 }
 """
+
 context = moderngl.create_context(standalone=True)
 default_rng = np.random.default_rng()
 
 
-class Lasers(Text):
+class Waves(Text):
     def __init__(self, *args, **kwargs):
         self.program = context.program(
-            vertex_shader=VERTEX_SHADER, fragment_shader=LASER_SHADER
+            vertex_shader=VERTEX_SHADER, fragment_shader=WAVES_SHADER
         )
         super().__init__(*args, **kwargs)
         self.start = time.perf_counter()
@@ -346,7 +317,11 @@ class Lasers(Text):
         while True:
             h, w = self.size
             t = time.perf_counter() * 0.4
-            self.positions += self.velocities * np.sin(t)
+            if round(t) % 2:
+                self.positions += self.velocities * np.sin(t * np.pi / 2)
+            else:
+                self.positions += np.sin(t * np.pi / 2)
+
             self.positions %= LEN
             for y in range(h):
                 i = int(self.positions[y].item())
@@ -359,10 +334,7 @@ class Lasers(Text):
         self.marquee = np.array(list(MARQUEE))[np.arange(w + LEN) % LEN]
         self.positions = (np.arange(h) % LEN).astype(float)
         self.velocities = (np.arange(h) - h / 2) * 0.03
-        for y in range(h):
-            i = int(self.positions[y].item())
-            self.chars[y] = self.marquee[i : i + w]
-        self.canvas["style"] |= 2
+        self.canvas["style"] |= Style.ITALIC
         self.program["iResolution"] = w, h
         self.fbo = context.simple_framebuffer((w, h), components=4, dtype="f4")
 
@@ -421,16 +393,16 @@ class Plasma(Graphics):
 
 class ModernGlApp(App):
     async def on_start(self):
-        lasers = Lasers(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        waves = Waves(size_hint={"height_hint": 1.0, "width_hint": 1.0})
         plasma = Plasma(
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
             # try `blitter="sextant"` if terminal font doesn't support octants
             blitter="octant",
         )
-        self.add_gadgets(lasers, plasma)
+        self.add_gadgets(waves, plasma)
 
         while True:
-            lasers.update()
+            waves.update()
             plasma.update()
             await asyncio.sleep(0)
 
