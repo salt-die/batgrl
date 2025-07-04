@@ -1044,3 +1044,5 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     def on_blur(self):
         """Hide cursor on blur."""
         self._cursor.is_enabled = False
+        self._selection = None
+        self._highlight_selection()
