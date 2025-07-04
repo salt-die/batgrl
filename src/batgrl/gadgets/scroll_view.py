@@ -1,7 +1,7 @@
 """A scrollable view gadget."""
 
 import asyncio
-from typing import Final, cast
+from typing import Final, Literal, cast
 
 from ..geometry import round_down
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent
@@ -240,14 +240,14 @@ class ScrollView(Themable, Grabbable, Gadget):
         Allow scrolling with arrow keys.
     inertial_scrolling_enabled : bool, default: False
         Whether inertial scrolling is enabled.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     is_grabbable : bool, default: True
         Whether grabbable behavior is enabled.
     ptf_on_grab : bool, default: False
         Whether the gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton, default: "left"
+    mouse_button : MouseButton | Literal["any"], default: "left"
         Mouse button used for grabbing.
-    alpha : float, default: 1.0
-        Transparency of gadget.
     size : Sizelike, default: Size(10, 10)
         Size of gadget.
     pos : Pointlike, default: Point(0, 0)
@@ -293,16 +293,16 @@ class ScrollView(Themable, Grabbable, Gadget):
         Height of view port.
     port_width : int
         Width of view port.
+    alpha : float
+        Transparency of gadget.
     is_grabbable : bool
         Whether grabbable behavior is enabled.
     ptf_on_grab : bool
         Whether the gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton
+    mouse_button : MouseButton | Literal["any"]
         Mouse button used for grabbing.
     is_grabbed : bool
         Whether gadget is grabbed.
-    alpha : float
-        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -433,10 +433,10 @@ class ScrollView(Themable, Grabbable, Gadget):
         scrollwheel_enabled: bool = True,
         arrow_keys_enabled: bool = True,
         inertial_scrolling_enabled: bool = False,
+        alpha: float = 1.0,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
-        mouse_button: MouseButton = "left",
-        alpha: float = 1.0,
+        mouse_button: MouseButton | Literal["any"] = "left",
         size: Sizelike = Size(10, 10),
         pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,

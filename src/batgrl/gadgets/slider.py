@@ -1,6 +1,7 @@
 """A slider gadget."""
 
 from collections.abc import Callable
+from typing import Literal
 
 from ..colors import BLACK, WHITE, Color
 from ..terminal.events import MouseButton, MouseEvent
@@ -47,7 +48,7 @@ class Slider(Grabbable, Pane):
         Whether grabbable behavior is enabled.
     ptf_on_grab : bool, default: False
         Whether the gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton, default: "left"
+    mouse_button : MouseButton | Literal["any"], default: "left"
         Mouse button used for grabbing.
     bg_color : Color, default: BLACK
         Background color of gadget.
@@ -94,7 +95,7 @@ class Slider(Grabbable, Pane):
         Whether grabbable behavior is enabled.
     ptf_on_grab : bool
         Whether the gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton
+    mouse_button : MouseButton | Literal["any"]
         Mouse button used for grabbing.
     bg_color : Color
         Background color of gadget.
@@ -220,7 +221,7 @@ class Slider(Grabbable, Pane):
         slider_enabled: bool = True,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
-        mouse_button: MouseButton = "left",
+        mouse_button: MouseButton | Literal["any"] = "left",
         bg_color: Color = BLACK,
         alpha: float = 1.0,
         size: Sizelike = Size(10, 10),
@@ -374,8 +375,7 @@ class Slider(Grabbable, Pane):
     def grab(self, mouse_event: MouseEvent):
         """Move handle to mouse position on grab."""
         if (
-            mouse_event.event_type == "mouse_down"
-            and self.collides_point(mouse_event.pos)
+            self.collides_point(mouse_event.pos)
             and self.to_local(mouse_event.pos).y == self.height // 2
         ):
             super().grab(mouse_event)

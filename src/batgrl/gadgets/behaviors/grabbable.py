@@ -1,5 +1,7 @@
 """Grabbable behavior for a gadget."""
 
+from typing import Literal
+
 from ...terminal.events import MouseButton, MouseEvent
 from . import Behavior
 
@@ -23,7 +25,7 @@ class Grabbable(Behavior):
         Whether grabbable behavior is enabled.
     ptf_on_grab : bool, default: False
         Whether the gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton, default: "left"
+    mouse_button : MouseButton | Literal["any"], default: "left"
         Mouse button used for grabbing.
 
     Attributes
@@ -32,7 +34,7 @@ class Grabbable(Behavior):
         Whether grabbable behavior is enabled.
     ptf_on_grab : bool
         Whether the gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton
+    mouse_button : MouseButton | Literal["any"]
         Mouse button used for grabbing.
     is_grabbed : bool
         Whether gadget is grabbed.
@@ -52,15 +54,15 @@ class Grabbable(Behavior):
         *,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
-        mouse_button: MouseButton = "left",
+        mouse_button: MouseButton | Literal["any"] = "left",
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
-        self.is_grabbable = is_grabbable
-        self.ptf_on_grab = ptf_on_grab
-        self.mouse_button = mouse_button
-        self._is_grabbed = False
+        self.is_grabbable: bool = is_grabbable
+        self.ptf_on_grab: bool = ptf_on_grab
+        self.mouse_button: MouseButton | Literal["any"] = mouse_button
+        self._is_grabbed: bool = False
 
     def on_mouse(self, mouse_event) -> bool | None:
         """Determine if mouse event grabs or ungrabs gadget."""
@@ -72,11 +74,13 @@ class Grabbable(Behavior):
                     self.grab_update(mouse_event)
 
                 return True
-
             if (
                 self.collides_point(mouse_event.pos)
                 and mouse_event.event_type == "mouse_down"
-                and mouse_event.button == self.mouse_button
+                and (
+                    self.mouse_button == "any"
+                    or mouse_event.button == self.mouse_button
+                )
             ):
                 self.grab(mouse_event)
                 return True

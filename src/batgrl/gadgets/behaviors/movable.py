@@ -1,5 +1,7 @@
 """Movable behavior for a gadget."""
 
+from typing import Literal
+
 from ...geometry import clamp
 from ...terminal.events import MouseButton
 from .grabbable import Grabbable
@@ -25,7 +27,7 @@ class Movable(Grabbable):
         Whether grabbable behavior is enabled.
     ptf_on_grab : bool, default: False
         Whether the gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton, default: "left"
+    mouse_button : MouseButton | Literal["any"], default: "left"
         Mouse button used for grabbing.
 
     Attributes
@@ -40,7 +42,7 @@ class Movable(Grabbable):
         Whether grabbable behavior is enabled.
     ptf_on_grab : bool
         Whether the gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton
+    mouse_button : MouseButton | Literal["any"]
         Mouse button used for grabbing.
     is_grabbed : bool
         Whether gadget is grabbed.
@@ -63,7 +65,7 @@ class Movable(Grabbable):
         allow_horizontal_translation=True,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
-        mouse_button: MouseButton = "left",
+        mouse_button: MouseButton | Literal["any"] = "left",
         **kwargs,
     ) -> None:
         super().__init__(

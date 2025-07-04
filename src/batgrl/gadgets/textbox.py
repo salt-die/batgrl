@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import astuple, dataclass
-from typing import cast
+from typing import Literal, cast
 
 from ugrapheme import graphemes
 from uwcwidth import wcswidth
@@ -124,7 +124,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Whether grabbable behavior is enabled.
     ptf_on_grab : bool, default: False
         Whether the gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton, default: "left"
+    mouse_button : MouseButton | Literal["any"], default: "left"
         Mouse button used for grabbing.
     size : Sizelike, default: Size(10, 10)
         Size of gadget.
@@ -173,7 +173,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Whether grabbable behavior is enabled.
     ptf_on_grab : bool
         Whether the gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton
+    mouse_button : MouseButton | Literal["any"]
         Mouse button used for grabbing.
     is_grabbed : bool
         Whether gadget is grabbed.
@@ -322,7 +322,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         max_chars: int | None = None,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
-        mouse_button: MouseButton = "left",
+        mouse_button: MouseButton | Literal["any"] = "left",
         alpha: float = 1.0,
         size: Sizelike = Size(10, 10),
         pos: Pointlike = Point(0, 0),
@@ -804,7 +804,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
     def grab(self, mouse_event):
         """Start selection on grab."""
-        if mouse_event.button == "left" and self._box.collides_point(mouse_event.pos):
+        if self._box.collides_point(mouse_event.pos):
             super().grab(mouse_event)
 
             _, x = self._box.to_local(mouse_event.pos)

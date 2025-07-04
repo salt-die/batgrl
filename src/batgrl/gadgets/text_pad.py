@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import astuple, dataclass
+from typing import Literal
 
 from ugrapheme import grapheme_iter, graphemes
 from uwcwidth import wcswidth
 
 from ..logging import get_logger
-from ..terminal.events import KeyEvent, MouseEvent, PasteEvent
+from ..terminal.events import KeyEvent, MouseButton, MouseEvent, PasteEvent
 from ..text_tools import canvas_as_text, egc_chr, is_word_char
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
@@ -98,6 +99,12 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     ----------
     alpha : float, default: 1.0
         Transparency of gadget.
+    is_grabbable : bool, default: True
+        Whether grabbable behavior is enabled.
+    ptf_on_grab : bool, default: False
+        Whether the gadget will be pulled to front when grabbed.
+    mouse_button : MouseButton | Literal["any"], default: "left"
+        Mouse button used for grabbing.
     size : Sizelike, default: Size(10, 10)
         Size of gadget.
     pos : Pointlike, default: Point(0, 0)
@@ -129,6 +136,14 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         Whether gadget has focus.
     any_focused : bool
         Whether any gadget has focus.
+    is_grabbable : bool
+        Whether grabbable behavior is enabled.
+    ptf_on_grab : bool
+        Whether the gadget will be pulled to front when grabbed.
+    mouse_button : MouseButton | Literal["any"]
+        Mouse button used for grabbing.
+    is_grabbed : bool
+        Whether gadget is grabbed.
     size : Size
         Size of gadget.
     height : int
@@ -272,6 +287,9 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self,
         *,
         alpha: float = 1.0,
+        is_grabbable: bool = True,
+        ptf_on_grab: bool = False,
+        mouse_button: MouseButton | Literal["any"] = "left",
         size: Sizelike = Size(10, 10),
         pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -307,6 +325,9 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         """Stack of redo text edits."""
 
         super().__init__(
+            is_grabbable=is_grabbable,
+            ptf_on_grab=ptf_on_grab,
+            mouse_button=mouse_button,
             size=size,
             pos=pos,
             size_hint=size_hint,
@@ -939,7 +960,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def grab(self, mouse_event):
         """Start selection on grab."""
-        if mouse_event.button == "left" and self._pad.collides_point(mouse_event.pos):
+        if self._pad.collides_point(mouse_event.pos):
             super().grab(mouse_event)
 
             y, x = self._pad.to_local(mouse_event.pos)
