@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from numpy import dtype, float64, intc, ndarray, str_, uint8, ulong
+from numpy import dtype, float64, intc, ndarray, str_, uint8, uint32, ulong
 
 __all__ = [
     "Cell",
@@ -20,6 +20,7 @@ __all__ = [
     "RGBA_1D",
     "RGBA_2D",
     "RGBM_2D",
+    "UInt32_2D",
     "ULong1D",
     "ULong2D",
     "Unicode1D",
@@ -66,6 +67,9 @@ Int1D = ndarray[tuple[int], dtype[intc]]
 
 Int2D = ndarray[tuple[int, int], dtype[intc]]
 """A 2-dimensional array of integers."""
+
+UInt32_2D = ndarray[tuple[int, int], dtype[uint32]]
+"""A 2-dimensional array of unsigned 32-bit integers."""
 
 ULong1D = ndarray[tuple[int], dtype[ulong]]
 """A 1-dimensional array of unsigned long."""

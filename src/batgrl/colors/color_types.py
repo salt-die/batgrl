@@ -1,9 +1,10 @@
 """Color data structures."""
 
 import re
+from dataclasses import dataclass
 from typing import Final, NamedTuple, Self, TypedDict
 
-__all__ = ["AColor", "Color", "ColorTheme"]
+__all__ = ["AColor", "Color", "ColorTheme", "SyntaxHighlightTheme"]
 
 _HEXCODE_RE: Final = re.compile(r"^#?[0-9a-fA-F]{6}$")
 _AHEXCODE_RE: Final = re.compile(r"^#?[0-9a-fA-F]{8}$")
@@ -454,3 +455,44 @@ class ColorTheme(TypedDict, total=False):
     """Window border normal color."""
     window_border_inactive: Hexcode
     """Window border inactive color."""
+
+
+@dataclass
+class SyntaxHighlightTheme:
+    """Syntax highlight theme."""
+
+    default_fg: Color
+    """Default foreground color."""
+    default_bg: Color
+    """Default background color."""
+    cursor_fg: Color
+    """Default cursor foreground color."""
+    cursor_bg: Color
+    """Default cursor background color."""
+    active_line: Color
+    """The background color of the cursor's current line."""
+    selection: Color
+    """The color of selected text."""
+    highlights: dict[str, tuple[int, Color | None]]
+    """A dictionary of tree sitter query names to (style, color) tuples."""
+
+    def __init__(
+        self,
+        default_fg: Hexcode,
+        default_bg: Hexcode,
+        cursor_fg: Hexcode,
+        cursor_bg: Hexcode,
+        active_line: Hexcode,
+        selection: Hexcode,
+        highlights: dict[str, tuple[int, Hexcode | None]],
+    ):
+        self.default_fg = Color.from_hex(default_fg)
+        self.default_bg = Color.from_hex(default_bg)
+        self.cursor_fg = Color.from_hex(cursor_fg)
+        self.cursor_bg = Color.from_hex(cursor_bg)
+        self.active_line = Color.from_hex(active_line)
+        self.selection = Color.from_hex(selection)
+        self.highlights = {
+            k: (style, None if hexcode is None else Color.from_hex(hexcode))
+            for k, (style, hexcode) in highlights.items()
+        }

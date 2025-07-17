@@ -5,32 +5,35 @@ from __future__ import annotations
 from dataclasses import astuple, dataclass
 from typing import Literal
 
+from tree_sitter import Parser, Query, Tree
 from ugrapheme import grapheme_iter, graphemes
 from uwcwidth import wcswidth
 
+from ..array_types import UInt32_2D
+from ..colors import Color, Neptune, SyntaxHighlightTheme
 from ..logging import get_logger
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent, PasteEvent
-from ..text_tools import canvas_as_text, egc_chr, is_word_char
+from ..text_tools import canvas_as_text, egc_chr, egc_ord, is_word_char
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .cursor import Cursor
 from .gadget import Gadget, Point, Pointlike, PosHint, Size, SizeHint, Sizelike
 from .scroll_view import ScrollView
-from .text import Text
+from .text import Text, _tree_sitter_parser
 
 __all__ = ["Point", "Size", "TextPad"]
 
 logger = get_logger(__name__)
 
 
-@dataclass
+@dataclass(slots=True)
 class _TextSelection:
     start: Point
     end: Point
 
 
-@dataclass
+@dataclass(slots=True)
 class _TextEdit:
     cursor: Point
     selection: _TextSelection | None
@@ -87,6 +90,22 @@ class _TextEdit:
             return True
 
         return False
+
+
+@dataclass
+class _TreeEdit:
+    start_byte_offset: int
+    start_point: tuple[int, int]
+    end_byte_offset: int
+    end_point: tuple[int, int]
+
+
+@dataclass
+class _SyntaxHighlightInfo:
+    language: str
+    parser: Parser
+    query: Query
+    syntax_tree: Tree
 
 
 class TextPad(Themable, Grabbable, Focusable, Gadget):
@@ -286,6 +305,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     def __init__(
         self,
         *,
+        syntax_highlight_language: str | None = None,
+        syntax_highlight_theme: SyntaxHighlightTheme = Neptune,
         alpha: float = 1.0,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
@@ -323,6 +344,10 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         """Stack of undo text edits."""
         self._redo_stack: list[_TextEdit] = []
         """Stack of redo text edits."""
+        self._syntax_highlight_info: _SyntaxHighlightInfo | None = None
+        """Language, parser, query, and syntax tree needed for syntax highlighting."""
+        self._syntax_highlight_theme: SyntaxHighlightTheme = syntax_highlight_theme
+        """Theme for syntax highlighting."""
 
         super().__init__(
             is_grabbable=is_grabbable,
@@ -340,6 +365,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self._pad.add_gadget(self._cursor)
         self._scroll_view.view = self._pad
         self.add_gadget(self._scroll_view)
+        self.syntax_highlight_language = syntax_highlight_language
 
     @property
     def alpha(self) -> float:
@@ -380,13 +406,203 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     @property
     def end_of_content(self) -> Point:
         """Point after last character in text."""
-        ll = self._line_widths
-        return Point(len(ll) - 1, ll[-1])
+        return Point(len(self._line_widths) - 1, self._line_widths[-1])
 
     @property
     def page_lines(self) -> int:
         """Number of rows a page-up or page-down moves."""
         return self._scroll_view.port_height
+
+    @property
+    def syntax_highlight_language(self) -> str | None:
+        """Language for syntax highlighting."""
+        if self._syntax_highlight_info is None:
+            return None
+        return self._syntax_highlight_info.language
+
+    @syntax_highlight_language.setter
+    def syntax_highlight_language(self, syntax_highlight_language: str | None) -> None:
+        if syntax_highlight_language is None:
+            self._syntax_highlight_info = None
+            self._cursor.reverse = True
+            self._cursor.fg_color = None
+            self._cursor.bg_color = None
+        else:
+            parser_result = _tree_sitter_parser(syntax_highlight_language)
+            if parser_result is None:
+                self._syntax_highlight_info = None
+            else:
+                parser, query = parser_result
+                syntax_tree = parser.parse(self._tree_sitter_read_pad)
+                self._syntax_highlight_info = _SyntaxHighlightInfo(
+                    syntax_highlight_language, parser, query, syntax_tree
+                )
+                self._cursor.reverse = None
+                self._cursor.fg_color = self._syntax_highlight_theme.cursor_fg
+                self._cursor.bg_color = self._syntax_highlight_theme.cursor_bg
+
+        self._highlight_selection()
+
+    def _clear_visible_newlines(self):
+        """Replace any "▌" on empty lines with whitespace."""
+        for i, line_width in enumerate(self._line_widths):
+            if line_width == 0:
+                self._pad.canvas[i, 0:1]["ord"] = egc_ord(" ")
+
+    def _add_visible_newlines(self, fg_color: Color):
+        """Show empty lines in selection with "▌"."""
+        if self._selection is None:
+            return
+
+        sy, ey = self._selection.start.y, self._selection.end.y
+        if sy > ey:
+            sy, ey = ey, sy
+
+        for line in range(sy, ey + 1):
+            if self._line_widths[line] == 0 and line != self._cursor.y:
+                self._pad.canvas[line, 0:1]["ord"] = egc_ord("▌")
+                self._pad.canvas[line, 0:1]["fg_color"] = fg_color
+
+    def _highlight_selection(self):
+        self._clear_visible_newlines()
+        fg = self._pad.canvas["fg_color"]
+        bg = self._pad.canvas["bg_color"]
+
+        selection_fg = self.get_color("text_pad_selection_highlight_fg")
+        line_highlight_fg = self.get_color("text_pad_line_highlight_fg")
+        if self._syntax_highlight_info is None:
+            fg[:] = self._pad.default_fg_color
+            bg[:] = self._pad.default_bg_color
+            selection = self.get_color("text_pad_selection_highlight_bg")
+            active_line = self.get_color("text_pad_line_highlight_bg")
+        else:
+            self._pad._highlight(
+                self._syntax_highlight_theme,
+                self._syntax_highlight_info.query,
+                self._syntax_highlight_info.syntax_tree,
+            )
+            selection = self._syntax_highlight_theme.selection
+            active_line = self._syntax_highlight_theme.active_line
+
+        if self._selection is not None and self._selection.start != self._selection.end:
+            if self._selection.start < self._selection.end:
+                (sy, sx), (ey, ex) = self._selection.start, self._selection.end
+            else:
+                (sy, sx), (ey, ex) = self._selection.end, self._selection.start
+
+            line_widths = self._line_widths
+
+            if sy == ey:
+                bg[sy, sx:ex] = selection
+            else:
+                bg[sy, sx : line_widths[sy]] = selection
+                bg[ey, :ex] = selection
+                for i in range(sy + 1, ey):
+                    bg[i, : line_widths[i]] = selection
+
+            if self._syntax_highlight_info is None:
+                if sy == ey:
+                    fg[sy, sx:ex] = selection_fg
+                else:
+                    fg[sy, sx : line_widths[sy]] = selection_fg
+                    fg[ey, :ex] = selection_fg
+                    for i in range(sy + 1, ey):
+                        fg[i, : line_widths[i]] = selection_fg
+
+            self._add_visible_newlines(selection)
+
+        else:  # Add line highlight.
+            if self._syntax_highlight_info is None:
+                fg[self.cursor.y, :] = line_highlight_fg
+            bg[self.cursor.y, :] = active_line
+
+    def _tree_sitter_read_pad(self, _, point: tuple[int, int]) -> bytes:
+        y, x = self._pad._tree_sitter_point_to_pos(point)
+        if y >= len(self._line_widths):
+            return b""
+
+        end = self._line_widths[y]
+        return (
+            "".join(
+                egc_chr(ord_) for ord_ in self._pad.canvas["ord"][y, x:end].tolist()
+            ).encode()
+            + b"\n"
+        )
+
+    def _range_to_offset(
+        self, start: Pointlike, end: Pointlike
+    ) -> tuple[int, tuple[int, int], int, tuple[int, int]]:
+        """
+        Convert point (row, column) in text pad to a tree sitter point (row,
+        byte_offset).
+        """
+        ords: UInt32_2D = self._pad.canvas["ord"]
+
+        sy, sx = start
+        start_byte_offset = 0
+        start_row_byte_offset = 0
+
+        for v in range(sy):
+            for u in range(self._line_widths[v]):
+                start_byte_offset += len(egc_chr(ords[v, u]).encode())
+            start_byte_offset += 1
+
+        for u in range(sx):
+            start_row_byte_offset += len(egc_chr(ords[sy, u]).encode())
+
+        start_byte_offset += start_row_byte_offset
+
+        ey, ex = end
+        nbytes = ey - sy
+        if sy == ey:
+            for u in range(sx, ex):
+                nbytes += len(egc_chr(ords[sy, u]).encode())
+            end_row_byte_offset = start_row_byte_offset + nbytes
+        else:
+            # Last bit of first line
+            for u in range(sx, self._line_widths[sy]):
+                nbytes += len(egc_chr(ords[sy, u]).encode())
+
+            # All of middle lines
+            for v in range(sy + 1, ey):
+                for u in range(self._line_widths[v]):
+                    nbytes += len(egc_chr(ords[v, u]).encode())
+
+            # First bit of last line
+            end_row_byte_offset = 0
+            for u in range(ex):
+                end_row_byte_offset += len(egc_chr(ords[ey, u]).encode())
+            nbytes += end_row_byte_offset
+
+        end_byte_offset = start_byte_offset + nbytes
+        return (
+            start_byte_offset,
+            (sy, start_row_byte_offset),
+            end_byte_offset,
+            (ey, end_row_byte_offset),
+        )
+
+    def _pos_to_point(
+        self, pos: Pointlike, point: Pointlike, byte_offset: int
+    ) -> tuple[int, int]:
+        """
+        Convert ``pos`` (row, column) to a tree sitter point (row, byte_offset).
+
+        The return value is calculated starting from previously calculated ``point``
+        and ``byte_offset`` to save some effort.
+        """
+        ords: UInt32_2D = self._pad.canvas["ord"]
+        sy, sx = point
+        ey, ex = pos
+        if ey == sy:
+            for u in range(sx, ex):
+                byte_offset += len(egc_chr(ords[sy, u]).encode())
+            return ey, byte_offset
+
+        byte_offset = 0
+        for u in range(ex):
+            byte_offset += len(egc_chr(ords[ey, u]).encode())
+        return ey, byte_offset
 
     def replace_text(self, start: Pointlike, end: Pointlike, content: str) -> None:
         """
@@ -407,37 +623,46 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self._selection = None
         self._prev_x = None
 
-        ll = self._line_widths
+        line_widths = self._line_widths
         pad = self._pad
+        highlight_info = self._syntax_highlight_info
 
         if start > end:
             start, end = end, start
 
+        tree_edit = (
+            None
+            if highlight_info is None
+            else _TreeEdit(*self._range_to_offset(start, end))
+        )
+
         sy, sx = start
         ey, ex = end
 
-        if ey >= len(ll):
+        if ey >= len(line_widths):
             logger.debug(
                 "replace_text: Delete end y-coordinate is greater than number of lines."
             )
-            ey = len(ll) - 1
-        if ex > ll[ey]:
+            ey = len(line_widths) - 1
+        if ex > line_widths[ey]:
             logger.debug(
                 "replace_text: Delete end x-coordinate is greater than line length."
             )
-            ex = ll[ey]
+            ex = line_widths[ey]
 
         if sy == ey:
             text = canvas_as_text(pad.canvas[sy, sx:ex])
         else:
-            lines = [canvas_as_text(pad.canvas[sy, sx : ll[sy]])]
+            lines = [canvas_as_text(pad.canvas[sy, sx : line_widths[sy]])]
             for y in range(sy + 1, ey):
-                lines.append(canvas_as_text(pad.canvas[y, : ll[y]]))
+                lines.append(canvas_as_text(pad.canvas[y, : line_widths[y]]))
             lines.append(canvas_as_text(pad.canvas[ey, :ex]))
             text = "\n".join(lines)
 
-        len_end = ll[ey] - ex
-        len_start = ll[sy] = sx + len_end
+        len_end = line_widths[ey] - ex
+        len_start = line_widths[sy] = sx + len_end
+        if line_widths[sy] >= pad.width:
+            pad.width = line_widths[sy] + 1
 
         pad.canvas[sy, sx:len_start] = pad.canvas[ey, ex : ex + len_end]
         pad.canvas[sy, len_start:] = pad.default_cell
@@ -446,54 +671,56 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         pad.canvas[sy + 1 : sy + 1 + len(remaining)] = remaining
         pad.canvas[sy + 1 + len(remaining) :] = pad.default_cell
 
-        del ll[sy + 1 : ey + 1]
-        height = max(len(ll), self._scroll_view.port_height)
-        width = max(max(ll) + 1, self._scroll_view.port_width)
+        del line_widths[sy + 1 : ey + 1]
+        height = max(len(line_widths), self._scroll_view.port_height)
+        width = max(max(line_widths) + 1, self._scroll_view.port_width)
         pad.size = height, width
 
-        line_remaining = pad.canvas[sy, sx : ll[sy]].copy()
+        line_remaining = pad.canvas[sy, sx : line_widths[sy]].copy()
 
         lines = content.split("\n")  # DO NOT USE `splitlines`.
         if len(lines) == 1:
             line = lines[0]
             line_width = wcswidth(line)
 
-            ll[sy] += line_width
-            if ll[sy] >= pad.width:
-                pad.width = ll[sy] + 1
+            line_widths[sy] += line_width
+            if line_widths[sy] >= pad.width:
+                pad.width = line_widths[sy] + 1
 
             pad.add_str(line, pos=(sy, sx))
-            pad.canvas[sy, sx + line_width : ll[sy]] = line_remaining
-            self.cursor = sy, sx + line_width
+            pad.canvas[sy, sx + line_width : line_widths[sy]] = line_remaining
+            cursor = Point(sy, sx + line_width)
         else:
             first, *lines, last = lines
             newlines = len(lines) + 1
             width_last = wcswidth(last)
             last_y = sy + newlines
 
-            ll[sy] = sx + wcswidth(first)
+            line_widths[sy] = sx + wcswidth(first)
             for i, line in enumerate(lines, start=sy + 1):
-                ll.insert(i, wcswidth(line))
-            ll.insert(last_y, width_last + wcswidth(canvas_as_text(line_remaining)))
+                line_widths.insert(i, wcswidth(line))
+            line_widths.insert(
+                last_y, width_last + wcswidth(canvas_as_text(line_remaining))
+            )
 
-            height = max(len(ll), self._scroll_view.port_height)
-            width = max(max(ll) + 1, self._scroll_view.port_width)
+            height = max(len(line_widths), self._scroll_view.port_height)
+            width = max(max(line_widths) + 1, self._scroll_view.port_width)
             pad.size = height, width
 
             pad.canvas[sy + newlines + 1 :] = pad.canvas[sy + 1 : -newlines]
-            pad.canvas[sy, ll[sy] :] = pad.default_cell
+            pad.canvas[sy, line_widths[sy] :] = pad.default_cell
 
             pad.add_str(first, pos=(sy, sx))
             for i, line in enumerate(lines, start=sy + 1):
                 pad.add_str(line.ljust(pad.width), pos=(i, 0))
 
             pad.add_str(last, pos=(last_y, 0))
-            pad.canvas[last_y, width_last : ll[last_y]] = line_remaining
-            pad.canvas[last_y, ll[last_y] :] = pad.default_cell
-            self.cursor = last_y, width_last
+            pad.canvas[last_y, width_last : line_widths[last_y]] = line_remaining
+            pad.canvas[last_y, line_widths[last_y] :] = pad.default_cell
+            cursor = Point(last_y, width_last)
 
         inverse_edit = _TextEdit(
-            prev_cursor, prev_selection, Point(sy, sx), self.cursor, text
+            prev_cursor, prev_selection, Point(sy, sx), cursor, text
         )
         if self._replace_text_to_undo_stack:
             stack = self._undo_stack
@@ -508,6 +735,22 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
         if not (stack and stack[-1].join(inverse_edit)):
             stack.append(inverse_edit)
+
+        if tree_edit is not None and highlight_info is not None:
+            self._clear_visible_newlines()
+            old_tree = highlight_info.syntax_tree
+            old_tree.edit(
+                tree_edit.start_byte_offset,
+                tree_edit.end_byte_offset,
+                tree_edit.start_byte_offset + len(content.encode()),
+                tree_edit.start_point,
+                tree_edit.end_point,
+                self._pos_to_point(cursor, start, tree_edit.start_point[1]),
+            )
+            new_tree = highlight_info.parser.parse(self._tree_sitter_read_pad, old_tree)
+            highlight_info.syntax_tree = new_tree
+
+        self.cursor = cursor
 
     def undo(self):
         """Undo previous edit."""
@@ -527,39 +770,6 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             self.replace_text(prev_edit.start, prev_edit.end, prev_edit.text)
             self._selection = prev_edit.selection
             self.cursor = prev_edit.cursor
-
-    def _highlight_selection(self):
-        fg = self._pad.canvas["fg_color"]
-        bg = self._pad.canvas["bg_color"]
-        fg[:] = self._pad.default_fg_color
-        bg[:] = self._pad.default_bg_color
-
-        if self._selection is not None and self._selection.start != self._selection.end:
-            start, end = self._selection.start, self._selection.end
-            if start > end:
-                sy, sx = end
-                ey, ex = start
-            else:
-                sy, sx = start
-                ey, ex = end
-
-            highlight_fg = self.get_color("text_pad_selection_highlight_fg")
-            highlight_bg = self.get_color("text_pad_selection_highlight_bg")
-            ll = self._line_widths
-            if sy == ey:
-                fg[sy, sx:ex] = highlight_fg
-                bg[sy, sx:ex] = highlight_bg
-            else:
-                fg[sy, sx : ll[sy]] = highlight_fg
-                bg[sy, sx : ll[sy]] = highlight_bg
-                fg[ey, :ex] = highlight_fg
-                bg[ey, :ex] = highlight_bg
-                for i in range(sy + 1, ey):
-                    fg[i, : ll[i]] = highlight_fg
-                    bg[i, : ll[i]] = highlight_bg
-        else:  # Add line highlight.
-            fg[self.cursor.y, :] = self.get_color("text_pad_line_highlight_fg")
-            bg[self.cursor.y, :] = self.get_color("text_pad_line_highlight_bg")
 
     def move_cursor_left(self, n: int = 1):
         """Move cursor left `n` characters."""

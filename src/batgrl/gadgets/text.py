@@ -1,23 +1,24 @@
 """A text gadget."""
 
+import importlib
+from functools import cache
+from pathlib import Path
 from typing import Literal
 
 import numpy as np
-from pygments.lexer import Lexer
-from pygments.lexers import guess_lexer
-from pygments.style import Style as PygmentsStyle
-from uwcwidth import wcswidth
+from tree_sitter import Language, Parser, Query, QueryCursor, Tree
 
 from .._rendering import text_render
 from ..array_types import RGBM_2D, Cell0D, Cell2D, Enum2D, Unicode2D
-from ..colors import Color, Neptune
+from ..colors import Color, Neptune, SyntaxHighlightTheme
+from ..logging import get_logger
 from ..text_tools import (
     Style,
     _parse_batgrl_md,
     _text_to_cells,
     _write_cells_to_canvas,
     add_text,
-    canvas_as_text,
+    egc_chr,
     egc_ord,
     new_cell,
 )
@@ -40,6 +41,8 @@ __all__ = [
     "Text",
     "add_text",
 ]
+
+logger = get_logger(__name__)
 
 Border = Literal[
     "light",
@@ -90,6 +93,27 @@ _BORDERS = {
     "sextant_rounded": "🬔🬧▌▐🬂🬭🬣🬘",
 }
 """Border characters for :meth:`batgrl.text_gadget.Text.add_border`."""
+
+
+@cache
+def _tree_sitter_parser(language: str) -> tuple[Parser, Query] | None:
+    try:
+        tree_module = importlib.import_module(f"tree_sitter_{language}")
+    except ImportError:
+        logger.info(f"Could not load tree-sitter language {language!r}.")
+        return None
+    else:
+        tree_lang: object = tree_module.language()
+
+    query = Path(__file__).parent.parent / "tree_sitter_highlights" / f"{language}.scm"
+    if not query.exists():
+        logger.info(f"Could not load tree-sitter query '{language}.scm'.")
+        return None
+
+    lang = Language(tree_lang)
+    query = Query(lang, query.read_text())
+
+    return Parser(lang), query
 
 
 class Text(Gadget):
@@ -381,8 +405,88 @@ class Text(Gadget):
             self.canvas["bg_color"][[0, -1]] = bg_color
             self.canvas["bg_color"][:, [0, -1]] = bg_color
 
+    def _tree_sitter_point_to_pos(
+        self, point: tuple[int, int], last: tuple[int, int, int] | None = None
+    ) -> Point:
+        """
+        Convert a tree sitter (row, byte_offset) to a point in the canvas.
+
+        ``last`` can reuse a previous `point_to_pos` calculation and has the form
+        (last_row, last_byte_offset, last_x).
+        """
+        h, w = self.canvas.shape
+        y, byte_offset = point
+        if y >= h:
+            return Point(y, 0)
+
+        if last is None:
+            nbytes = x = 0
+        else:
+            last_y, nbytes, x = last
+            if last_y != y or nbytes > byte_offset:
+                nbytes = x = 0
+
+        while nbytes < byte_offset:
+            nbytes += len(egc_chr(self.canvas["ord"][y, x]).encode())
+            x += 1
+
+            if x >= w:
+                return Point(y, w)
+
+        return Point(y, x)
+
+    def _tree_sitter_read_canvas(self, _, point: tuple[int, int]) -> bytes:
+        y, x = self._tree_sitter_point_to_pos(point)
+        if y >= self.height:
+            return b""
+
+        return (
+            "".join(egc_chr(ord_) for ord_ in self.canvas["ord"][y, x:].tolist())
+            .rstrip()
+            .encode()
+            + b"\n"
+        )
+
+    def _highlight(
+        self, theme: SyntaxHighlightTheme, query: Query, syntax_tree: Tree
+    ) -> None:
+        self.canvas["fg_color"] = theme.default_fg
+        self.canvas["bg_color"] = theme.default_bg
+
+        matches = QueryCursor(query).matches(syntax_tree.root_node)
+        highlights: dict[tuple[int, int, int, int], tuple[int, str]] = {}
+        for index, captures in matches:
+            for highlight, nodes in captures.items():
+                if highlight not in theme.highlights:
+                    continue
+
+                for node in nodes:
+                    sy, sbo = node.start_point
+                    ey, ebo = node.end_point
+                    if highlights.get((sy, sbo, ey, ebo), (-1, ""))[0] < index:
+                        highlights[sy, sbo, ey, ebo] = (index, highlight)
+
+        y = ex = ebo = 0
+        for (sy, sbo, ey, ebo), (_, highlight) in highlights.items():
+            y, sx = self._tree_sitter_point_to_pos((sy, sbo), last=(y, ebo, ex))
+            y, ex = self._tree_sitter_point_to_pos((ey, ebo), last=(y, sbo, sx))
+
+            style, fg_color = theme.highlights[highlight]
+            if sy != ey:
+                self.canvas["style"][sy, sx:] = style
+                self.canvas["style"][sy + 1 : ey] = style
+                self.canvas["style"][ey, :ex] = style
+                if fg_color is not None:
+                    self.canvas["fg_color"][sy, sx:] = fg_color
+                    self.canvas["fg_color"][sy + 1 : ey] = fg_color
+                    self.canvas["fg_color"][ey, :ex] = fg_color
+            else:
+                self.canvas["style"][sy, sx:ex] = style
+                if fg_color is not None:
+                    self.canvas["fg_color"][sy, sx:ex] = fg_color
+
     def add_syntax_highlighting(
-        self, lexer: Lexer | None = None, style: type[PygmentsStyle] = Neptune
+        self, language: str, theme: SyntaxHighlightTheme = Neptune
     ):
         """
         Add syntax highlighting to current text in canvas.
@@ -391,43 +495,15 @@ class Text(Gadget):
         ----------
         lexer : pygments.lexer.Lexer | None, default: None
             Lexer for text. If not given, the lexer is guessed.
-        style : pygments.style.Style, default: Neptune
-            A pygments style to use for syntax highlighting.
+        theme : SyntaxHighlightTheme, default: Neptune
+            A theme to use for syntax highlighting.
         """
-        text = canvas_as_text(self.canvas)
-        if lexer is None:
-            lexer = guess_lexer(text)
+        parser_result = _tree_sitter_parser(language)
+        if parser_result is None:
+            return
 
-        self.canvas["fg_color"] = 0
-        self.canvas["bg_color"] = Color.from_hex(style.background_color)
-        y = x = 0
-        for ttype, value in lexer.get_tokens(text):
-            lines = value.split("\n")
-            token_style = style.style_for_token(ttype)
-            for i, line in enumerate(lines):
-                if i > 0:
-                    y += 1
-                    x = 0
-
-                if len(line) == 0:
-                    continue
-
-                end = x + wcswidth(line)
-                if token_style["color"]:
-                    self.canvas[y, x:end]["fg_color"] = Color.from_hex(
-                        token_style["color"]
-                    )
-                if token_style["bgcolor"]:
-                    self.canvas[y, x:end]["bg_color"] = Color.from_hex(
-                        token_style["bgcolor"]
-                    )
-                if token_style["bold"]:
-                    self.canvas[y, x:end]["style"] |= Style.BOLD
-                if token_style["italic"]:
-                    self.canvas[y, x:end]["style"] |= Style.ITALIC
-                if token_style["underline"]:
-                    self.canvas[y, x:end]["style"] |= Style.UNDERLINE
-                x = end
+        parser, query = parser_result
+        self._highlight(theme, query, parser.parse(self._tree_sitter_read_canvas))
 
     def add_str(
         self,
