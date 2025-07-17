@@ -15,7 +15,11 @@ class SyntaxApp(App):
         text.set_text(code)
         text.add_syntax_highlighting("python")
 
-        sv = ScrollView(pos=(2, 0), size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        sv = ScrollView(
+            pos=(2, 0),
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
+            dynamic_bars=True,
+        )
         sv.view = text
 
         self.add_gadget(sv)
