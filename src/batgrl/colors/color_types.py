@@ -472,9 +472,9 @@ class SyntaxHighlightTheme:
     active_line: Color
     """The background color of the cursor's current line."""
     selection: Color
-    """The color of selected text."""
+    """The background color of selected text."""
     highlights: dict[str, tuple[int, Color | None]]
-    """A dictionary of tree sitter query names to (style, color) tuples."""
+    """A dictionary of tree sitter query names to (style, hexcode) tuples."""
 
     def __init__(
         self,
