@@ -2055,6 +2055,7 @@ cdef void trans_sixel_graphics_field_render(
         size_t w = graphics_cell_width(cells, graphics)
         size_t gh = graphics.shape[0], gw = graphics.shape[1]
         size_t oy, ox, gy, gx, pgy, pgx
+        where_fg_result where_fg
 
     for i in range(nparticles):
         if not particles[i, 3]:
@@ -2077,7 +2078,10 @@ cdef void trans_sixel_graphics_field_render(
             kind[ipy, ipx] == GLYPH
             or kind[ipy, ipx] == MIXED and not graphics[pgy, pgx, 3]
         ):
-            if cells[ipy, ipx].ord == HALF_BLOCK_ORD and py - ipy < .5:
+            where_fg = get_where_fg(cells[ipy, ipx].ord)
+            if where_fg.where_fg(
+                py - ipy, px - ipx, where_fg.region, where_fg.block_height
+            ):
                 graphics[pgy, pgx, 0] = cells[ipy, ipx].fg_color[0]
                 graphics[pgy, pgx, 1] = cells[ipy, ipx].fg_color[1]
                 graphics[pgy, pgx, 2] = cells[ipy, ipx].fg_color[2]
