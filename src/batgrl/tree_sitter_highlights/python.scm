@@ -152,8 +152,10 @@
 ;; Keywords
 ["async" "assert" "await" "global" "nonlocal" "pass" "with" "as"] @keyword
 
-["def" "class" "lambda"] @keyword.def
-(function_definition "async" @keyword.def)
+["def" "lambda"] @keyword.function
+(function_definition "async" @keyword.function)
+
+"class" @keyword.class
 
 ["and" "in" "is" "not" "or" "del"] @keyword.operator
 
