@@ -4,6 +4,8 @@ import re
 from dataclasses import dataclass
 from typing import Final, NamedTuple, Self, TypedDict
 
+from .._style import Style
+
 __all__ = ["AColor", "Color", "ColorTheme", "SyntaxHighlightTheme"]
 
 _HEXCODE_RE: Final = re.compile(r"^#?[0-9a-fA-F]{6}$")
@@ -473,7 +475,7 @@ class SyntaxHighlightTheme:
     """The background color of the cursor's current line."""
     selection: Color
     """The background color of selected text."""
-    highlights: dict[str, tuple[int, Color | None]]
+    highlights: dict[str, tuple[Style, Color | None]]
     """A dictionary of tree sitter query names to (style, hexcode) tuples."""
 
     def __init__(
@@ -484,7 +486,7 @@ class SyntaxHighlightTheme:
         cursor_bg: Hexcode,
         active_line: Hexcode,
         selection: Hexcode,
-        highlights: dict[str, tuple[int, Hexcode | None]],
+        highlights: dict[str, tuple[Style, Hexcode | None]],
     ):
         self.default_fg = Color.from_hex(default_fg)
         self.default_bg = Color.from_hex(default_bg)
