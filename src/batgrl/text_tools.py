@@ -121,7 +121,7 @@ def is_word_char(char: str) -> bool:
 
 def new_cell(
     ord: int = 0x20,
-    style: Style = Style.DEFAULT,
+    style: Style = Style.NO_STYLE,
     fg_color: Color = WHITE,
     bg_color: Color = BLACK,
 ) -> Cell0D:
@@ -135,7 +135,7 @@ def new_cell(
     ----------
     ord : int, default: 0x20
         The cell's character's ord.
-    style : Style, Style.DEFAULT
+    style : Style, Style.NO_STYLE
         The style (bold, italic, etc.) of the cell.
     fg_color : Color, default: WHITE
         Foreground color of cell.

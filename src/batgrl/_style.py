@@ -117,7 +117,7 @@ class Uint8Flag(np.uint8, ReprEnum, NpFlag):  # type: ignore
 class Style(Uint8Flag):
     """The graphic rendition parameters of a terminal cell."""
 
-    DEFAULT = 0
+    NO_STYLE = 0
     BOLD = 0b1
     ITALIC = 0b10
     UNDERLINE = 0b100
