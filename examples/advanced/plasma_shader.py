@@ -28,7 +28,7 @@ from batgrl.gadgets.text import Style, Text
 MARQUEE = "batgrl   "
 LEN = len(MARQUEE)
 VERTEX_SHADER = """
-#version 460 core
+#version 330 core
 
 out vec2 position;
 
@@ -39,7 +39,7 @@ void main() {
 }
 """
 WAVES_SHADER = """
-#version 460 core
+#version 330 core
 
 in vec2 position;
 uniform float iTime;
@@ -70,7 +70,7 @@ main() {
 }
 """
 PLASMA_SHADER = """
-#version 460 core
+#version 330 core
 
 in vec2 position;
 uniform float iTime;
