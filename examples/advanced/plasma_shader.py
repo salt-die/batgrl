@@ -49,7 +49,7 @@ vec4
 mainImage(in vec2 fragCoord)
 {
     float i = iTime;
-	vec2 uv = fragCoord.xy / iResolution.xy * 2.0 - 1.0;
+    vec2 uv = fragCoord.xy / iResolution.xy * 2.0 - 1.0;
     vec4 c = vec4(1.0);
     float d = length(uv);
     float a = atan(uv.y, uv.x) + sin(i * .2) *.5;
@@ -61,7 +61,7 @@ mainImage(in vec2 fragCoord)
     uv += sin(uv * 1234.567 + i) * .0005;
     c.r = abs(mod(uv.y + uv.x * 2. * d, uv.x * 1.1));
 
-	return c.rrra;
+    return c.rrra;
 }
 
 void
@@ -101,30 +101,30 @@ hash(float n) {
 
 float
 noise(in vec3 p) {
-	vec3 ip = floor(p);
+    vec3 ip = floor(p);
     vec3 fp = fract(p);
-	fp = fp * fp * (3.0 - 2.0 * fp);
-	vec2 tap = (ip.xy + vec2(37.0, 17.0) * ip.z) + fp.xy;
-	vec2 rg = textureLod(iChannel0, (tap + 0.5) / 256.0, 0.0).yx;
-	return mix(rg.x, rg.y, fp.z);
+    fp = fp * fp * (3.0 - 2.0 * fp);
+    vec2 tap = (ip.xy + vec2(37.0, 17.0) * ip.z) + fp.xy;
+    vec2 rg = textureLod(iChannel0, (tap + 0.5) / 256.0, 0.0).yx;
+    return mix(rg.x, rg.y, fp.z);
 }
 
 mat3 m3 = mat3(0.00,  0.80,  0.60, -0.80,  0.36, -0.48, -0.60, -0.48,  0.64);
 
 float
 flow(in vec3 p, in float t) {
-	float z=2.;
-	float rz = 0.;
-	vec3 bp = p;
-	for (float i=1.; i < 5.; i++) {
-		p += time*.1;
-		rz+= (sin(noise(p + t * 0.8) * 6.) * 0.5 + 0.5) / z;
-		p = mix(bp, p, 0.6);
-		z *= 2.;
-		p *= 2.01;
+    float z=2.;
+    float rz = 0.;
+    vec3 bp = p;
+    for (float i=1.; i < 5.; i++) {
+        p += time*.1;
+        rz+= (sin(noise(p + t * 0.8) * 6.) * 0.5 + 0.5) / z;
+        p = mix(bp, p, 0.6);
+        z *= 2.;
+        p *= 2.01;
         p*= m3;
-	}
-	return rz;
+    }
+    return rz;
 }
 
 float
@@ -143,9 +143,9 @@ sins(in float x) {
 float
 segm(vec3 p, vec3 a, vec3 b) {
     vec3 pa = p - a;
-	vec3 ba = b - a;
-	float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.);
-	return length(pa - ba * h) * .5;
+    vec3 ba = b - a;
+    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.);
+    return length(pa - ba * h) * .5;
 }
 
 vec3
@@ -169,7 +169,7 @@ path(in float i, in float d, vec3 hit) {
 vec2
 map(vec3 p, float i, vec3 hit) {
     vec3 p0 = p;
-	float lp = length(p);
+    float lp = length(p);
     vec3 bg = vec3(0.);
     vec3 en = path(i, lp, hit);
     float ins = smoothstep(0.11, .46, lp);
@@ -182,7 +182,7 @@ map(vec3 p, float i, vec3 hit) {
 
 float
 march(in vec3 ro, in vec3 rd, in float startf, in float maxd, in float j, vec3 hit) {
-	float precis = 0.001;
+    float precis = 0.001;
     float h=0.5;
     float d = startf;
     for(int i=0; i < MAX_ITER; i++) {
@@ -191,7 +191,7 @@ march(in vec3 ro, in vec3 rd, in float startf, in float maxd, in float j, vec3 h
         float res = map(ro + rd*d, j, hit).x;
         h = res;
     }
-	return d;
+    return d;
 }
 
 vec3
@@ -228,11 +228,11 @@ iSphere2(in vec3 ro, in vec3 rd) {
 
 vec4
 mainImage(in vec2 fragCoord) {
-	vec2 p = fragCoord.xy / iResolution.xy - 0.5;
-	p.x *= iResolution.x / iResolution.y;
-	vec2 um = iMouse.xy / iResolution.xy - .5;
+    vec2 p = fragCoord.xy / iResolution.xy - 0.5;
+    p.x *= iResolution.x / iResolution.y;
+    vec2 um = iMouse.xy / iResolution.xy - .5;
     um.x *= iResolution.x / iResolution.y;
-	vec3 ro = vec3(0., 0., 5.);
+    vec3 ro = vec3(0., 0., 5.);
     vec3 rd = normalize(vec3(p * .7,-1.5));
     mat2 mx = mm2(time * .4);
     mat2 my = mm2(time * 0.3);
@@ -250,7 +250,7 @@ mainImage(in vec2 fragCoord) {
         rd = brd;
         mat2 mm = mm2((time * 0.1 + ((j + 1.) * 5.1)) * j * 0.25);
         float rz = march(ro, rd, 2.5, FAR, j, vec3(0.));
-		if (rz >= FAR) continue;
+        if (rz >= FAR) continue;
         vec3 pos = ro + rz * rd;
         col = max(col, vmarch(pos, rd, j, bro, vec3(0.)));
     }
@@ -268,7 +268,7 @@ mainImage(in vec2 fragCoord) {
         rd = brd;
         mat2 mm = mm2((time * 0.1 + ((j + 1.) * 5.1)) * j * 0.25);
         float rz = march(ro, rd, 2.5, FAR, j, hit);
-		if (rz < FAR) {
+        if (rz < FAR) {
             vec3 pos = ro + rz * rd;
             col = max(col, vmarch(pos, rd, j, bro, hit));
         }
