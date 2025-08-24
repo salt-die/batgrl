@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 
-from ...colors import NEPTUNE_THEME, Color, ColorTheme, Hexcode
+from ...colors import NEPTUNE_THEME, Color, ColorTheme, ColorThemeColor, Hexcode
 from . import Behavior
 
 __all__ = ["Themable"]
@@ -33,7 +33,7 @@ class Themable(ABC, Behavior):
         """Paint the gadget with current theme."""
 
     @classmethod
-    def get_color(cls, color_name: str) -> Color:
+    def get_color(cls, color_name: ColorThemeColor) -> Color:
         """Get a color by name from the current color theme."""
         hexcode: Hexcode
         if color_name not in cls.color_theme:

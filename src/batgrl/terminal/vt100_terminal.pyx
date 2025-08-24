@@ -342,7 +342,7 @@ cdef class Vt100Terminal:
                 bool(info & 4),
                 dy,
                 dx,
-                pixels,
+                pixels_pos=pixels,
             )
         )
 

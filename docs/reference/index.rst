@@ -18,6 +18,7 @@ batgrl Reference
    gadgets
    geometry
    logging
+   queries
    terminal.events
    text_tools
    texture_tools

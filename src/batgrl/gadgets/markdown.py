@@ -10,11 +10,8 @@ import cv2
 import numpy as np
 from mistletoe import Document, block_token, span_token
 from mistletoe.base_renderer import BaseRenderer
-from pygments.lexers import get_lexer_by_name
-from pygments.style import Style as PygmentsStyle
-from pygments.util import ClassNotFound
 
-from ..colors import Neptune, lerp_colors
+from ..colors import Neptune, SyntaxHighlightTheme, lerp_colors
 from ..emojis import EMOJIS
 from ..geometry import Point, Size
 from ..text_tools import Style
@@ -344,11 +341,11 @@ class _BatgrlRenderer(BaseRenderer):
     quote_depth: int = 0
     last_token: span_token.SpanToken | block_token.BlockToken | None = None
 
-    def __init__(self, width, syntax_highlighting_style: type[PygmentsStyle], blitter):
+    def __init__(self, width, syntax_highlighting_theme: SyntaxHighlightTheme, blitter):
         super().__init__(BlankLine, Spaces, EmojiCode)
         block_token.remove_token(block_token.Footnote)
         self.width = max(width, _MIN_MARKDOWN_WIDTH)
-        self.syntax_highlighting_style: type[PygmentsStyle] = syntax_highlighting_style
+        self.syntax_highlighting_theme: SyntaxHighlightTheme = syntax_highlighting_theme
         self.blitter = blitter
         self.render_map["SetextHeading"] = self.render_setext_heading
         self.render_map["CodeFence"] = self.render_block_code
@@ -605,11 +602,7 @@ class _BatgrlRenderer(BaseRenderer):
         text = _BlockCode()
         text.set_text(token.content.rstrip())
         text.width = max(text.width, self.render_width)
-        try:
-            lexer = get_lexer_by_name(token.language)
-        except ClassNotFound:
-            lexer = None
-        text.add_syntax_highlighting(lexer=lexer, style=self.syntax_highlighting_style)
+        text.add_syntax_highlighting(token.language, self.syntax_highlighting_theme)
         text.canvas["bg_color"] = Themable.get_color("markdown_block_code_bg")
         return text
 
@@ -761,7 +754,7 @@ class Markdown(Themable, Gadget):
     ----------
     markdown : str
         The markdown string.
-    syntax_highlighting_style : type[pygments.style.Style], default: Neptune
+    syntax_highlighting_theme : SyntaxHighlightTheme, default: Neptune
         The syntax highlighting style for code blocks.
     blitter : Blitter, default: "half"
         Determines how images are rendered.
@@ -786,7 +779,7 @@ class Markdown(Themable, Gadget):
     ----------
     markdown : str
         The markdown string.
-    syntax_highlighting_style : type[pygments.style.Style]
+    syntax_highlighting_theme : SyntaxHighlightTheme
         The syntax highlighting style for code blocks.
     blitter : Blitter, default: "half"
         Determines how images are rendered.
@@ -897,7 +890,7 @@ class Markdown(Themable, Gadget):
         self,
         *,
         markdown: str,
-        syntax_highlighting_style: type[PygmentsStyle] = Neptune,
+        syntax_highlighting_theme: SyntaxHighlightTheme = Neptune,
         blitter: Blitter = "half",
         size: Sizelike = Size(10, 10),
         pos: Pointlike = Point(0, 0),
@@ -934,7 +927,7 @@ class Markdown(Themable, Gadget):
         self._link_hint.is_enabled = False
         self.add_gadgets(self._scroll_view, self._link_hint)
         self.markdown = markdown
-        self.syntax_highlighting_style = syntax_highlighting_style
+        self.syntax_highlighting_theme = syntax_highlighting_theme
         """The syntax highlighting style for code blocks."""
         self._blitter: Blitter
         self.blitter = blitter
@@ -951,13 +944,15 @@ class Markdown(Themable, Gadget):
         self._build_markdown()
 
     @property
-    def syntax_highlighting_style(self) -> type[PygmentsStyle]:
+    def syntax_highlighting_theme(self) -> SyntaxHighlightTheme:
         """The syntax highlighting style for code blocks."""
-        return self._style
+        return self._syntax_highlight_theme
 
-    @syntax_highlighting_style.setter
-    def syntax_highlighting_style(self, syntax_highlighting_style: type[PygmentsStyle]):
-        self._style = syntax_highlighting_style
+    @syntax_highlighting_theme.setter
+    def syntax_highlighting_theme(
+        self, syntax_highlighting_theme: SyntaxHighlightTheme
+    ):
+        self._syntax_highlight_theme = syntax_highlighting_theme
         self._build_markdown()
 
     @property
@@ -977,7 +972,7 @@ class Markdown(Themable, Gadget):
             return
 
         with _BatgrlRenderer(
-            self._scroll_view.port_width, self.syntax_highlighting_style, self.blitter
+            self._scroll_view.port_width, self.syntax_highlighting_theme, self.blitter
         ) as renderer:
             rendered = renderer.render(Document(self.markdown))
 

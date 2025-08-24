@@ -1,6 +1,5 @@
 """Tools for text."""
 
-from enum import Enum
 from typing import Final, cast
 
 import numpy as np
@@ -8,6 +7,7 @@ from ugrapheme import grapheme_iter
 from uwcwidth import wcswidth
 
 from ._batgrl_markdown import find_md_tokens
+from ._style import Style
 from .array_types import Cell, Cell0D, Cell1D, Cell2D, cell_dtype
 from .colors import BLACK, WHITE, Color
 from .geometry import Size
@@ -43,19 +43,6 @@ VERTICAL_BLOCKS: Final = " ▁▂▃▄▅▆▇█"
 HORIZONTAL_BLOCKS: Final = " ▏▎▍▌▋▊▉█"
 
 logger = get_logger(__name__)
-
-
-class Style(np.uint8, Enum):
-    """The graphic rendition parameters of a terminal cell."""
-
-    # ! Don't use auto() as these must match the definitions in _rendering.pyx.
-    DEFAULT = 0
-    BOLD = 0b1
-    ITALIC = 0b10
-    UNDERLINE = 0b100
-    STRIKETHROUGH = 0b1000
-    OVERLINE = 0b10000
-    REVERSE = 0b100000
 
 
 def egc_ord(text: str) -> int:
@@ -134,7 +121,7 @@ def is_word_char(char: str) -> bool:
 
 def new_cell(
     ord: int = 0x20,
-    style: Style = Style.DEFAULT,
+    style: Style = Style.NO_STYLE,
     fg_color: Color = WHITE,
     bg_color: Color = BLACK,
 ) -> Cell0D:
@@ -148,7 +135,7 @@ def new_cell(
     ----------
     ord : int, default: 0x20
         The cell's character's ord.
-    style : Style, Style.DEFAULT
+    style : Style, Style.NO_STYLE
         The style (bold, italic, etc.) of the cell.
     fg_color : Color, default: WHITE
         Foreground color of cell.

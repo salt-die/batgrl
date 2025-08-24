@@ -1,23 +1,21 @@
 """A text gadget."""
 
-from typing import Literal
+from typing import Any, Final, Literal, NamedTuple
 
 import numpy as np
-from pygments.lexer import Lexer
-from pygments.lexers import guess_lexer
-from pygments.style import Style as PygmentsStyle
-from uwcwidth import wcswidth
+from tree_sitter import QueryCursor, Tree
 
 from .._rendering import text_render
 from ..array_types import RGBM_2D, Cell0D, Cell2D, Enum2D, Unicode2D
-from ..colors import Color, Neptune
+from ..colors import Color, Neptune, SyntaxHighlightTheme
+from ..queries import Highlighter, TSPoint, get_highlighter
 from ..text_tools import (
     Style,
     _parse_batgrl_md,
     _text_to_cells,
     _write_cells_to_canvas,
     add_text,
-    canvas_as_text,
+    egc_chr,
     egc_ord,
     new_cell,
 )
@@ -66,7 +64,7 @@ Border = Literal[
 ]
 """Border styles for :meth:`batgrl.text_gadget.Text.add_border`."""
 
-_BORDERS = {
+_BORDERS: Final[dict[Border, str]] = {
     "light": "┌┐││──└┘",
     "heavy": "┏┓┃┃━━┗┛",
     "double": "╔╗║║══╚╝",
@@ -92,9 +90,28 @@ _BORDERS = {
 """Border characters for :meth:`batgrl.text_gadget.Text.add_border`."""
 
 
+def _fill_array(sy: int, sx: int, ey: int, ex: int, arr: np.ndarray, value: Any):
+    """Fill ``arr`` from ``(sy, sx)`` to ``(ey, ex)`` with ``value``."""
+    if sy == ey:
+        arr[sy : sy + 1, sx:ex] = value
+    else:
+        arr[sy : sy + 1, sx:] = value
+        arr[sy + 1 : ey] = value
+        arr[ey : ey + 1, :ex] = value
+
+
+class _InjectionRange(NamedTuple):
+    start_row: int
+    start_byte_offset: int
+    start_column: int
+    end_row: int
+    end_byte_offset: int
+    end_column: int
+
+
 class Text(Gadget):
     r"""
-    A text gadget. Displays arbitrary text data.
+    A gadget to display arbitrary styled text.
 
     Parameters
     ----------
@@ -184,7 +201,7 @@ class Text(Gadget):
     -------
     add_border(style="light", ...)
         Add a border to the gadget.
-    add_syntax_highlighting(lexer, style)
+    add_syntax_highlighting(language, style)
         Add syntax highlighting to current text in canvas.
     add_str(str, pos, ...)
         Add a single line of text to the canvas.
@@ -270,6 +287,14 @@ class Text(Gadget):
         self.default_cell = default_cell
         self.canvas: Cell2D = np.full(size, self.default_cell)
         self.alpha = alpha
+        self._injection_range: _InjectionRange | None = None
+        """
+        The range of some injected languages (such as, e.g., a regex string in python
+        code) in the canvas when syntax highlighting.
+
+        Set by `_highlight`, ``_injection_range`` modifies the behavior of both
+        ``_tree_sitter_point_to_pos`` and ``_tree_sitter_read_canvas``.
+        """
 
     @property
     def chars(self) -> Unicode2D:
@@ -381,53 +406,145 @@ class Text(Gadget):
             self.canvas["bg_color"][[0, -1]] = bg_color
             self.canvas["bg_color"][:, [0, -1]] = bg_color
 
+    def _tree_sitter_point_to_pos(
+        self, point: tuple[int, int], prev: tuple[int, int, int] | None = None
+    ) -> Point:
+        """
+        Convert a tree sitter (row, byte_offset) to a point in the canvas.
+
+        ``prev`` can reuse a previous `point_to_pos` calculation and has the form
+        (prev_row, prev_byte_offset, prev_x).
+        """
+        y, byte_offset = point
+        x = nbytes = 0
+        end_column = self.width
+        if self._injection_range is not None:
+            y += self._injection_range.start_row
+            if y == self._injection_range.start_row:
+                x = self._injection_range.start_column
+            if y == self._injection_range.end_row:
+                end_column = self._injection_range.end_column
+            elif y > self._injection_range.end_row:
+                return Point(self._injection_range.end_row + 1, 0)
+        elif y >= self.height:
+            return Point(self.height, 0)
+
+        if prev is not None and y == prev[0] and prev[1] < byte_offset:
+            _, nbytes, x = prev
+
+        while nbytes < byte_offset:
+            nbytes += len(egc_chr(self.canvas["ord"][y, x]).encode())
+            x += 1
+
+            if x >= end_column:
+                return Point(y, end_column)
+
+        return Point(y, x)
+
+    def _tree_sitter_read_canvas(self, _, point: tuple[int, int]) -> bytes:
+        y, x = self._tree_sitter_point_to_pos(point)
+        if y >= self.height:
+            return b""
+
+        end_column = None
+        if self._injection_range is not None:
+            if y > self._injection_range.end_row:
+                return b""
+
+            if y == self._injection_range.end_row:
+                end_column = self._injection_range.end_column
+
+        ords = self.canvas["ord"][y, x:end_column].tolist()
+        return "".join(egc_chr(ord_) for ord_ in ords).rstrip().encode() + b"\n"
+
+    def _highlight(
+        self,
+        theme: SyntaxHighlightTheme,
+        highlighter: Highlighter,
+        syntax_tree: Tree,
+        point_range: tuple[TSPoint, TSPoint] | None = None,
+    ) -> None:
+        highlights_cursor = QueryCursor(highlighter.highlights)
+        if point_range is not None:
+            highlights_cursor.set_point_range(*point_range)
+        elif self._injection_range is None:
+            self.canvas["fg_color"] = theme.default_fg
+            self.canvas["bg_color"] = theme.default_bg
+
+        highlights_matches = highlights_cursor.matches(syntax_tree.root_node)
+        # Sorting matches by query priority. Later queries have greater priority.
+        highlights_matches.sort(key=lambda tup: tup[0])
+        prev = (-1, 0, 0)
+        tokens = (
+            (highlight, *node.start_point, *node.end_point)
+            for _, captures in highlights_matches
+            for highlight, nodes in captures.items()
+            for node in nodes
+        )
+        for highlight, sy, sbo, ey, ebo in tokens:
+            if highlight not in theme.highlights:
+                continue
+
+            sy, sx = self._tree_sitter_point_to_pos((sy, sbo), prev=prev)
+            ey, ex = self._tree_sitter_point_to_pos((ey, ebo), prev=(sy, sbo, sx))
+            prev = ey, ebo, ex
+
+            style, fg_color = theme.highlights[highlight]
+            _fill_array(sy, sx, ey, ex, self.canvas["style"], style)
+            # Un-style whitespace:
+            self.canvas["style"][self.canvas["ord"] == 0x20] = 0
+            if fg_color is not None:
+                _fill_array(sy, sx, ey, ex, self.canvas["fg_color"], fg_color)
+
+        if highlighter.injections is None:
+            return
+
+        injections_cursor = QueryCursor(highlighter.injections)
+        if point_range is not None:
+            injections_cursor.set_point_range(*point_range)
+
+        prev_injection_range = self._injection_range
+
+        injections_matches = injections_cursor.matches(syntax_tree.root_node)
+        injections = (
+            (language, *node.start_point, *node.end_point)
+            for _, captures in injections_matches
+            for language, nodes in captures.items()
+            for node in nodes
+        )
+        for language, sy, sbo, ey, ebo in injections:
+            injection_highlighter = get_highlighter(language)
+            if injection_highlighter is None:
+                continue
+
+            sy, sx = self._tree_sitter_point_to_pos((sy, sbo))
+            ey, ex = self._tree_sitter_point_to_pos((ey, ebo), prev=(sy, sbo, sx))
+            self._injection_range = _InjectionRange(sy, sbo, sx, ey, ebo, ex)
+            injected_syntax_tree = injection_highlighter.parser.parse(
+                self._tree_sitter_read_canvas
+            )
+            self._highlight(theme, injection_highlighter, injected_syntax_tree)
+            self._injection_range = prev_injection_range
+
     def add_syntax_highlighting(
-        self, lexer: Lexer | None = None, style: type[PygmentsStyle] = Neptune
+        self, language: str, theme: SyntaxHighlightTheme = Neptune
     ):
         """
         Add syntax highlighting to current text in canvas.
 
         Parameters
         ----------
-        lexer : pygments.lexer.Lexer | None, default: None
-            Lexer for text. If not given, the lexer is guessed.
-        style : pygments.style.Style, default: Neptune
-            A pygments style to use for syntax highlighting.
+        language : str
+            The language for syntax highlighting.
+        theme : SyntaxHighlightTheme, default: Neptune
+            A theme to use for syntax highlighting.
         """
-        text = canvas_as_text(self.canvas)
-        if lexer is None:
-            lexer = guess_lexer(text)
+        highlighter = get_highlighter(language)
+        if highlighter is None:
+            return
 
-        self.canvas["fg_color"] = 0
-        self.canvas["bg_color"] = Color.from_hex(style.background_color)
-        y = x = 0
-        for ttype, value in lexer.get_tokens(text):
-            lines = value.split("\n")
-            token_style = style.style_for_token(ttype)
-            for i, line in enumerate(lines):
-                if i > 0:
-                    y += 1
-                    x = 0
-
-                if len(line) == 0:
-                    continue
-
-                end = x + wcswidth(line)
-                if token_style["color"]:
-                    self.canvas[y, x:end]["fg_color"] = Color.from_hex(
-                        token_style["color"]
-                    )
-                if token_style["bgcolor"]:
-                    self.canvas[y, x:end]["bg_color"] = Color.from_hex(
-                        token_style["bgcolor"]
-                    )
-                if token_style["bold"]:
-                    self.canvas[y, x:end]["style"] |= Style.BOLD
-                if token_style["italic"]:
-                    self.canvas[y, x:end]["style"] |= Style.ITALIC
-                if token_style["underline"]:
-                    self.canvas[y, x:end]["style"] |= Style.UNDERLINE
-                x = end
+        syntax_tree = highlighter.parser.parse(self._tree_sitter_read_canvas)
+        self._highlight(theme, highlighter, syntax_tree)
 
     def add_str(
         self,

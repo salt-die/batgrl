@@ -8,6 +8,7 @@ from uwcwidth cimport wcwidth_uint32, wcswidth
 
 from ._rendering cimport Cell
 from ._sixel cimport OctTree, sixel
+from ._style import Style
 from .colors import Color
 from .geometry.regions cimport CRegion, Region, bounding_rect, contains
 from .logging import LogLevel, get_logger
@@ -27,12 +28,12 @@ logger = get_logger(__name__)
 ctypedef enum CellKind: GLYPH, SIXEL, MIXED, SEE_THROUGH_SIXEL
 cdef:
     unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
-    uint8_t BOLD = 0b000001
-    uint8_t ITALIC = 0b000010
-    uint8_t UNDERLINE = 0b000100
-    uint8_t STRIKETHROUGH = 0b001000
-    uint8_t OVERLINE = 0b010000
-    uint8_t REVERSE = 0b100000
+    uint8_t BOLD = Style.BOLD
+    uint8_t ITALIC = Style.ITALIC
+    uint8_t UNDERLINE = Style.UNDERLINE
+    uint8_t STRIKETHROUGH = Style.STRIKETHROUGH
+    uint8_t OVERLINE = Style.OVERLINE
+    uint8_t REVERSE = Style.REVERSE
     uint32_t EGC_BASE = 0x180000
     uint32_t SPACE_ORD = 0x20
     uint32_t BRAILLE_ORD = 0x2800

@@ -23,8 +23,6 @@ autodoc_default_options = {
     "ignore-module-all": True,
 }
 
-# autodoc_mock_imports = []
-
 html_theme = "pydata_sphinx_theme"
 html_sidebars = {"**": ["search-field", "sidebar-nav-bs"]}
 html_theme_options = {
@@ -37,7 +35,6 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 numpydoc_show_inherited_class_members = {
     "batgrl.colors.color_types.Color": False,
     "batgrl.colors.color_types.AColor": False,
-    "batgrl.colors.color_types.ColorTheme": False,
     "batgrl.gadgets.data_table.ColumnStyle": False,
     "batgrl.gadgets.gadget.PosHint": False,
     "batgrl.gadgets.gadget.SizeHint": False,
@@ -48,6 +45,8 @@ numpydoc_show_inherited_class_members = {
     "batgrl.figfont.FullLayout": False,
     "batgrl.logging.CustomLogger": False,
     "batgrl.logging.LogLevel": False,
+    "batgrl.queries.TSPoint": False,
+    "batgrl.queries.Highlighter": False,
     "batgrl.text_tools.Style": False,
 }
 

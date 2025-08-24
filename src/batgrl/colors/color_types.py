@@ -1,9 +1,12 @@
 """Color data structures."""
 
 import re
-from typing import Final, NamedTuple, Self, TypedDict
+from dataclasses import dataclass
+from typing import Final, Literal, NamedTuple, Self
 
-__all__ = ["AColor", "Color", "ColorTheme"]
+from .._style import Style
+
+__all__ = ["AColor", "Color", "ColorTheme", "SyntaxHighlightTheme"]
 
 _HEXCODE_RE: Final = re.compile(r"^#?[0-9a-fA-F]{6}$")
 _AHEXCODE_RE: Final = re.compile(r"^#?[0-9a-fA-F]{8}$")
@@ -184,273 +187,118 @@ class AColor(NamedTuple):
         return f"#{hexcode}"
 
 
-class ColorTheme(TypedDict, total=False):
-    """
-    Colors for themable gadgets.
+type ColorThemeColor = Literal[
+    "primary_fg",
+    "primary_bg",
+    "text_pad_line_highlight_fg",
+    "text_pad_line_highlight_bg",
+    "text_pad_selection_highlight_fg",
+    "text_pad_selection_highlight_bg",
+    "textbox_primary_fg",
+    "textbox_primary_bg",
+    "textbox_selection_highlight_fg",
+    "textbox_selection_highlight_bg",
+    "textbox_placeholder_fg",
+    "textbox_placeholder_bg",
+    "button_normal_fg",
+    "button_normal_bg",
+    "button_hover_fg",
+    "button_hover_bg",
+    "button_press_fg",
+    "button_press_bg",
+    "button_disallowed_fg",
+    "button_disallowed_bg",
+    "menu_item_hover_fg",
+    "menu_item_hover_bg",
+    "menu_item_selected_fg",
+    "menu_item_selected_bg",
+    "menu_item_disallowed_fg",
+    "menu_item_disallowed_bg",
+    "titlebar_normal_fg",
+    "titlebar_normal_bg",
+    "titlebar_inactive_fg",
+    "titlebar_inactive_bg",
+    "data_table_sort_indicator_fg",
+    "data_table_sort_indicator_bg",
+    "data_table_hover_fg",
+    "data_table_hover_bg",
+    "data_table_stripe_fg",
+    "data_table_stripe_bg",
+    "data_table_stripe_hover_fg",
+    "data_table_stripe_hover_bg",
+    "data_table_selected_fg",
+    "data_table_selected_bg",
+    "data_table_selected_hover_fg",
+    "data_table_selected_hover_bg",
+    "progress_bar_fg",
+    "progress_bar_bg",
+    "markdown_link_fg",
+    "markdown_link_bg",
+    "markdown_link_hover_fg",
+    "markdown_link_hover_bg",
+    "markdown_inline_code_fg",
+    "markdown_inline_code_bg",
+    "markdown_quote_fg",
+    "markdown_quote_bg",
+    "markdown_title_fg",
+    "markdown_title_bg",
+    "markdown_image_fg",
+    "markdown_image_bg",
+    "markdown_block_code_bg",
+    "markdown_quote_block_code_bg",
+    "markdown_header_bg",
+    "scroll_view_scrollbar",
+    "scroll_view_indicator_normal",
+    "scroll_view_indicator_hover",
+    "scroll_view_indicator_press",
+    "window_border_normal",
+    "window_border_inactive",
+]
 
-    Missing colors will use the default color theme.
+type ColorTheme = dict[ColorThemeColor, Hexcode]
+"""
+Colors for themable gadgets.
 
-    Attributes
-    ----------
-    primary_fg : Hexcode
-        The primary foreground color.
-    primary_bg : Hexcode
-        The primary background color.
-    text_pad_line_highlight_fg: Hexcode
-        Text pad line highlight foreground color.
-    text_pad_line_highlight_bg: Hexcode
-        Text pad line highlight background color.
-    text_pad_selection_highlight_fg : Hexcode
-        Text pad selection foreground color.
-    text_pad_selection_highlight_bg : Hexcode
-        Text pad selection background color.
-    textbox_primary_fg : Hexcode
-        Text pad primary foreground color.
-    textbox_primary_bg : Hexcode
-        Text pad primary background color.
-    textbox_selection_highlight_fg : Hexcode
-        Textbox selection foreground color.
-    textbox_selection_highlight_bg : Hexcode
-        Textbox selection background color.
-    textbox_placeholder_fg : Hexcode
-        Textbox placeholder foreground color.
-    textbox_placeholder_bg : Hexcode
-        Textbox placeholder background color.
-    button_normal_fg : Hexcode
-        Button normal foreground color.
-    button_normal_bg : Hexcode
-        Button normal background color.
-    button_hover_fg : Hexcode
-        Button hover foreground color.
-    button_hover_bg : Hexcode
-        Button hover background color.
-    button_press_fg : Hexcode
-        Button press foreground color.
-    button_press_bg : Hexcode
-        Button press background color.
-    button_disallowed_fg : Hexcode
-        Button disallowed foreground color.
-    button_disallowed_bg : Hexcode
-        Button disallowed background color.
-    menu_item_hover_fg : Hexcode
-        Menu item hover foreground color.
-    menu_item_hover_bg : Hexcode
-        Menu item hover background color.
-    menu_item_selected_fg : Hexcode
-        Menu item selected foreground color.
-    menu_item_selected_bg : Hexcode
-        Menu item selected background color.
-    menu_item_disallowed_fg : Hexcode
-        Menu item disallowed foreground color.
-    menu_item_disallowed_bg : Hexcode
-        Menu item disallowed background color.
-    titlebar_normal_fg : Hexcode
-        Titlebar normal foreground color.
-    titlebar_normal_bg : Hexcode
-        Titlebar normal background color.
-    titlebar_inactive_fg : Hexcode
-        Titlebar inactive foreground color.
-    titlebar_inactive_bg : Hexcode
-        Titlebar inactive background color.
-    data_table_sort_indicator_fg : Hexcode
-        Data table sort indicator foreground color.
-    data_table_sort_indicator_bg : Hexcode
-        Data table sort indicator background color.
-    data_table_hover_fg : Hexcode
-        Data table hover foreground color.
-    data_table_hover_bg : Hexcode
-        Data table hover background color.
-    data_table_stripe_fg : Hexcode
-        Data table stripe foreground color.
-    data_table_stripe_bg : Hexcode
-        Data table stripe background color.
-    data_table_stripe_hover_fg : Hexcode
-        Data table stripe hover foreground color.
-    data_table_stripe_hover_bg : Hexcode
-        Data table stripe hover background color.
-    data_table_selected_fg : Hexcode
-        Data table selected foreground color.
-    data_table_selected_bg : Hexcode
-        Data table selected background color.
-    data_table_selected_hover_fg : Hexcode
-        Data table selected hover foreground color.
-    data_table_selected_hover_bg : Hexcode
-        Data table selected hover background color.
-    progress_bar_fg : Hexcode
-        Progress bar foreground color.
-    progress_bar_bg : Hexcode
-        Progress bar background color.
-    markdown_link_fg : Hexcode
-        Markdown link foreground color.
-    markdown_link_bg : Hexcode
-        Markdown link background color.
-    markdown_link_hover_fg : Hexcode
-        Markdown link hover foreground color.
-    markdown_link_hover_bg : Hexcode
-        Markdown link hover background color.
-    markdown_inline_code_fg : Hexcode
-        Markdown inline code foreground color.
-    markdown_inline_code_bg : Hexcode
-        Markdown inline code background color.
-    markdown_quote_fg : Hexcode
-        Markdown quote foreground color.
-    markdown_quote_bg : Hexcode
-        Markdown quote background color.
-    markdown_title_fg : Hexcode
-        Markdown title foreground color.
-    markdown_title_bg : Hexcode
-        Markdown title background color.
-    markdown_image_fg : Hexcode
-        Markdown image foreground color.
-    markdown_image_bg : Hexcode
-        Markdown image background color.
-    markdown_block_code_background : Hexcode
-        Markdown block code background color.
-    markdown_quote_block_code_background : Hexcode
-        Markdown quote block code background color.
-    markdown_header_background : Hexcode
-        Markdown header background color.
-    scroll_view_scrollbar : Hexcode
-        Scroll view scrollbar color.
-    scroll_view_indicator_normal : Hexcode
-        Scroll view indicator normal color.
-    scroll_view_indicator_hover : Hexcode
-        Scroll view indicator hover color.
-    scroll_view_indicator_press : Hexcode
-        Scroll view indicator press color.
-    window_border_normal : Hexcode
-        Window border normal color.
-    window_border_inactive : Hexcode
-        Window border inactive color.
-    """
+Missing colors will use the default color theme.
+"""
 
-    primary_fg: Hexcode
-    """The primary foreground color."""
-    primary_bg: Hexcode
-    """The primary background color."""
-    text_pad_line_highlight_fg: Hexcode
-    """Text pad line highlight foreground color."""
-    text_pad_line_highlight_bg: Hexcode
-    """Text pad line highlight background color."""
-    text_pad_selection_highlight_fg: Hexcode
-    """Text pad selection foreground color."""
-    text_pad_selection_highlight_bg: Hexcode
-    """Text pad selection background color."""
-    textbox_primary_fg: Hexcode
-    """Text pad primary foreground color."""
-    textbox_primary_bg: Hexcode
-    """Text pad primary background color."""
-    textbox_selection_highlight_fg: Hexcode
-    """Textbox selection foreground color."""
-    textbox_selection_highlight_bg: Hexcode
-    """Textbox selection background color."""
-    textbox_placeholder_fg: Hexcode
-    """Textbox placeholder foreground color."""
-    textbox_placeholder_bg: Hexcode
-    """Textbox placeholder background color."""
-    button_normal_fg: Hexcode
-    """Button normal foreground color."""
-    button_normal_bg: Hexcode
-    """Button normal background color."""
-    button_hover_fg: Hexcode
-    """Button hover foreground color."""
-    button_hover_bg: Hexcode
-    """Button hover background color."""
-    button_press_fg: Hexcode
-    """Button press foreground color."""
-    button_press_bg: Hexcode
-    """Button press background color."""
-    button_disallowed_fg: Hexcode
-    """Button disallowed foreground color."""
-    button_disallowed_bg: Hexcode
-    """Button disallowed background color."""
-    menu_item_hover_fg: Hexcode
-    """Menu item hover foreground color."""
-    menu_item_hover_bg: Hexcode
-    """Menu item hover background color."""
-    menu_item_selected_fg: Hexcode
-    """Menu item selected foreground color."""
-    menu_item_selected_bg: Hexcode
-    """Menu item selected background color."""
-    menu_item_disallowed_fg: Hexcode
-    """Menu item disallowed foreground color."""
-    menu_item_disallowed_bg: Hexcode
-    """Menu item disallowed background color."""
-    titlebar_normal_fg: Hexcode
-    """Titlebar normal foreground color."""
-    titlebar_normal_bg: Hexcode
-    """Titlebar normal background color."""
-    titlebar_inactive_fg: Hexcode
-    """Titlebar inactive foreground color."""
-    titlebar_inactive_bg: Hexcode
-    """Titlebar inactive background color."""
-    data_table_sort_indicator_fg: Hexcode
-    """Data table sort indicator foreground color."""
-    data_table_sort_indicator_bg: Hexcode
-    """Data table sort indicator background color."""
-    data_table_hover_fg: Hexcode
-    """Data table hover foreground color."""
-    data_table_hover_bg: Hexcode
-    """Data table hover background color."""
-    data_table_stripe_fg: Hexcode
-    """Data table stripe foreground color."""
-    data_table_stripe_bg: Hexcode
-    """Data table stripe background color."""
-    data_table_stripe_hover_fg: Hexcode
-    """Data table stripe hover foreground color."""
-    data_table_stripe_hover_bg: Hexcode
-    """Data table stripe hover background color."""
-    data_table_selected_fg: Hexcode
-    """Data table selected foreground color."""
-    data_table_selected_bg: Hexcode
-    """Data table selected background color."""
-    data_table_selected_hover_fg: Hexcode
-    """Data table selected hover foreground color."""
-    data_table_selected_hover_bg: Hexcode
-    """Data table selected hover background color."""
-    progress_bar_fg: Hexcode
-    """Progress bar foreground color."""
-    progress_bar_bg: Hexcode
-    """Progress bar background color."""
-    markdown_link_fg: Hexcode
-    """Markdown link foreground color."""
-    markdown_link_bg: Hexcode
-    """Markdown link background color."""
-    markdown_link_hover_fg: Hexcode
-    """Markdown link hover foreground color."""
-    markdown_link_hover_bg: Hexcode
-    """Markdown link hover background color."""
-    markdown_inline_code_fg: Hexcode
-    """Markdown inline code foreground color."""
-    markdown_inline_code_bg: Hexcode
-    """Markdown inline code background color."""
-    markdown_quote_fg: Hexcode
-    """Markdown quote foreground color."""
-    markdown_quote_bg: Hexcode
-    """Markdown quote background color."""
-    markdown_title_fg: Hexcode
-    """Markdown title foreground color."""
-    markdown_title_bg: Hexcode
-    """Markdown title background color."""
-    markdown_image_fg: Hexcode
-    """Markdown image foreground color."""
-    markdown_image_bg: Hexcode
-    """Markdown image background color."""
-    markdown_block_code_bg: Hexcode
-    """Markdown block code background color."""
-    markdown_quote_block_code_bg: Hexcode
-    """Markdown quote block code background color."""
-    markdown_header_bg: Hexcode
-    """Markdown header background color."""
-    scroll_view_scrollbar: Hexcode
-    """Scroll view scrollbar color."""
-    scroll_view_indicator_normal: Hexcode
-    """Scroll view indicator normal color."""
-    scroll_view_indicator_hover: Hexcode
-    """Scroll view indicator hover color."""
-    scroll_view_indicator_press: Hexcode
-    """Scroll view indicator press color."""
-    window_border_normal: Hexcode
-    """Window border normal color."""
-    window_border_inactive: Hexcode
-    """Window border inactive color."""
+
+@dataclass
+class SyntaxHighlightTheme:
+    """Syntax highlight theme."""
+
+    default_fg: Color
+    """Default foreground color."""
+    default_bg: Color
+    """Default background color."""
+    cursor_fg: Color
+    """Default cursor foreground color."""
+    cursor_bg: Color
+    """Default cursor background color."""
+    active_line: Color
+    """The background color of the cursor's current line."""
+    selection: Color
+    """The background color of selected text."""
+    highlights: dict[str, tuple[Style, Color | None]]
+    """A dictionary of tree sitter query names to (style, Color) tuples."""
+
+    def __init__(
+        self,
+        default_fg: Hexcode,
+        default_bg: Hexcode,
+        cursor_fg: Hexcode,
+        cursor_bg: Hexcode,
+        active_line: Hexcode,
+        selection: Hexcode,
+        highlights: dict[str, tuple[Style, Hexcode | None]],
+    ):
+        self.default_fg = Color.from_hex(default_fg)
+        self.default_bg = Color.from_hex(default_bg)
+        self.cursor_fg = Color.from_hex(cursor_fg)
+        self.cursor_bg = Color.from_hex(cursor_bg)
+        self.active_line = Color.from_hex(active_line)
+        self.selection = Color.from_hex(selection)
+        self.highlights = {
+            k: (style, None if hexcode is None else Color.from_hex(hexcode))
+            for k, (style, hexcode) in highlights.items()
+        }

@@ -622,6 +622,6 @@ class LinePlot(Gadget):
         return True
 
     def on_add(self):
-        """Built plot on add."""
+        """Build plot on add."""
         super().on_add()
         self._build_plot()
