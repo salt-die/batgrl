@@ -272,7 +272,7 @@ class GraphicParticleField(Gadget):
         ):
             self._blitter = "half"
             logger.info(
-                f'{blitter!r} blitter not yet supported. Blitter set to "half".'
+                "'%s' blitter not yet supported. Blitter set to 'half'.", blitter
             )
         else:
             self._blitter = blitter

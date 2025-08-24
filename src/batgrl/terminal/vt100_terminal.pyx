@@ -440,7 +440,7 @@ cdef class Vt100Terminal:
         def _on_timeout():
             if escape in self._dsr_timeouts:
                 del self._dsr_timeouts[escape]
-            logger.info(f"Device Status Report (DSR) Timeout: {escape!r}")
+            logger.info("Device Status Report (DSR) Timeout: '%s'", escape)
         return _on_timeout
 
     cpdef void process_stdin(self):

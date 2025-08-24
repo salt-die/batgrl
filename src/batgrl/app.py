@@ -9,6 +9,7 @@ from pathlib import Path
 from time import perf_counter
 from typing import Any, Final, cast
 
+from . import __version__
 from ._rendering import terminal_render
 from ._sixel import OctTree
 from .colors import NEPTUNE_THEME, Color, ColorTheme
@@ -19,6 +20,7 @@ from .gadgets.gadget import Gadget, _GadgetList
 from .gadgets.graphic_field import GraphicParticleField
 from .gadgets.graphics import _BLITTER_GEOMETRY, Graphics, scale_geometry
 from .geometry import Point, Size
+from .logging import get_logger
 from .terminal import (
     Vt100Terminal,
     app_mode,
@@ -38,6 +40,8 @@ from .terminal.events import (
 )
 
 __all__ = ["App", "run_gadget_as_app"]
+
+logger = get_logger(__name__)
 
 _CTRL_C: Final = KeyEvent("c", ctrl=True)
 """Keybind for exiting the app."""
@@ -348,6 +352,8 @@ class App(ABC):
 
     def run(self) -> Any:
         """Run the app."""
+        logger.info("batgrl v%s", __version__)
+        logger.info("Starting app")
         tmp_stderr = StringIO()
         try:
             with redirect_stderr(tmp_stderr):
@@ -362,6 +368,7 @@ class App(ABC):
             else:
                 print(error_output, file=sys.stderr, end="")
 
+        logger.info("Exiting app")
         exit_value = self._exit_value
         self._exit_value = None
         return exit_value

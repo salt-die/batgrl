@@ -7,6 +7,7 @@ from contextlib import contextmanager
 from typing import Final
 
 from ..geometry import Size
+from ..logging import get_logger
 from .events import (
     DECReplyModeEvent,
     DeviceAttributesReportEvent,
@@ -21,6 +22,8 @@ __all__ = [
     "determine_terminal_capabilities",
     "get_platform_terminal",
 ]
+
+logger = get_logger(__name__)
 
 _SIXEL_SUPPORT: Final = 4
 """Terminal attribute for sixel support."""
@@ -106,6 +109,8 @@ async def determine_terminal_capabilities(terminal: Vt100Terminal) -> tuple[bool
     tuple[bool, Size]
         Return whether sixel is supported and pixel geometry.
     """
+    logger.info("Determining terminal capabilities...")
+
     pixel_geometry: Size | None = None
     sixel_support: bool = False
     terminal_info_reported: asyncio.Event = asyncio.Event()
@@ -126,11 +131,19 @@ async def determine_terminal_capabilities(terminal: Vt100Terminal) -> tuple[bool
                     th, tw = terminal.get_size()
                     pixel_geometry = Size(ph // th, pw // tw)
             elif isinstance(event, DECReplyModeEvent):
-                if event.mode != 1016:
+                if event.mode == 1016:
+                    if event.value:
+                        logger.info("SGR Pixels supported")
+                        terminal.enable_sgr_pixels()
+                    else:
+                        logger.info("SGR-Pixels not supported")
+                elif event.mode == 2026:
+                    if event.value:
+                        logger.info("Synchronized update mode (SUM) supported")
+                    else:
+                        logger.info("Synchronized update mode (SUM) not supported")
+                else:
                     continue
-
-                if event.value:
-                    terminal.enable_sgr_pixels()
             else:
                 continue
 
@@ -149,7 +162,7 @@ async def determine_terminal_capabilities(terminal: Vt100Terminal) -> tuple[bool
     terminal._event_handler = report_handler
 
     terminal.request_synchronized_update_mode_supported()
-    # Result of request is stored in `terminal`.
+    await wait_for_report()
 
     terminal.request_pixel_geometry()
     await wait_for_report()
@@ -160,14 +173,23 @@ async def determine_terminal_capabilities(terminal: Vt100Terminal) -> tuple[bool
         await wait_for_report()
 
     if pixel_geometry is None:
+        logger.info("Pixel geometry not reported")
+        logger.info("Sixel not supported")
         # No pixel geometry reported; don't even attempt SGR-PIXELS or SIXEL.
         return False, Size(20, 10)
+
+    logger.info("Pixel geometry reported as: %s", pixel_geometry)
 
     terminal.request_sgr_pixels_supported()
     await wait_for_report()
 
     terminal.request_device_attributes()
     await wait_for_report()
+
+    if sixel_support:
+        logger.info("Sixel supported")
+    else:
+        logger.info("Sixel not supported")
 
     terminal._event_handler = old_handler
     return sixel_support, pixel_geometry

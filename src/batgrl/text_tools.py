@@ -72,8 +72,8 @@ def egc_ord(text: str) -> int:
         return ord(egc)
 
     if egc not in EGCS:
+        logger.debug("Extended Grapheme Cluster added to EGC_POOL: %s", egc)
         # FIXME: Unbounded growth
-        logger.debug(f"EGC Added: {egc} {[ord(i) for i in egc]}")
         EGCS[egc] = len(EGC_POOL)
         EGC_POOL.append(egc)
     return EGCS[egc] | EGC_BASE

@@ -398,7 +398,8 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self._hide_char_ord = egc_ord(char)
         if wcswidth(egc_chr(self._hide_char_ord)) != 1:
             logger.info(
-                f"hide_char ({char}) cell width greater than 1, using default hide_char"
+                "hide_char (%s) cell width greater than 1, using default hide_char",
+                char,
             )
             self._hide_char_ord = ord("*")
 

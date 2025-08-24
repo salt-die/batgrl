@@ -1084,7 +1084,9 @@ class Gadget:
                 for key, start_value in start.items()
             }
 
-        logger.debug(f"_tween_lerp unexpected types: {start=}, {end=}, {p=}")
+        logger.debug(
+            "_tween_lerp unexpected types: start=%s, end=%s, p=%s", start, end, p
+        )
 
     async def tween(
         self,

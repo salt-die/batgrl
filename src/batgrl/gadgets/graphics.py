@@ -289,8 +289,8 @@ class Graphics(Gadget):
         if blitter == "sixel" and not self._sixel_support:
             self._blitter = "half"
             logger.info(
-                'Can\'t set blitter to "sixel" without sixel terminal support. '
-                'Setting blitter to "half" instead.'
+                "Can't set blitter to 'sixel' without sixel terminal support. "
+                "Setting blitter to 'half' instead."
             )
         else:
             self._blitter = blitter

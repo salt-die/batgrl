@@ -107,7 +107,7 @@ def get_highlighter(language: str) -> Highlighter | None:
 
     tree_lang = _find_tree_sitter_language(language)
     if tree_lang is None:
-        logger.info(f"Could not load {language!r} tree-sitter Language.")
+        logger.info("Could not load '%s' tree-sitter Language.", language)
         return None
 
     parser = Parser(tree_lang)
@@ -115,7 +115,11 @@ def get_highlighter(language: str) -> Highlighter | None:
     queries_path = Path(__file__).parent / language
     highlights_path = queries_path / "highlights.scm"
     if not highlights_path.exists():
-        logger.info(f"Could not find {highlights_path.absolute()!r}.")
+        logger.info(
+            "Highlight query for '%s' language not found at '%s'.",
+            language,
+            highlights_path.resolve(),
+        )
         return None
     highlights = Query(tree_lang, highlights_path.read_text())
 
