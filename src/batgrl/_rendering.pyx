@@ -40,6 +40,7 @@ cdef:
     uint32_t END_OF_BRAILLE_ORD = 0x28ff
     uint32_t HALF_BLOCK_ORD = 0x2580
     uint32_t END_OF_GEOMETRY_BLOCK_ORD = 0x25a0
+    uint32_t FORCE_REPAINT_FLAG = 0b1000  # Must be greater than max CellKind
 
 
 cdef struct RegionIterator:
@@ -2526,7 +2527,7 @@ cpdef void terminal_render(
         size_t oy = app_pos[0], ox = app_pos[1]
         ssize_t cursor_y = -1, cursor_x = -1
         Cell *last_sgr = NULL
-        bint emit_sixel = 0
+        bint sixel_changed = 0
         uint8_t *quant_color
         unsigned int aspect_h = aspect_ratio[0], aspect_w = aspect_ratio[1]
 
@@ -2539,49 +2540,55 @@ cpdef void terminal_render(
 
     for y in range(h):
         for x in range(w):
-            if kind[y, x]:
-                if y < min_y_sixel:
-                    min_y_sixel = y
-                if y > max_y_sixel:
-                    max_y_sixel = y
-                if x < min_x_sixel:
-                    min_x_sixel = x
-                if x > max_x_sixel:
-                    max_x_sixel = x
-                if not emit_sixel:
-                    if resized:
-                        emit_sixel = 1
-                    elif kind[y, x] != prev_kind[y, x]:
-                        emit_sixel = 1
-                    else:
-                        gh = y * cell_h
-                        gw = x * cell_w
-                        if kind[y, x] == SIXEL:
-                            # Check if graphics changed.
-                            emit_sixel = not rgba2d_eq(
-                                graphics[gh:gh + cell_h, gw:gw + cell_w],
-                                prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
-                            )
-                        elif kind[y, x] == MIXED:
-                            # Check if cell or graphics changed.
-                            emit_sixel = not (
-                                cell_eq(&cells[y, x], &prev_cells[y, x])
-                                and rgba2d_eq(
-                                    graphics[gh:gh + cell_h, gw:gw + cell_w],
-                                    prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
-                                )
-                            )
-                        elif kind[y, x] == SEE_THROUGH_SIXEL:
-                            # Check if cell (but not bg_color) or graphics changed.
-                            emit_sixel = not see_through_cell_eq(
-                                &cells[y, x],
-                                &prev_cells[y, x],
-                                graphics[gh:gh + cell_h, gw:gw + cell_w],
-                                prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
-                            )
+            if kind[y, x] == GLYPH:
+                continue
+            
+            if y < min_y_sixel:
+                min_y_sixel = y
+            elif y > max_y_sixel:
+                max_y_sixel = y
+            
+            if x < min_x_sixel:
+                min_x_sixel = x
+            elif x > max_x_sixel:
+                max_x_sixel = x
+            
+            if sixel_changed:
+                continue
 
+            if resized:
+                sixel_changed = 1
+            elif kind[y, x] != prev_kind[y, x]:
+                sixel_changed = 1
+            else:
+                gh = y * cell_h
+                gw = x * cell_w
+                if True:
+                    # Check if graphics changed.
+                    sixel_changed = not rgba2d_eq(
+                        graphics[gh:gh + cell_h, gw:gw + cell_w],
+                        prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
+                    )
+                elif kind[y, x] == MIXED:
+                    # Check if cell or graphics changed.
+                    sixel_changed = not (
+                        cell_eq(&cells[y, x], &prev_cells[y, x])
+                        and rgba2d_eq(
+                            graphics[gh:gh + cell_h, gw:gw + cell_w],
+                            prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
+                        )
+                    )
+                elif kind[y, x] == SEE_THROUGH_SIXEL:
+                    # Check if cell (but not bg_color) or graphics changed.
+                    sixel_changed = not see_through_cell_eq(
+                        &cells[y, x],
+                        &prev_cells[y, x],
+                        graphics[gh:gh + cell_h, gw:gw + cell_w],
+                        prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
+                    )
+    
     # Note ALL mixed and ALL sixel cells are re-emitted if any has changed.
-    if emit_sixel:
+    if sixel_changed:
         gy = min_y_sixel * cell_h
         gx = min_x_sixel * cell_w
         gh = (max_y_sixel + 1 - min_y_sixel) * cell_h
@@ -2591,11 +2598,11 @@ cpdef void terminal_render(
             y = gh % 6
             if y:
                 gh -= y
-                # If sixel graphics height is clipped force repaint of sixel cells on
-                # last line by changing to mixed cells.
+                # If sixel graphics height is clipped force repaint of glyphs beneath
+                # sixel cells on last line.
                 for x in range(min_x_sixel, max_x_sixel + 1):
                     if kind[max_y_sixel, x]:
-                        kind[max_y_sixel, x] = MIXED
+                        kind[max_y_sixel, x] |= FORCE_REPAINT_FLAG
 
         for y in range(h):
             for x in range(w):
@@ -2620,21 +2627,28 @@ cpdef void terminal_render(
     cursor_x = -1
     for y in range(h):
         for x in range(w):
-            if kind[y, x] == GLYPH and (
-                resized
-                or prev_kind[y, x]
-                or (
-                    emit_sixel
-                    and min_y_sixel <= y <= max_y_sixel
-                    and min_x_sixel <= x <= max_x_sixel
-                )
-                or not cell_eq(&cells[y, x], &prev_cells[y, x])
-            ):
+            if kind[y, x] & FORCE_REPAINT_FLAG:
                 if write_glyph(
                     f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, &last_sgr
                 ):
                     raise MemoryError
-            elif kind[y, x] == SEE_THROUGH_SIXEL and emit_sixel:
+                kind[y, x] -= FORCE_REPAINT_FLAG
+            elif kind[y, x] == GLYPH:
+                if (
+                    resized
+                    or prev_kind[y, x]
+                    or (
+                        sixel_changed
+                        and min_y_sixel <= y <= max_y_sixel
+                        and min_x_sixel <= x <= max_x_sixel
+                    )
+                    or not cell_eq(&cells[y, x], &prev_cells[y, x])
+                ):
+                    if write_glyph(
+                        f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, &last_sgr
+                    ):
+                        raise MemoryError
+            elif kind[y, x] == SEE_THROUGH_SIXEL and sixel_changed:
                 # Note to future code archaeologists:
                 # The reason for SEE_THROUGH_SIXEL is to color match the background of
                 # a cell that is seen "under" graphics with the quantized color of the
