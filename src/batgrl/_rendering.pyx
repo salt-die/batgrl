@@ -2500,21 +2500,20 @@ cdef inline ssize_t write_glyph(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef void terminal_render(
-    Vt100Terminal terminal,
-    bint resized,
-    OctTree octree,
-    tuple[int, int] app_pos,
-    Cell[:, ::1] cells,
-    Cell[:, ::1] prev_cells,
-    int[:, ::1] widths,
-    uint8_t[:, :, ::1] graphics,
-    uint8_t[:, :, ::1] prev_graphics,
-    uint8_t[:, :, ::1] sgraphics,
-    uint8_t[:, ::1] kind,
-    uint8_t[:, ::1] prev_kind,
-    tuple[int, int] aspect_ratio,
-):
+cpdef void terminal_render(bint resized, app, root, tuple[int, int] aspect_ratio):
+    cdef:
+        Vt100Terminal terminal = app._terminal
+        OctTree octree = app._octree
+        tuple[int, int] app_pos = app._app_pos
+        Cell[:, ::1] cells = root.cells
+        Cell[:, ::1] prev_cells = root._last_cells
+        int[:, ::1] widths = root._widths
+        uint8_t[:, :, ::1] graphics = root.graphics
+        uint8_t[:, :, ::1] prev_graphics = root._last_graphics
+        uint8_t[:, :, ::1] sgraphics = root._last_graphics
+        uint8_t[:, ::1] kind = root.kind
+        uint8_t[:, ::1] prev_kind = root._last_kind
+
     normalize_canvas(cells, widths)
 
     cdef:
@@ -2522,9 +2521,8 @@ cpdef void terminal_render(
         size_t h = cells.shape[0], w = cells.shape[1], y, x
         size_t cell_h = graphics_cell_height(cells, graphics)
         size_t cell_w = graphics_cell_width(cells, graphics)
-        size_t gy, gx, gh, gw
+        size_t gy, gx, gh, gw, oy = app_pos[0], ox = app_pos[1]
         size_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
-        size_t oy = app_pos[0], ox = app_pos[1]
         ssize_t cursor_y = -1, cursor_x = -1
         Cell *last_sgr = NULL
         bint sixel_changed = 0
@@ -2563,7 +2561,7 @@ cpdef void terminal_render(
             else:
                 gh = y * cell_h
                 gw = x * cell_w
-                if True:
+                if kind[y, x] == SIXEL:
                     # Check if graphics changed.
                     sixel_changed = not rgba2d_eq(
                         graphics[gh:gh + cell_h, gw:gw + cell_w],

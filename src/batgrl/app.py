@@ -491,18 +491,9 @@ class App(ABC):
                 resized = root._resized
                 root._render()
                 terminal_render(
-                    terminal,
                     resized,
-                    self._octree,
-                    self._app_pos,
-                    root.cells,
-                    root._last_cells,
-                    root._widths,
-                    root.graphics,
-                    root._last_graphics,
-                    root._sgraphics,
-                    root.kind,
-                    root._last_kind,
+                    self,
+                    root,
                     Graphics._sixel_aspect_ratio,
                 )
 
