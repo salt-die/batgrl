@@ -2542,17 +2542,17 @@ cpdef void terminal_render(
         for x in range(w):
             if kind[y, x] == GLYPH:
                 continue
-            
+
             if y < min_y_sixel:
                 min_y_sixel = y
             elif y > max_y_sixel:
                 max_y_sixel = y
-            
+
             if x < min_x_sixel:
                 min_x_sixel = x
             elif x > max_x_sixel:
                 max_x_sixel = x
-            
+
             if sixel_changed:
                 continue
 
@@ -2586,7 +2586,7 @@ cpdef void terminal_render(
                         graphics[gh:gh + cell_h, gw:gw + cell_w],
                         prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
                     )
-    
+
     # Note ALL mixed and ALL sixel cells are re-emitted if any has changed.
     if sixel_changed:
         gy = min_y_sixel * cell_h
@@ -2689,4 +2689,5 @@ cpdef void terminal_render(
         logger.log(LogLevel.ANSI, f"Frame rendered: {f.len} bytes")
         logger.log(LogLevel.ANSI, "ANSI DUMP")
         logger.log(LogLevel.ANSI, f.buf[:f.len])
+
     fbuf_flush_fd(f, terminal.stdout)
