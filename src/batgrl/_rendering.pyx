@@ -21,7 +21,7 @@ from .terminal._fbuf cimport (
     fbuf_putucs4,
 )
 from .terminal.vt100_terminal cimport Vt100Terminal
-from .text_tools import EGC_POOL
+from .text_tools import EGC_POOL, EGC_BASE as _EGC_BASE
 
 logger = get_logger(__name__)
 
@@ -34,13 +34,13 @@ cdef:
     uint8_t STRIKETHROUGH = Style.STRIKETHROUGH
     uint8_t OVERLINE = Style.OVERLINE
     uint8_t REVERSE = Style.REVERSE
-    uint32_t EGC_BASE = 0x180000
+    uint8_t FORCE_REPAINT_FLAG = 0b10000000
+    uint32_t EGC_BASE = _EGC_BASE
     uint32_t SPACE_ORD = 0x20
     uint32_t BRAILLE_ORD = 0x2800
     uint32_t END_OF_BRAILLE_ORD = 0x28ff
     uint32_t HALF_BLOCK_ORD = 0x2580
     uint32_t END_OF_GEOMETRY_BLOCK_ORD = 0x25a0
-    uint32_t FORCE_REPAINT_FLAG = 0b1000  # Must be greater than max CellKind
 
 
 cdef struct RegionIterator:
