@@ -2533,7 +2533,7 @@ cpdef void terminal_render(bint resized, app, root, tuple[int, int] aspect_ratio
         raise MemoryError
 
     if terminal.sum_supported:
-        if fbuf_putn(f, "\x1b[2026h", 7):
+        if fbuf_putn(f, "\x1b[?2026h", 8):
             raise MemoryError
 
     for y in range(h):
@@ -2669,7 +2669,7 @@ cpdef void terminal_render(bint resized, app, root, tuple[int, int] aspect_ratio
                     raise MemoryError
 
     if (
-        terminal.sum_supported and f.len == 9
+        terminal.sum_supported and f.len == 10
         or not terminal.sum_supported and f.len == 2
     ):
         # Only 'Save Cursor' and 'SUM' in buffer. Don't flush.
@@ -2677,7 +2677,7 @@ cpdef void terminal_render(bint resized, app, root, tuple[int, int] aspect_ratio
         return
 
     if terminal.sum_supported:
-        if fbuf_putn(f, "\x1b[2026l", 7):
+        if fbuf_putn(f, "\x1b[?2026l", 8):
             raise MemoryError
 
     if fbuf_putn(f, "\x1b8", 2):  # Restore cursor
