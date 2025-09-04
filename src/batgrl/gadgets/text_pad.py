@@ -397,7 +397,6 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self.replace_text((0, 0), self.end_of_text, text)
         self._undo_stack.clear()
         self._redo_stack.clear()
-        self.cursor = self.end_of_text
 
     @property
     def cursor(self) -> Point:
