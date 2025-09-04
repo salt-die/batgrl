@@ -322,20 +322,20 @@ class Text(Gadget):
     @property
     def default_fg_color(self) -> Color:
         """Foreground color of default character."""
-        return Color(*self._default_cell["fg_color"])  # type: ignore
+        return Color(*self._default_cell["fg_color"].tolist())
 
     @default_fg_color.setter
     def default_fg_color(self, default_fg_color: Color):
-        self._default_cell["fg_color"] = default_fg_color  # type: ignore
+        self._default_cell["fg_color"] = default_fg_color
 
     @property
     def default_bg_color(self) -> Color:
         """Background color of default character."""
-        return Color(*self._default_cell["bg_color"])  # type: ignore
+        return Color(*self._default_cell["bg_color"].tolist())
 
     @default_bg_color.setter
     def default_bg_color(self, default_bg_color: Color):
-        self._default_cell["bg_color"] = default_bg_color  # type: ignore
+        self._default_cell["bg_color"] = default_bg_color
 
     @property
     def alpha(self) -> float:
