@@ -5,7 +5,6 @@ import sys
 from abc import ABC, abstractmethod
 from contextlib import redirect_stderr
 from io import StringIO
-from pathlib import Path
 from time import perf_counter
 from typing import Any, Final, cast
 
@@ -81,8 +80,6 @@ class App(ABC):
         Max duration of a double-click.
     render_interval : float, default: 0.0
         Duration in seconds between consecutive frame renders.
-    redirect_stderr : Path | None, default: None
-        If provided, stderr is written to this path.
 
     Attributes
     ----------
@@ -102,8 +99,6 @@ class App(ABC):
         Max duration of a double-click.
     render_interval : float
         Duration in seconds between consecutive frame renders.
-    redirect_stderr : Path | None
-        Path where stderr is saved.
     sixel_support : bool
         Whether sixel is supported.
     sixel_geometry : Size
@@ -142,7 +137,6 @@ class App(ABC):
         color_theme: ColorTheme = NEPTUNE_THEME,
         double_click_timeout: float = 0.5,
         render_interval: float = 0.0,
-        redirect_stderr: Path | None = None,
     ):
         self.root: _Root | None = None
         """Root of gadget tree (only set while app is running)."""
@@ -162,8 +156,6 @@ class App(ABC):
         """Max duration of a double-click."""
         self.render_interval = render_interval
         """Duration in seconds between consecutive frame renders."""
-        self.redirect_stderr = redirect_stderr
-        """Path where stderr is saved."""
         self._terminal: Vt100Terminal | None = None
         """Platform-specific terminal (only set while app is running)."""
         self._app_pos: Point = Point(0, 0)
@@ -183,7 +175,6 @@ class App(ABC):
             f"    inline_height={self.inline_height},\n"
             f"    double_click_timeout={self.double_click_timeout},\n"
             f"    render_interval={self.render_interval},\n"
-            f"    redirect_stderr={self.redirect_stderr},\n"
             ")"
         )
 
@@ -355,18 +346,14 @@ class App(ABC):
         logger.info("batgrl v%s", __version__)
         logger.info("Starting app")
         tmp_stderr = StringIO()
+
         try:
             with redirect_stderr(tmp_stderr):
                 asyncio.run(self._run_async())
         except asyncio.CancelledError:
             pass
         finally:
-            error_output = tmp_stderr.getvalue()
-            if self.redirect_stderr:
-                with open(self.redirect_stderr, "w") as error_file:
-                    print(error_output, file=error_file, end="")
-            else:
-                print(error_output, file=sys.stderr, end="")
+            sys.stderr.write(tmp_stderr.getvalue())
 
         logger.info("Exiting app")
         exit_value = self._exit_value
@@ -566,7 +553,6 @@ def run_gadget_as_app(
     color_theme: ColorTheme = NEPTUNE_THEME,
     double_click_timeout: float = 0.5,
     render_interval: float = 0.0,
-    redirect_stderr: Path | None = None,
 ) -> Any:
     """
     Run a gadget as an app.
@@ -594,8 +580,6 @@ def run_gadget_as_app(
         Max duration of a double-click.
     render_interval : float, default: 0.0
         Duration in seconds between consecutive frame renders.
-    redirect_stderr : Path | None, default: None
-        If provided, stderr is written to this path.
     """
 
     class _DefaultApp(App):
@@ -611,5 +595,4 @@ def run_gadget_as_app(
         color_theme=color_theme,
         double_click_timeout=double_click_timeout,
         render_interval=render_interval,
-        redirect_stderr=redirect_stderr,
     ).run()
