@@ -38,6 +38,14 @@ cell_dtype = dtype(
 )
 """A structured array type that represents a single cell in a terminal."""
 
+braille_pixel_dtype = dtype(
+    [
+        ("ord", "uint32"),
+        ("total_fg", "double", (4,)),
+        ("ncolors", "uint32"),
+    ]
+)
+
 Cell = ndarray[tuple[int, ...], cell_dtype]
 """An array of ``cell_dtype``."""
 

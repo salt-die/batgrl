@@ -10,7 +10,15 @@ from typing import Any
 import numpy as np
 
 from .._rendering import graphics_field_render
-from ..array_types import RGBA_1D, RGBA_2D, RGBM_2D, Cell2D, Coords, Enum2D
+from ..array_types import (
+    RGBA_1D,
+    RGBA_2D,
+    RGBM_2D,
+    Cell2D,
+    Coords,
+    Enum2D,
+    braille_pixel_dtype,
+)
 from ..logging import get_logger
 from .gadget import (
     Gadget,
@@ -213,7 +221,7 @@ class GraphicParticleField(Gadget):
         self.particle_coords: Coords
         """An array of particle positions with shape `(N, 2)`."""
         if particle_coords is None:
-            self.particle_coords = np.zeros((0, 2), dtype=np.float64)
+            self.particle_coords = np.zeros((0, 2), dtype=np.float64)  # type: ignore
         else:
             self.particle_coords = np.ascontiguousarray(
                 particle_coords, dtype=np.float64
@@ -224,7 +232,7 @@ class GraphicParticleField(Gadget):
         if particle_colors is None:
             self.particle_colors = np.zeros(
                 (len(self.particle_coords), 4), dtype=np.uint8
-            )
+            )  # type: ignore
         else:
             self.particle_colors = np.ascontiguousarray(particle_colors, dtype=np.uint8)
 
@@ -234,6 +242,9 @@ class GraphicParticleField(Gadget):
             self.particle_properties = {}
         else:
             self.particle_properties = particle_properties
+
+        self._braille_pixels = np.zeros(0, dtype=braille_pixel_dtype)
+        """Array for building braille glyphs from particles."""
 
         self.alpha = alpha
         """Transparency of gadget."""
@@ -277,11 +288,25 @@ class GraphicParticleField(Gadget):
         else:
             self._blitter = blitter
 
+        if blitter == "braille":
+            self._braille_pixels = np.zeros(
+                (self.height * self.width), dtype=braille_pixel_dtype
+            )
+        else:
+            self._braille_pixels = np.zeros(0, dtype=braille_pixel_dtype)
+
     def on_add(self) -> None:
         """Change sixel blitter if sixel is not supported on add."""
         if self._blitter == "sixel" and not Graphics._sixel_support:
             self.blitter = "half"
         super().on_add()
+
+    def on_size(self) -> None:
+        """Resize braille pixels on size."""
+        if self.blitter == "braille":
+            self._braille_pixels = np.zeros(
+                (self.height * self.width), dtype=braille_pixel_dtype
+            )
 
     @property
     def nparticles(self) -> int:
@@ -320,5 +345,6 @@ class GraphicParticleField(Gadget):
             self.particle_coords,
             self.particle_colors,
             self._alpha,
+            self._braille_pixels,
             self._region,
         )

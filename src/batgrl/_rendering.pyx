@@ -1,12 +1,12 @@
 from libc.math cimport round, pow
 from libc.stdint cimport uint8_t, uint32_t
-from libc.stdlib cimport div_t, free, div, malloc
+from libc.stdlib cimport div_t, div
 from libc.string cimport memset
 
 cimport cython
 from uwcwidth cimport wcwidth_uint32, wcswidth
 
-from ._rendering cimport Cell
+from ._rendering cimport Cell, BraillePixel
 from ._sixel cimport OctTree, sixel
 from ._style import Style
 from .colors import Color
@@ -2101,12 +2101,6 @@ cdef void trans_sixel_graphics_field_render(
                     break
 
 
-cdef struct BraillePixel:
-    uint32_t ord
-    double[4] total_fg
-    unsigned int ncolors
-
-
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef void opaque_braille_graphics_field_render(
@@ -2115,6 +2109,7 @@ cdef void opaque_braille_graphics_field_render(
     int abs_x,
     double[:, ::1] coords,
     uint8_t[:, ::1] particles,
+    BraillePixel[::1] pixels,
     CRegion *cregion,
 ):
     cdef:
@@ -2123,15 +2118,10 @@ cdef void opaque_braille_graphics_field_render(
         int ipy, ipx, y, x, pgy, pgx
         size_t h, w
         Cell *dst
-
-    bounding_rect(cregion, &y, &x, &h, &w)
-    cdef:
-        BraillePixel *pixels = <BraillePixel*>malloc(sizeof(BraillePixel) * h * w)
         BraillePixel *pixel
 
-    if pixels is NULL:
-        return
-    memset(pixels, 0, sizeof(BraillePixel) * h * w)
+    bounding_rect(cregion, &y, &x, &h, &w)
+    memset(&pixels[0], 0, h * w * sizeof(BraillePixel))
 
     for i in range(nparticles):
         py = coords[i][0] + abs_y
@@ -2168,8 +2158,6 @@ cdef void opaque_braille_graphics_field_render(
         dst.fg_color[1] = <uint8_t>(pixel.total_fg[1] / pixel.ncolors)
         dst.fg_color[2] = <uint8_t>(pixel.total_fg[2] / pixel.ncolors)
 
-    free(pixels)
-
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -2182,6 +2170,7 @@ cdef void trans_braille_graphics_field_render(
     double[:, ::1] coords,
     uint8_t[:, ::1] particles,
     double alpha,
+    BraillePixel[::1] pixels,
     CRegion *cregion,
 ):
     if alpha == 0:
@@ -2197,15 +2186,10 @@ cdef void trans_braille_graphics_field_render(
         size_t rh, rw
         int pgy, pgx
         uint8_t[3] rgb
-
-    bounding_rect(cregion, &y, &x, &rh, &rw)
-    cdef:
-        BraillePixel *pixels = <BraillePixel*>malloc(sizeof(BraillePixel) * rh * rw)
         BraillePixel *pixel
 
-    if pixels is NULL:
-        return
-    memset(pixels, 0, sizeof(BraillePixel) * rh * rw)
+    bounding_rect(cregion, &y, &x, &rh, &rw)
+    memset(&pixels[0], 0, rh * rw * sizeof(BraillePixel))
 
     for i in range(nparticles):
         if not particles[i, 3]:
@@ -2262,7 +2246,6 @@ cdef void trans_braille_graphics_field_render(
         composite(
             &dst.fg_color[0], &rgb[0], pixel.total_fg[3] / 255 / pixel.ncolors * alpha
         )
-    free(pixels)
 
 
 @cython.boundscheck(False)
@@ -2277,6 +2260,7 @@ cpdef void graphics_field_render(
     double[:, ::1] coords,
     uint8_t[:, ::1] particles,
     double alpha,
+    BraillePixel[::1] pixels,
     Region region,
 ):
     cdef:
@@ -2328,11 +2312,12 @@ cpdef void graphics_field_render(
                 coords,
                 particles,
                 alpha,
+                pixels,
                 cregion,
             )
         else:
             opaque_braille_graphics_field_render(
-                cells, abs_y, abs_x, coords, particles, cregion
+                cells, abs_y, abs_x, coords, particles, pixels, cregion
             )
     elif blitter == "sixel":
         if is_transparent:

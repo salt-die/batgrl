@@ -6,3 +6,9 @@ cdef packed struct Cell:
     unsigned char style
     unsigned char[3] fg_color
     unsigned char[3] bg_color
+
+
+cdef packed struct BraillePixel:
+    uint32_t ord
+    double[4] total_fg
+    uint32_t ncolors
