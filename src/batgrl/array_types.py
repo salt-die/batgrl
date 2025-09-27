@@ -25,6 +25,7 @@ __all__ = [
     "ULong2D",
     "Unicode1D",
     "Unicode2D",
+    "braille_pixel_dtype",
     "cell_dtype",
 ]
 
@@ -45,6 +46,7 @@ braille_pixel_dtype = dtype(
         ("ncolors", "uint32"),
     ]
 )
+"""A structured array type for building braille glyphs in a graphic field."""
 
 Cell = ndarray[tuple[int, ...], cell_dtype]
 """An array of ``cell_dtype``."""
