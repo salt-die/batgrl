@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "Cython>=3.0.3",
-    "numpy>=2.0.0",
+    "numpy>=2.3.4",
     "packaging>=25.0",
     "setuptools>=80.7.1",
     "uwcwidth>=1.0.0",
