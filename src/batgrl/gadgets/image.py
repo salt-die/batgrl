@@ -192,7 +192,8 @@ class Image(Graphics):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self._otexture = np.zeros((1, 1, 4), dtype=np.uint8)
+        self._otexture: RGBA_2D = np.zeros((1, 1, 4), dtype=np.uint8)  # type:ignore
+
         super().__init__(
             default_color=default_color,
             alpha=alpha,
@@ -221,7 +222,7 @@ class Image(Graphics):
     def path(self, path: Path | None):
         self._path = path
         if path is None:
-            self._otexture = np.full((1, 1, 4), self.default_color, dtype=np.uint8)
+            self._otexture = np.full((1, 1, 4), self.default_color, dtype=np.uint8)  # type:ignore
         else:
             self._otexture = read_texture(path)
         self.on_size()

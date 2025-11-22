@@ -1,7 +1,7 @@
 """Tools for graphics."""
 
 from pathlib import Path
-from typing import Literal
+from typing import Literal, cast
 
 import cv2
 import numpy as np
@@ -38,19 +38,46 @@ def read_texture(path: Path) -> RGBA_2D:
         An uint8 RGBA array of the image.
     """
     image = cv2.imread(str(path.absolute()), cv2.IMREAD_UNCHANGED)
+    image = cast(np.ndarray, image)
+    return _texture_to_RGBA_2D(image)
 
-    if image.dtype == np.dtype(np.uint16):
-        image = (image // 257).astype(np.uint8)
-    elif image.dtype == np.dtype(np.float32):
-        image = (image * 255).astype(np.uint8)
+
+def read_buffer(buffer: bytes) -> RGBA_2D:
+    """
+    Return a uint8 RGBA numpy array from bytes.
+
+    Parameters
+    ----------
+    path : Path
+        Path to image.
+
+    Returns
+    -------
+    RGBA_2D
+        An uint8 RGBA array of the image.
+    """
+    decoded = np.frombuffer(buffer, dtype=np.uint8)
+    image = cv2.imdecode(decoded, cv2.IMREAD_UNCHANGED)
+    image = cast(np.ndarray, image)
+    return _texture_to_RGBA_2D(image)
+
+
+def _texture_to_RGBA_2D(texture: np.ndarray) -> RGBA_2D:
+    if texture.dtype == np.dtype(np.uint16):
+        texture = (texture // 257).astype(np.uint8)
+    elif texture.dtype == np.dtype(np.float32):
+        texture = (texture * 255).astype(np.uint8)
+
+    if texture.ndim == 2:
+        texture = np.dstack((texture, texture, texture))
 
     # Add an alpha channel if there isn't one.
-    h, w, c = image.shape
+    h, w, c = texture.shape
     if c == 3:
         default_alpha_channel = np.full((h, w, 1), 255, dtype=np.uint8)
-        image = np.dstack((image, default_alpha_channel))
+        texture = np.dstack((texture, default_alpha_channel))
 
-    return cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)  # type: ignore
+    return cv2.cvtColor(texture, cv2.COLOR_BGRA2RGBA)  # type: ignore
 
 
 def resize_texture(
@@ -81,7 +108,7 @@ def resize_texture(
     old_h, old_w = texture.shape[:2]
     h, w = size
     if old_h == 0 or old_w == 0 or h == 0 or w == 0:
-        return np.zeros((h, w, 4), np.uint8)
+        return np.zeros((h, w, 4), np.uint8)  # type: ignore
     return cv2.resize(
         texture, (w, h), dst=out, interpolation=_INTERPOLATION_TO_CV_ENUM[interpolation]
     )  # type: ignore
