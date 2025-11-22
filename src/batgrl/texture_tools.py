@@ -9,7 +9,13 @@ import numpy as np
 from .array_types import RGBA_2D
 from .geometry import Point, Region, Sizelike, rect_slice
 
-__all__ = ["Interpolation", "composite", "read_texture", "resize_texture"]
+__all__ = [
+    "Interpolation",
+    "composite",
+    "read_buffer",
+    "read_texture",
+    "resize_texture",
+]
 
 Interpolation = Literal["nearest", "linear", "cubic", "area", "lanczos"]
 """Interpolation methods for resizing graphic gadgets."""
@@ -21,25 +27,6 @@ _INTERPOLATION_TO_CV_ENUM = {
     "lanczos": cv2.INTER_LANCZOS4,
     "nearest": cv2.INTER_NEAREST,
 }
-
-
-def read_texture(path: Path) -> RGBA_2D:
-    """
-    Return a uint8 RGBA numpy array from a path to an image.
-
-    Parameters
-    ----------
-    path : Path
-        Path to image.
-
-    Returns
-    -------
-    RGBA_2D
-        An uint8 RGBA array of the image.
-    """
-    image = cv2.imread(str(path.absolute()), cv2.IMREAD_UNCHANGED)
-    image = cast(np.ndarray, image)
-    return _texture_to_RGBA_2D(image)
 
 
 def read_buffer(buffer: bytes) -> RGBA_2D:
@@ -58,6 +45,25 @@ def read_buffer(buffer: bytes) -> RGBA_2D:
     """
     decoded = np.frombuffer(buffer, dtype=np.uint8)
     image = cv2.imdecode(decoded, cv2.IMREAD_UNCHANGED)
+    image = cast(np.ndarray, image)
+    return _texture_to_RGBA_2D(image)
+
+
+def read_texture(path: Path) -> RGBA_2D:
+    """
+    Return a uint8 RGBA numpy array from a path to an image.
+
+    Parameters
+    ----------
+    path : Path
+        Path to image.
+
+    Returns
+    -------
+    RGBA_2D
+        An uint8 RGBA array of the image.
+    """
+    image = cv2.imread(str(path.absolute()), cv2.IMREAD_UNCHANGED)
     image = cast(np.ndarray, image)
     return _texture_to_RGBA_2D(image)
 
