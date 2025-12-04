@@ -4,7 +4,7 @@ import asyncio
 import sys
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
-from typing import Final
+from typing import Final, cast
 
 from ..geometry import Size
 from ..logging import get_logger
@@ -115,7 +115,7 @@ async def determine_terminal_capabilities(terminal: Vt100Terminal) -> tuple[bool
     sixel_support: bool = False
     terminal_info_reported: asyncio.Event = asyncio.Event()
     report_timeout: asyncio.TimerHandle
-    expected_event: Event | None = None
+    expected_event: Event | None = cast(Event | None, None)
 
     def expect_event(event_type: type[Event]):
         def report_handler(events: list[Event]) -> None:
