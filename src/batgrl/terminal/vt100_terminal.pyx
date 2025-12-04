@@ -555,6 +555,10 @@ cdef class Vt100Terminal:
         self.sgr_pixels_mode = 1
         self.write(b"\xb1[?1016h")
 
+    def disable_sgr_pixels(self) -> None:
+        self.sgr_pixels_mode = 0
+        self.write(b"\xb1[?1016l")
+
     def reset_attributes(self) -> None:
         self.write(b"\x1b[0m")
 

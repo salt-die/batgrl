@@ -115,40 +115,20 @@ async def determine_terminal_capabilities(terminal: Vt100Terminal) -> tuple[bool
     sixel_support: bool = False
     terminal_info_reported: asyncio.Event = asyncio.Event()
     report_timeout: asyncio.TimerHandle
+    expected_event: Event | None = None
 
-    def report_handler(events: list[Event]) -> None:
-        """Handle terminal reports."""
-        nonlocal sixel_support, pixel_geometry, report_timeout
+    def expect_event(event_type: type[Event]):
+        def report_handler(events: list[Event]) -> None:
+            """Handle terminal reports."""
+            nonlocal expected_event, report_timeout
+            for event in events:
+                if isinstance(event, event_type):
+                    report_timeout.cancel()
+                    terminal_info_reported.set()
+                    expected_event = event
+                    return
 
-        for event in events:
-            if isinstance(event, DeviceAttributesReportEvent):
-                sixel_support = _SIXEL_SUPPORT in event.device_attributes
-            elif isinstance(event, PixelGeometryReportEvent):
-                if event.kind == "cell":
-                    pixel_geometry = event.geometry
-                else:
-                    ph, pw = event.geometry
-                    th, tw = terminal.get_size()
-                    pixel_geometry = Size(ph // th, pw // tw)
-            elif isinstance(event, DECReplyModeEvent):
-                if event.mode == 1016:
-                    if event.value:
-                        logger.info("SGR Pixels supported")
-                        terminal.enable_sgr_pixels()
-                    else:
-                        logger.info("SGR-Pixels not supported")
-                elif event.mode == 2026:
-                    if event.value:
-                        logger.info("Synchronized update mode (SUM) supported")
-                    else:
-                        logger.info("Synchronized update mode (SUM) not supported")
-                else:
-                    continue
-            else:
-                continue
-
-            report_timeout.cancel()
-            terminal_info_reported.set()
+        return report_handler
 
     async def wait_for_report():
         nonlocal report_timeout
@@ -159,18 +139,30 @@ async def determine_terminal_capabilities(terminal: Vt100Terminal) -> tuple[bool
         terminal_info_reported.clear()
 
     old_handler = terminal._event_handler
-    terminal._event_handler = report_handler
 
+    terminal._event_handler = expect_event(DECReplyModeEvent)
     terminal.request_synchronized_update_mode_supported()
     await wait_for_report()
+    if isinstance(expected_event, DECReplyModeEvent) and expected_event.mode == 2026:
+        if 1 <= expected_event.value <= 3:
+            logger.info("Synchronized update mode (SUM) supported")
+        else:
+            logger.info("Synchronized update mode (SUM) not supported")
 
+    terminal._event_handler = expect_event(PixelGeometryReportEvent)
     terminal.request_pixel_geometry()
     await wait_for_report()
+    if isinstance(expected_event, PixelGeometryReportEvent):
+        pixel_geometry = expected_event.geometry
 
     if pixel_geometry is None:
         # Fallback to terminal geometry from which pixel geometry can be calculated.
         terminal.request_terminal_geometry()
         await wait_for_report()
+        if isinstance(expected_event, PixelGeometryReportEvent):
+            ph, pw = expected_event.geometry
+            th, tw = terminal.get_size()
+            pixel_geometry = Size(ph // th, pw // tw)
 
     if pixel_geometry is None:
         logger.info("Pixel geometry not reported")
@@ -180,16 +172,36 @@ async def determine_terminal_capabilities(terminal: Vt100Terminal) -> tuple[bool
 
     logger.info("Pixel geometry reported as: %s", pixel_geometry)
 
+    terminal._event_handler = expect_event(DECReplyModeEvent)
     terminal.request_sgr_pixels_supported()
     await wait_for_report()
+    if isinstance(expected_event, DECReplyModeEvent) and expected_event.mode == 1016:
+        if 1 <= expected_event.value <= 3:
+            # May be reported as "off" instead of not supported...
+            # Try to turn on and check again.
+            terminal.enable_sgr_pixels()
+            terminal.request_sgr_pixels_supported()
+            await wait_for_report()
+            if (
+                isinstance(expected_event, DECReplyModeEvent)
+                and expected_event.mode == 1016
+            ):
+                if expected_event.value == 2:
+                    terminal.disable_sgr_pixels()
+                    logger.info("SGR Pixels not supported.")
+                else:
+                    logger.info("SGR Pixels supported.")
+        else:
+            logger.info("SGR Pixels not supported.")
 
+    terminal._event_handler = expect_event(DeviceAttributesReportEvent)
     terminal.request_device_attributes()
     await wait_for_report()
-
-    if sixel_support:
-        logger.info("Sixel supported")
-    else:
-        logger.info("Sixel not supported")
+    if isinstance(expected_event, DeviceAttributesReportEvent):
+        if _SIXEL_SUPPORT in expected_event.device_attributes:
+            logger.info("Sixel supported")
+        else:
+            logger.info("Sixel not supported")
 
     terminal._event_handler = old_handler
     return sixel_support, pixel_geometry

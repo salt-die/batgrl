@@ -172,6 +172,9 @@ class Vt100Terminal:
     def enable_sgr_pixels(self) -> None:
         """Enable SGR-PIXELS mouse mode."""
 
+    def disable_sgr_pixels(self) -> None:
+        """Disable SGR-PIXELS mouse mode."""
+
     def reset_attributes(self) -> None:
         """Reset character attributes."""
 
