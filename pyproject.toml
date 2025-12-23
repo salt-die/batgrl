@@ -40,6 +40,9 @@ dynamic = ["version"]
 [tool.setuptools.dynamic]
 version = {attr = "batgrl.__version__"}
 
+[tool.setuptools.package-data]
+batgrl = ["py.typed", "*.h", "*.pxd", "*.pyx"]
+
 [tool.ruff.lint]
 select = [
     "D",  # pydocstyle
