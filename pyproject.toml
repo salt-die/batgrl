@@ -41,7 +41,23 @@ dynamic = ["version"]
 version = {attr = "batgrl.__version__"}
 
 [tool.setuptools.package-data]
-batgrl = ["py.typed", "*.h", "*.pxd", "*.pyx"]
+batgrl = [
+    "py.typed", 
+    "_rendering.pxd",
+    "_rendering.pyx",
+    "_sixel.pxd",
+    "_sixel.pyx",
+    "gadgets/_raycasting.pyx",
+    "gadgets/_shadow_casting.pyx",
+    "geometry/regions.pxd",
+    "geometry/regions.pyi",
+    "geometry/regions.pyx",
+    "terminal/_fbuf.h",
+    "terminal/_fbuf.pxd",
+    "terminal/_fbuf.pyx",
+    "terminal/vt100_terminal.pxd",
+    "terminal/vt100_terminal.pyx",
+]
 
 [tool.ruff.lint]
 select = [
