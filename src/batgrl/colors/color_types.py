@@ -27,11 +27,13 @@ string ``"#abc123`` is equivalent to ``"#abc123ff"``.
 
 
 def validate_hexcode(hexcode: Hexcode) -> bool:
-    return bool(_HEXCODE_RE.match(hexcode))
+    return _HEXCODE_RE.fullmatch(hexcode) is not None
 
 
 def validate_ahexcode(ahexcode: AHexcode) -> bool:
-    return validate_hexcode(ahexcode) or bool(_AHEXCODE_RE.match(ahexcode))
+    if validate_hexcode(ahexcode):
+        return True
+    return _AHEXCODE_RE.fullmatch(ahexcode) is not None
 
 
 def _to_hex(channel: int):
