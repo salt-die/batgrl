@@ -77,6 +77,8 @@ class WindowsTerminal(Vt100Terminal):
         Disable mouse support in terminal.
     enable_sgr_pixels()
         Enable SGR-PIXELS mouse mode.
+    disable_sgr_pixels()
+        Disable SGR-PIXELS mouse mode.
     reset_attributes()
         Reset character attributes.
     enable_bracketed_paste()
