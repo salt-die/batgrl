@@ -8,8 +8,8 @@ from .._style import Style
 
 __all__ = ["AColor", "Color", "ColorTheme", "SyntaxHighlightTheme"]
 
-_HEXCODE_RE: Final = re.compile(r"^#?[0-9a-fA-F]{6}$")
-_AHEXCODE_RE: Final = re.compile(r"^#?[0-9a-fA-F]{8}$")
+_HEXCODE_RE: Final = re.compile(r"\A#?[0-9a-fA-F]{6}\Z")
+_AHEXCODE_RE: Final = re.compile(r"\A#?[0-9a-fA-F]{8}\Z")
 
 type Hexcode = str
 """

@@ -56,7 +56,7 @@ def _image_size(texture_h: float, texture_w: float, max_width: float) -> Size:
     return Size(int(h * pct), int(w * pct))
 
 
-def _is_task_list_item(list_item: block_token.ListItem) -> re.Match | None:
+def _is_task_list_item(list_item: block_token.ListItem) -> re.Match[str] | None:
     if list_item.leader != "-":
         return None
     # Match the first raw text item
@@ -78,7 +78,7 @@ def _default_cell():
 
 
 class BlankLine(block_token.BlockToken):
-    pattern = re.compile(r"\s*\n$")
+    pattern = re.compile(r"\s*\n\Z")
 
     def __init__(self, _):
         self.children = []
@@ -618,7 +618,7 @@ class _BatgrlRenderer(BaseRenderer):
         checks = list(map(_is_task_list_item, token.children))
         if all(checks):
             items = [
-                self.render_task_list_item(child, cast(re.Match, match))
+                self.render_task_list_item(child, cast(re.Match[str], match))
                 for child, match in zip(token.children, checks)
             ]
         else:
@@ -627,7 +627,7 @@ class _BatgrlRenderer(BaseRenderer):
         return _List(items, prefix)
 
     def render_task_list_item(
-        self, token: block_token.ListItem, match: re.Match
+        self, token: block_token.ListItem, match: re.Match[str]
     ) -> Gadget:
         current_token = token
         while True:

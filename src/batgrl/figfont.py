@@ -168,14 +168,14 @@ class FIGFont:
     def from_path(cls, path: Path) -> Self:
         """Load a FIGFont from a path."""
         HEADER_RE = (
-            r"^[tf]lf2.(?P<hardblank>.) (?P<height>\d+) \d+ \d+ "
-            r"(?P<old_layout>-?\d+) (?P<comment_lines>\d+)"
+            r"^[tf]lf2.(?P<hardblank>.) (?P<height>[0-9]+) [0-9]+ [0-9]+ "
+            r"(?P<old_layout>-?[0-9]+) (?P<comment_lines>[0-9]+)"
             r"(?: (?P<reverse_text>0|1)"
-            r"(?: (?P<layout>\d+)"
-            r"(?: \d+)?)?)?\s*$"
+            r"(?: (?P<layout>[0-9]+)"
+            r"(?: [0-9]+)?)?)?\s*\Z"
         )
-        ENDMARKS_RE = re.compile(r"(\S)\1*\s*$")
-        NUMBER_RE = re.compile(r"^(0[0-7]*|0x[a-fA-F0-9]+|[1-9]\d*)(?:\s+\w*)?$")
+        ENDMARKS_RE = re.compile(r"(\S)\1*\s*\Z")
+        NUMBER_RE = re.compile(r"^(0[0-7]*|0x[a-fA-F0-9]+|[1-9][0-9]*)(?:\s+\w*)?\Z")
 
         if zipfile.is_zipfile(path):
             with zipfile.ZipFile(path) as f:

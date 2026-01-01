@@ -15,7 +15,7 @@ from .gadget import Gadget, PosHint, SizeHint
 from .scroll_view import ScrollView
 from .text import Pointlike, Sizelike, Text
 
-_CSI_RE: Final = re.compile(r"\x1b\[[;\d]*\w")
+_CSI_RE: Final = re.compile(r"\x1b\[[;0-9]*[^;0-9]")
 """Control sequence pattern."""
 # Colors from VGA column of: https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
 _LOW_INTENSITY: Final = (
@@ -127,7 +127,7 @@ class _AnsReader:
 
             escape = match[0]
             command = escape[-1]
-            params = (int(n) for n in re.findall(r"\d+", escape))
+            params = (int(n) for n in re.findall(r"[0-9]+", escape))
             if command == "m":
                 for param in params:
                     if param == 0:
