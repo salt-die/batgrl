@@ -553,11 +553,11 @@ cdef class Vt100Terminal:
 
     def enable_sgr_pixels(self) -> None:
         self.sgr_pixels_mode = 1
-        self.write(b"\xb1[?1016h")
+        self.write(b"\xb1[?1016h")  # SET_SGR_PIXELS_MODE_MOUSE
 
     def disable_sgr_pixels(self) -> None:
         self.sgr_pixels_mode = 0
-        self.write(b"\xb1[?1016l")
+        self.write(b"\xb1[?1016l")  # SET_SGR_PIXELS_MODE_MOUSE
 
     def reset_attributes(self) -> None:
         self.write(b"\x1b[0m")
