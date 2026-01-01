@@ -172,36 +172,37 @@ async def determine_terminal_capabilities(terminal: Vt100Terminal) -> tuple[bool
 
     logger.info("Pixel geometry reported as: %s", pixel_geometry)
 
-    terminal._event_handler = expect_event(DECReplyModeEvent)
-    terminal.request_sgr_pixels_supported()
-    await wait_for_report()
-    if isinstance(expected_event, DECReplyModeEvent) and expected_event.mode == 1016:
-        if 1 <= expected_event.value <= 3:
-            # May be reported as "off" instead of not supported...
-            # Try to turn on and check again.
-            terminal.enable_sgr_pixels()
-            terminal.request_sgr_pixels_supported()
-            await wait_for_report()
-            if (
-                isinstance(expected_event, DECReplyModeEvent)
-                and expected_event.mode == 1016
-            ):
-                if expected_event.value == 2:
-                    terminal.disable_sgr_pixels()
-                    logger.info("SGR Pixels not supported.")
-                else:
-                    logger.info("SGR Pixels supported.")
-        else:
-            logger.info("SGR Pixels not supported.")
-
     terminal._event_handler = expect_event(DeviceAttributesReportEvent)
     terminal.request_device_attributes()
     await wait_for_report()
     if isinstance(expected_event, DeviceAttributesReportEvent):
         if _SIXEL_SUPPORT in expected_event.device_attributes:
+            sixel_support = True
             logger.info("Sixel supported")
         else:
             logger.info("Sixel not supported")
+
+    terminal._event_handler = expect_event(DECReplyModeEvent)
+    terminal.request_sgr_pixels_supported()
+    await wait_for_report()
+    if (
+        isinstance(expected_event, DECReplyModeEvent)
+        and expected_event.mode == 1016
+        and expected_event.value == 0  # Not recognized
+    ):
+        terminal._event_handler = old_handler
+        return sixel_support, pixel_geometry
+
+    # Attempt to turn on sgr pixels
+    terminal.enable_sgr_pixels()
+    terminal.request_sgr_pixels_supported()
+    await wait_for_report()
+    if isinstance(expected_event, DECReplyModeEvent) and expected_event.mode == 1016:
+        if not expected_event.value & 1:
+            terminal.disable_sgr_pixels()
+            logger.info("SGR Pixels not supported.")
+        else:
+            logger.info("SGR Pixels supported.")
 
     terminal._event_handler = old_handler
     return sixel_support, pixel_geometry
