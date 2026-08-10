@@ -229,9 +229,8 @@ class App(ABC):
     @inline_height.setter
     def inline_height(self, inline_height: int):
         self._inline_height = inline_height
-        if self.inline and self.root is not None:
-            terminal = cast(Vt100Terminal, self._terminal)
-            height, _ = terminal.get_size()
+        if self.inline and self.root is not None and self._terminal is not None:
+            height, _ = self._terminal.get_size()
             self.root.height = min(inline_height, height)
 
     @property
@@ -354,6 +353,10 @@ class App(ABC):
             pass
         finally:
             sys.stderr.write(tmp_stderr.getvalue())
+            if self.root is not None:
+                self.root.destroy()
+                self.root = None
+            self._terminal = None
 
         logger.info("Exiting app")
         exit_value = self._exit_value
@@ -370,10 +373,6 @@ class App(ABC):
             Value returned by ``run()``.
         """
         self._exit_value = exit_value
-        if self.root is not None:
-            self.root.destroy()
-            self.root = None
-        self._terminal = None
 
         try:
             tasks = asyncio.all_tasks()
