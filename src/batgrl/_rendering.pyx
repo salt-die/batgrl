@@ -2491,13 +2491,13 @@ cpdef void terminal_render(bint resized, app, root, tuple[int, int] aspect_ratio
         OctTree octree = app._octree
         tuple[int, int] app_pos = app._app_pos
         Cell[:, ::1] cells = root.cells
-        Cell[:, ::1] prev_cells = root._last_cells
+        Cell[:, ::1] prev_cells = root._prev_cells
         int[:, ::1] widths = root._widths
         uint8_t[:, :, ::1] graphics = root.graphics
-        uint8_t[:, :, ::1] prev_graphics = root._last_graphics
-        uint8_t[:, :, ::1] sgraphics = root._last_graphics
+        uint8_t[:, :, ::1] prev_graphics = root._prev_graphics
+        uint8_t[:, :, ::1] sgraphics = root._sgraphics
         uint8_t[:, ::1] kind = root.kind
-        uint8_t[:, ::1] prev_kind = root._last_kind
+        uint8_t[:, ::1] prev_kind = root._prev_kind
 
     normalize_canvas(cells, widths)
 

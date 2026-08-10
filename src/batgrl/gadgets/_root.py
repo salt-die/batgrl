@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from threading import RLock
-from typing import TYPE_CHECKING, Final, Literal, Self
+from typing import TYPE_CHECKING, Final, Literal, Self, cast
 
 import numpy as np
 
@@ -47,35 +47,37 @@ class _Root(Gadget):
         """Whether terminal has resized since last render."""
         self.cells: Cell2D
         """Current rendering of gadget tree."""
-        self.graphics: RGBM_2D = np.empty((0, 0, 4), np.uint8)
+        self.graphics: RGBM_2D = cast(RGBM_2D, np.empty((0, 0, 4), np.uint8))
         """Current graphics rendering."""
-        self._sgraphics: RGBM_2D = np.empty((0, 0, 4), np.uint8)
+        self._sgraphics: RGBM_2D = cast(RGBM_2D, np.empty((0, 0, 4), np.uint8))
         """Used by renderer to scale graphics from 0-255 to 0-100 for sixel."""
         self.kind: Enum2D
         """Whether a cell should use canvas, graphics or both."""
         self._widths: Int2D
         """Column widths of characters in canvas."""
-        self._last_cells: Cell2D
+        self._prev_cells: Cell2D
         """Previous rendering of gadget tree."""
-        self._last_graphics: RGBM_2D = np.empty((0, 0, 4), np.uint8)
+        self._prev_graphics: RGBM_2D = cast(RGBM_2D, np.empty((0, 0, 4), np.uint8))
         """Previous graphics rendering."""
-        self._last_kind: Enum2D
+        self._prev_kind: Enum2D
         """Previous kind."""
 
     def on_size(self):
         """Remake buffers and set ``_resized`` flag on resize."""
         self._resized = True
         self.cells = np.full(self._size, self._cell)
-        self._last_cells = self.cells.copy()
+        self._prev_cells = self.cells.copy()
         self._widths = np.zeros(self._size, dtype=np.intc)
         self.kind = np.zeros(self._size, np.uint8)
-        self._last_kind = self.kind.copy()
+        self._prev_kind = self.kind.copy()
 
         if Graphics._sixel_support:
             h, w = scale_geometry("sixel", self.size)
-            self.graphics = np.full((h, w, 4), (*self._bg_color, 0), np.uint8)
-            self._last_graphics = self.graphics.copy()
-            self._sgraphics = np.zeros((h, w, 4), np.uint8)
+            self.graphics = cast(
+                RGBM_2D, np.full((h, w, 4), (*self._bg_color, 0), np.uint8)
+            )
+            self._prev_graphics = self.graphics.copy()
+            self._sgraphics = cast(RGBM_2D, np.zeros((h, w, 4), np.uint8))
 
     @property
     def bg_color(self) -> Color:
@@ -144,9 +146,9 @@ class _Root(Gadget):
             if not self._regions_valid:
                 self._set_regions()
 
-            self.cells, self._last_cells = self._last_cells, self.cells
-            self.graphics, self._last_graphics = self._last_graphics, self.graphics
-            self.kind, self._last_kind = self._last_kind, self.kind
+            self.cells, self._prev_cells = self._prev_cells, self.cells
+            self.graphics, self._prev_graphics = self._prev_graphics, self.graphics
+            self.kind, self._prev_kind = self._prev_kind, self.kind
 
             self.cells[:] = self._cell
             self.graphics[:] = (*self.bg_color, 0)
