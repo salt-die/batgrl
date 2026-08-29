@@ -624,8 +624,8 @@ class Gadget:
         return self._size_hint
 
     @size_hint.setter
-    def size_hint(self, size_hint: SizeHint):
-        self._size_hint = _normalize_size_hint(size_hint)
+    def size_hint(self, size_hint: SizeHint | None):
+        self._size_hint = _normalize_size_hint(size_hint or {})
         self.apply_hints()
 
     @property
@@ -634,8 +634,8 @@ class Gadget:
         return self._pos_hint
 
     @pos_hint.setter
-    def pos_hint(self, pos_hint: PosHint):
-        self._pos_hint = _normalize_pos_hint(pos_hint)
+    def pos_hint(self, pos_hint: PosHint | None):
+        self._pos_hint = _normalize_pos_hint(pos_hint or {})
         self.apply_hints()
 
     @property
