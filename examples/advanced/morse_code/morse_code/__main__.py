@@ -136,6 +136,7 @@ class MorseCodeApp(App):
             ):
                 current_node = current_node.dot
             else:
+                progress_bar.progress = None
                 continue
 
             for i, line in enumerate(
