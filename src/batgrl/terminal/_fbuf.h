@@ -245,47 +245,35 @@ decode_utf16(fbuf *f, unsigned short utf16) {
 static inline ssize_t
 fbuf_read_fd(fbuf *f, int fd, int *size_event) {
     HANDLE handle = (HANDLE)_get_osfhandle(fd);
-    DWORD nevents, events_to_read, events_read;
+    DWORD nevents, nreads;
     if (!GetNumberOfConsoleInputEvents(handle, &nevents)) {
         return -1;
     }
-    INPUT_RECORD *records = (INPUT_RECORD *)malloc(
-        sizeof(INPUT_RECORD) * nevents
-    );
-    if (!records) {
-        return -1;
-    }
-    events_to_read = nevents;
-    while (events_to_read) {
-        if (!ReadConsoleInputW(handle, records, nevents, &events_read)) {
-            free(records);
+
+    INPUT_RECORD record;
+    for (size_t i = 0; i < nevents; i++) {
+        if (!ReadConsoleInputW(handle, &record, 1, &nreads) || !nreads) {
             return -1;
         }
-        events_to_read -= events_read;
-    }
-    for (size_t i = 0; i < nevents; i++) {
-        INPUT_RECORD *record = &records[i];
-        if (record->EventType == KEY_EVENT) {
-            if (!record->Event.KeyEvent.bKeyDown) {
+        if (record.EventType == KEY_EVENT) {
+            if (!record.Event.KeyEvent.bKeyDown) {
                 continue;
             }
             if (
-                record->Event.KeyEvent.dwControlKeyState
-                && !record->Event.KeyEvent.wVirtualKeyCode
+                record.Event.KeyEvent.dwControlKeyState
+                && !record.Event.KeyEvent.wVirtualKeyCode
             ) {
                 continue;
             }
-            if (decode_utf16(f, record->Event.KeyEvent.uChar.UnicodeChar)) {
-                free(records);
+            if (decode_utf16(f, record.Event.KeyEvent.uChar.UnicodeChar)) {
                 return 1;
             }
         }
-        else if (record->EventType == WINDOW_BUFFER_SIZE_EVENT) {
-            size_event[0] = (int)record->Event.WindowBufferSizeEvent.dwSize.Y;
-            size_event[1] = (int)record->Event.WindowBufferSizeEvent.dwSize.X;
+        else if (record.EventType == WINDOW_BUFFER_SIZE_EVENT) {
+            size_event[0] = (int)record.Event.WindowBufferSizeEvent.dwSize.Y;
+            size_event[1] = (int)record.Event.WindowBufferSizeEvent.dwSize.X;
         }
     }
-    free(records);
     return 0;
 }
 
